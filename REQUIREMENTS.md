@@ -19,12 +19,12 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ### 1.1 Player & movement (PLY)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-PLY-01 | Aurelia is the playable character from the start of the game. | MVP | New game starts with Aurelia in Elderroot Meadow. | ⬜ |
-| FR-PLY-02 | Free 360° movement in 3D with blended locomotion animations (idle / walk / run). | MVP | Aurelia turns smoothly toward any direction; speed is the same in all directions. | ⬜ |
+| FR-PLY-01 | Aurelia is the playable character from the start of the game. | MVP | New game starts with Aurelia in Elderroot Meadow. | 🟨 Aurelia (placeholder model) spawns in the test meadow (Phase 2); story start in Phase 6 |
+| FR-PLY-02 | Free 360° movement in 3D with blended locomotion animations (idle / walk / run). | MVP | Aurelia turns smoothly toward any direction; speed is the same in all directions. | 🟨 360° movement tested (Phase 2); real animations (idle/walk/jog/dash) on the animated stand-in with foot-speed matching (Phase 2b); waiting for Aurelia's VRoid model |
 | FR-PLY-03 | Mouse / right-stick aiming for attacks and spells. | MVP | Spells fire toward the cursor/stick direction. | ⬜ |
-| FR-PLY-04 | Dash with a short cooldown and brief invincibility; does not use stamina. | MVP | Dashing through an enemy attack causes no damage. | ⬜ |
+| FR-PLY-04 | Dash with a short cooldown and brief invincibility; does not use stamina. | MVP | Dashing through an enemy attack causes no damage. | 🟨 Dash with cooldown, 0.15 s input buffer and i-frame timer, tested (Phase 2); dodging hits checked in Phase 3 |
 | FR-PLY-05 | Free staff strike (melee, no stamina cost). | MVP | Usable even when stamina is 0. | ⬜ |
-| FR-PLY-06 | Interact with NPCs, chests, rest points and gather nodes, with a visible prompt. | MVP | A prompt appears in range; the interact key triggers it. | ⬜ |
+| FR-PLY-06 | Interact with NPCs, chests, rest points and gather nodes, with a visible prompt. | MVP | A prompt appears in range; the interact key triggers it. | ✅ Phase 2 (prompt + E, tested) |
 | FR-PLY-07 | Stats: HP, Stamina, Magic Power, Defense, Move speed. | MVP | Visible in the status menu; changed by equipment. | ⬜ |
 | FR-PLY-08 | On defeat, respawn at the last rest point without losing items. | MVP | Inventory is identical before and after respawn. | ⬜ |
 
@@ -124,14 +124,14 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ### 1.9 World (WLD)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-WLD-01 | 3D world built from terrain and modular kits (ruins, rocks, trees), seen through the hybrid camera. | MVP | Aurelia walks on terrain and around/behind objects; collisions work. | 🟨 Graybox test level with collisions (Phase 1b) |
-| FR-WLD-02 | Real 3D height: stairs and ramps are walkable, ledges block; no free jump in v1. | MVP | Aurelia climbs the test stairs automatically and can't step up a ledge. | ⬜ |
+| FR-WLD-01 | 3D world built from terrain and modular kits (ruins, rocks, trees), seen through the hybrid camera. | MVP | Aurelia walks on terrain and around/behind objects; collisions work. | 🟨 Elderroot test meadow with collisions (Phase 2) |
+| FR-WLD-02 | Real 3D height: stairs and ramps are walkable, ledges block; no free jump in v1. | MVP | Aurelia climbs the test stairs automatically and can't step up a ledge. | ✅ Phase 2 (stairs ramp climbed, 1.2 m ledge blocks; tested) |
 | FR-WLD-03 | Hub + 5 regions connected around the World Tree. | V1 (MVP: Elderroot) | All regions reachable. | ⬜ |
 | FR-WLD-04 | Spell-gated paths (Gust, Glacial Path, Stone Spire, dragon flight). | V1 | A gated path can't be crossed without its spell. | ⬜ |
 | FR-WLD-05 | Rest points: save, heal, learn spells, change loadout, fast travel. | MVP (save, heal, learn) / V1 (travel) | All functions available at a shrine. | ⬜ |
 | FR-WLD-06 | Day/night cycle (~20 real minutes per day) affecting lighting, enemies and NPCs. | MVP (lighting) / V1 | The screen tint changes over time. | ⬜ |
 | FR-WLD-07 | Weather: clear, rain, fog, storm, per region. | V1 (MVP: rain particles) | Stormspire is always stormy. | ⬜ |
-| FR-WLD-08 | Objects between the camera and Aurelia fade out (occlusion fade). | V1 | A wall in front of the camera becomes see-through while Aurelia is behind it. | ⬜ |
+| FR-WLD-08 | Objects between the camera and Aurelia fade out (occlusion fade). | V1 | A wall in front of the camera becomes see-through while Aurelia is behind it. | ✅ Phase 2 (dithered occlusion fade, tested) |
 | FR-WLD-09 | Opened chests, gathered nodes, defeated bosses and solved puzzles persist. | MVP | State survives a region change and a reload. | ⬜ |
 
 ### 1.10 UI (UI)
@@ -172,14 +172,14 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ### 1.14 Camera & graphics (CAM) — details in [3D_PROPOSAL.md](3D_PROPOSAL.md) §3
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-CAM-01 | High-angle follow camera (~40–45° down) that smoothly follows Aurelia. | MVP | Camera stays on Aurelia while she walks and dashes. | 🟨 Preview camera in test level (Phase 1b) |
-| FR-CAM-02 | Camera rotate (Q/R, middle-mouse drag, D-pad), zoom (wheel, 7–22 m) and reset (Z). | MVP | Each input works and stays within limits. | 🟨 Rotate/zoom/reset in test level (Phase 1b) |
-| FR-CAM-03 | Scenic viewpoints: entering an area blends the camera to a low, wide vista shot, then back. | V1 (MVP: 1 viewpoint) | The World Tree viewpoint shows the vista. | ⬜ |
-| FR-CAM-04 | Occlusion fade (see FR-WLD-08). | V1 | — | ⬜ |
+| FR-CAM-01 | High-angle follow camera (~40–45° down) that smoothly follows Aurelia. | MVP | Camera stays on Aurelia while she walks and dashes. | ✅ Phase 2 |
+| FR-CAM-02 | Camera rotate (Q/R, middle-mouse drag, D-pad), zoom (wheel, 7–22 m) and reset (Z). | MVP | Each input works and stays within limits. | ✅ Phase 2 |
+| FR-CAM-03 | Scenic viewpoints: entering an area blends the camera to a low, wide vista shot, then back. | V1 (MVP: 1 viewpoint) | The World Tree viewpoint shows the vista. | 🟨 MVP done: platform viewpoint shows the World Tree (Phase 2, tested); more viewpoints in later regions |
+| FR-CAM-04 | Occlusion fade (see FR-WLD-08). | V1 | — | ✅ Phase 2 (see FR-WLD-08) |
 | FR-CAM-05 | Graphics presets Low / Medium / High (render scale + FSR, MSAA, shadows, SSAO, glow, fog, grass density). | MVP | F1–F3 switch presets live; values from `data/graphics/`. | ✅ Phase 1b (tested) |
 | FR-CAM-06 | Developer performance overlay and `--benchmark` mode. | MVP | Overlay shows FPS/ms/draw calls/memory; benchmark writes results + screenshot. | ✅ Phase 1b |
-| FR-PLY-09 | No free jump in v1; automatic step-up on stairs (≤ ~0.35 m). | MVP | See FR-WLD-02. | ⬜ |
-| NFR-ART-04 | Characters made in VRoid Studio, imported as VRM with anime (MToon/toon) shading and spring-bone hair/cape. | MVP (Aurelia) | Aurelia's VRM imports and animates in Godot. | 🟨 VRM importer installed (Phase 1b) |
+| FR-PLY-09 | No free jump in v1; automatic step-up on stairs (≤ ~0.35 m). | MVP | See FR-WLD-02. | ✅ Phase 2 |
+| NFR-ART-04 | Characters made in VRoid Studio, imported as VRM with anime (MToon/toon) shading and spring-bone hair/cape. | MVP (Aurelia) | Aurelia's VRM imports and animates in Godot. | 🟨 Pipeline ready (Phase 2b): VRM importer, CC0 animations retargeted to Godot's humanoid skeleton, HumanoidVisual; waiting for the owner's VRoid export |
 | NFR-ART-05 | One visual style: all assets use the project's toon/stone/ground shaders and one colour palette. | V1 | Style check in the Phase 2b look test. | 🟨 Shaders written (Phase 1b) |
 
 ### 1.13 Audio (AUD) — details in [AUDIO_DESIGN.md](AUDIO_DESIGN.md)

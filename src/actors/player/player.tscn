@@ -1,0 +1,51 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://src/actors/player/player.gd" id="1_player"]
+[ext_resource type="Resource" path="res://data/player/aurelia_movement.tres" id="2_stats"]
+[ext_resource type="Script" path="res://src/actors/player/aurelia_placeholder.gd" id="3_visual"]
+[ext_resource type="Script" path="res://src/core/state_machine/state_machine.gd" id="4_machine"]
+[ext_resource type="Script" path="res://src/actors/player/states/idle_state.gd" id="5_idle"]
+[ext_resource type="Script" path="res://src/actors/player/states/move_state.gd" id="6_move"]
+[ext_resource type="Script" path="res://src/actors/player/states/dash_state.gd" id="7_dash"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.3
+height = 1.6
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_interact"]
+radius = 1.4
+
+[node name="Player" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 13
+script = ExtResource("1_player")
+stats = ExtResource("2_stats")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Visual" type="Node3D" parent="."]
+script = ExtResource("3_visual")
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("4_machine")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("5_idle")
+
+[node name="Move" type="Node" parent="StateMachine"]
+script = ExtResource("6_move")
+
+[node name="Dash" type="Node" parent="StateMachine"]
+script = ExtResource("7_dash")
+
+[node name="InteractionDetector" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 64
+monitorable = false
+
+[node name="Shape" type="CollisionShape3D" parent="InteractionDetector"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("SphereShape3D_interact")

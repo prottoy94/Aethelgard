@@ -217,6 +217,7 @@ camera_reset={
 3d_physics/layer_8="elemental"
 3d_physics/layer_9="water"
 3d_physics/layer_10="high_ground"
+3d_physics/layer_11="camera_occluder"
 
 [physics]
 

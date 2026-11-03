@@ -27,6 +27,7 @@ const AUTOLOADS: Array[Array] = [
 const PHYSICS_LAYERS: Array[String] = [
 	"world", "player", "enemy", "ally", "player_hurtbox",
 	"enemy_hurtbox", "interactable", "elemental", "water", "high_ground",
+	"camera_occluder",  # layer 11: non-solid volumes (tree canopies) the camera fades out
 ]
 
 const EDITOR_PLUGINS: Array[String] = [

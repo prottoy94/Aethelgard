@@ -148,13 +148,26 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 > Measured at 1080p: **273 FPS on the RTX 3050 (High)**, **74 FPS on the Intel UHD (Low)**, ~0.9–1.0 GB RAM.
 > Blender 5.2.3 and the Godot VRM importer are installed. The 2D check screen and 2D sprite placeholders were retired.
 
-### Phase 2: Walk & camera (M1) · **M**
+### Phase 2: Walk & camera (M1) · **M** · ✅ Done 2026-11-03
+> **Result:** Aurelia (a placeholder built from simple shapes following her character art: silver hair and braids,
+> elf ears, plum capelet with gold trim, green coat, staff with teal gem and lantern) walks in any direction relative to
+> the camera, dashes (cooldown, input buffer, i-frames), climbs stairs and is stopped by ledges. The hybrid camera follows,
+> rotates (Q/R, middle-mouse drag), zooms (wheel), resets (Z), swings to a **scenic World Tree view** on the platform, and
+> **fades walls and trees** that block the view. Signs can be read (E). The meadow now follows the Elderroot art: World Tree
+> with sunbeams, arch gate with ivy, broken walls, stone slabs, flowers, cliffs with a waterfall, lantern shrine, and Lumen the
+> blue butterfly. **38/38 tests pass.** Measured 1080p RTX 3050 High: 224–244 FPS, ~0.8 GB RAM.
 - Aurelia (capsule placeholder) moves in any direction, dashes, and climbs stairs automatically (no free jump).
 - The **hybrid camera**: follow, rotate, zoom, reset, a scenic viewpoint test, and occlusion fade.
 - Interact prompt (press E near a sign).
 - **You'll see and play:** walking around the 3D test meadow. You judge the speed, camera and feel.
 
-### Phase 2b: Look test, the "style diorama" · **M**
+### Phase 2b: Look test, the "style diorama" · **M** · 🟨 In progress (my part ready; waiting for your VRoid Aurelia)
+> **Done so far:** 120+ free **CC0 animations** (Quaternius) downloaded and **retargeted** to Godot's standard humanoid
+> skeleton, so they will drive your VRoid model too. A new animated character system picks idle/walk/jog/dash from movement,
+> matches the animation speed to her real speed (no foot sliding), plays one-shot actions (casting, hits…), and puts her
+> **staff in her right hand**. Try it now: press **V** in the meadow to switch to the animated stand-in mannequin, or open
+> `src/world/test/character_viewer.tscn` (keys 1–7 play animations). **43/43 tests pass.**
+> **Your step:** follow **[AURELIA_VROID_GUIDE.md](AURELIA_VROID_GUIDE.md)** and save `assets/models/characters/aurelia.vrm`.
 - **You make Aurelia in VRoid Studio** (I guide you step by step); I import her with her animations.
 - One small, beautiful corner of Elderroot: World Tree, ruins, grass, water, golden hour.
 - **You'll see:** a screenshot-worthy scene that **locks the art style** before we make lots of art.

@@ -180,7 +180,11 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 - **Terrain:** sculpted ground meshes (Blender or Godot) with the `ground` shader (grass tones + painted dirt paths via vertex colour).
 - **Modular kits:** ruins (arches, columns, walls, stairs), rocks, trees as reusable scenes with the `toon` / `stone_moss` shaders and simple collision shapes.
 - **Grass & flowers:** `MultiMeshInstance3D` with the `grass` shader; density follows the graphics preset.
-- **Elevation:** real 3D height. Stairs/ramps are walkable; ledges block. No free jump (§2).
+- **Elevation:** real 3D height. **Stairs collide as a smooth ramp** (one sloped collision box under the visible steps, ≤ ~30°),
+  so the character walks up them without jumping; ledges block. No free jump (§2).
+- **Occlusion fade:** solid objects are a `StaticBody3D` root with their meshes as children; non-solid blockers (tree canopies)
+  get an `Area3D` child on layer 11. The `CameraRig` raycasts to the player and sets the `fade` instance uniform on all meshes
+  under the hit root (toon, toon_outline and stone_moss shaders dither them out).
 - **Navigation:** `NavigationRegion3D` baked per area for enemies and the dragon (`NavigationAgent3D`).
 - **Performance:** automatic mesh LODs on import, `visibility_range` on small props, `OccluderInstance3D` for big ruins/cliffs, shadows only near the camera, fog hides the far distance.
 - **Persistent objects** (chests, puzzle states, bosses) have a unique `persist_id` and read/write `GameState` when spawned or changed.
@@ -233,13 +237,26 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 | 8 | elemental | puzzle objects that react to spells |
 | 9 | water | water surfaces (frozen → walkable) |
 | 10 | high_ground | elevated level collision |
+| 11 | camera_occluder | non-solid volumes (tree canopies) the camera checks for occlusion fade |
 
 ### 4.15 Placeholder & art pipeline (`NFR-ART-01`)
 - **Placeholders are simple 3D shapes** (capsules, boxes, cylinders, spheres) at real-world size, using the final shaders, as in
   `src/world/test/test_level_3d.gd`. Only 2D UI icons are generated as images (`tools/placeholders/`).
 - **Characters:** VRoid Studio → `.vrm` (reduce polygons on export) → `assets/models/characters/`. Animations retargeted to the humanoid skeleton;
   `AnimationTree` with a locomotion blend space (idle/walk/run) + one-shots (cast, strike, hurt, dash).
-- **Animation naming:** `idle`, `walk`, `run`, `dash`, `staff_strike`, `cast_projectile`, `cast_area`, `hurt`, `death`, `interact` (no per-direction animations in 3D).
+- **Animation pipeline (Phase 2b):** source = Quaternius Universal Animation Library (CC0) in `assets/animations/quaternius_ual/`.
+  Its `.glb.import` retargets the Rigify skeleton with `ual_bone_map.tres` (made by `tools/dev/make_ual_bone_map.gd`) to Godot's
+  `SkeletonProfileHumanoid`, renamed to the **unique node `%GeneralSkeleton`** (rest fixer: overwrite axis + fix silhouette).
+  Animation tracks therefore address `%GeneralSkeleton:<Bone>` and play on **any** humanoid model whose skeleton is renamed to
+  `GeneralSkeleton` with `unique_name_in_owner` (HumanoidVisual does this for VRM models).
+- **`HumanoidVisual`** (`src/actors/character/`): instantiates the model, scales it to `target_height`, turns it to face -Z,
+  adds the animation library, attaches `AureliaStaff` to the `RightHand` bone, and picks animations from movement
+  (`update_motion`) with playback speed = real speed ÷ native gait speed (measured with `tools/dev/measure_gait_speed.gd`).
+  `play_action()` plays one-shots (cast, strike, hurt…). Which clip is used for what: `HumanoidAnimSet`, data in
+  `data/animations/humanoid_default.tres`. Same interface as the shape placeholder, so `Player.set_visual()` can swap them.
+- **Animation naming:** clip names come from the library (`Idle`, `Walk`, `Jog_Fwd`, `Sprint`, `Spell_Simple_Shoot`,
+  `Sword_Attack`, `Hit_Chest`, `Death01`, `Interact`, `Sitting_Idle`…); gameplay code uses the `HumanoidAnimSet` roles
+  (idle, walk, run, dash, cast, strike, hurt, death, interact, rest), never clip names directly.
 - **Props/environment:** CC0 kits (Quaternius, Kenney) and own models from Blender, exported as `.glb`, recoloured to one palette, using the project shaders.
 - Swapping a placeholder for real art = replacing the mesh/scene of the visual child node. Gameplay nodes (collision, components) don't change.
 - Reference images in `Game Images/` are for mood only; screenshots of other games are never used as assets.

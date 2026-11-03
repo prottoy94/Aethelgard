@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="HumanoidAnimSet" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/actors/character/humanoid_anim_set.gd" id="1"]
+[ext_resource type="PackedScene" path="res://assets/animations/quaternius_ual/AnimationLibrary_Godot_Standard.glb" id="2"]
+
+; Speeds measured with tools/dev/measure_gait_speed.gd (walk: 1.02-1.05 m/s; jog estimated 2.5-3.5 m/s).
+[resource]
+script = ExtResource("1")
+library_scene = ExtResource("2")
+idle = &"Idle"
+walk = &"Walk"
+run = &"Jog_Fwd"
+dash = &"Sprint"
+cast = &"Spell_Simple_Shoot"
+strike = &"Sword_Attack"
+hurt = &"Hit_Chest"
+death = &"Death01"
+interact = &"Interact"
+rest = &"Sitting_Idle"
+walk_native_speed = 1.03
+run_native_speed = 3.0
+run_threshold = 2.2
+source_height = 1.83
+dash_speed_scale = 1.5
+min_speed_scale = 0.7
+max_speed_scale = 1.7
+blend_time = 0.18

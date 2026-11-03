@@ -6,8 +6,14 @@ The player is **Aurelia**, a silver-haired elf mage who starts with almost no ma
 crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos, Herald of the Final Ember**.
 
 ## Project status
-- **Phase 1 (skeleton) and Phase 1b (switch to 3D) done** 2026-11-03. **Next: Phase 2, walk & camera (M1)** (BUILD_PLAN.md §6).
-  Main scene = `src/world/test/test_level_3d.tscn` (graybox level + `PerfOverlay`). 19/19 tests pass.
+- **Phases 1, 1b and 2 done** 2026-11-03. **Phase 2b in progress:** animation pipeline + animated stand-in done; **waiting for the
+  owner's VRoid export** at `assets/models/characters/aurelia.vrm` (guide: AURELIA_VROID_GUIDE.md). When it arrives: inspect it with
+  `tools/dev/inspect_scene.gd`, view it with `character_viewer.tscn -- --model=res://assets/models/characters/aurelia.vrm`,
+  then make it the Player's default visual (HumanoidVisual) and build the style diorama. Then Phase 3 combat. 43/43 tests pass.
+  Main scene = `src/world/test/test_level_3d.tscn` (Elderroot test meadow: Player + CameraRig + PerfOverlay). Start options after `--`:
+  `--spawn=viewpoint`, `--benchmark=<dir>`, `--graphics=low|medium|high`.
+  Key code: `src/actors/player/` (Player, states, placeholder model, MovementStats), `src/game/camera/` (CameraRig, CameraSettings),
+  `src/world/camera/scenic_viewpoint.gd`, `src/components/interactable_component.gd`, `src/core/` (StateMachine, Cooldown, ToonMaterials).
   Git repo exists (branch `main`, no remote). **The owner makes commits manually: never commit or push.**
   `.gitignore` excludes **all images and audio for now** (owner decision 2026-11-03): `Game Images/`, `Audio_music/`,
   placeholder PNGs (re-create with the generator after a clone). Only the add-ons' own icons are kept.
@@ -29,6 +35,7 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
 | File | What it holds |
 |---|---|
 | [BUILD_PLAN.md](BUILD_PLAN.md) | **Start here:** the phase-by-phase build plan, made for the owner's PC (hardware limits, setup, workflow) |
+| [AURELIA_VROID_GUIDE.md](AURELIA_VROID_GUIDE.md) | Owner's step-by-step guide for making Aurelia in VRoid Studio and exporting the VRM |
 | [GAME_DESIGN.md](GAME_DESIGN.md) | The game: story, characters, magic, combat, dragons, crafting, puzzles, world, scope |
 | [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md) | Architecture, folder layout, systems, save format, testing, **milestone roadmap** |
 | [REQUIREMENTS.md](REQUIREMENTS.md) | Checkable requirements with IDs, priority (MVP/V1/Stretch) and status |
@@ -46,6 +53,9 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
 - **3D art:** placeholders are simple shapes at real size (1 unit = 1 m, Aurelia ≈ 1.6 m) using the shared shaders in `assets/shaders/`
   (toon + toon_outline, ground, grass, stone_moss, water). Characters via VRoid → VRM; CC0 animations; props from CC0 kits/Blender, one palette.
   Keep visuals in a child node so models swap without gameplay-code changes. No free jump in v1.
+  Animations: CC0 Quaternius library retargeted to `%GeneralSkeleton` (see TECHNICAL_DESIGN.md §4.15); use `HumanoidAnimSet` roles,
+  not clip names. Dev tools in `tools/dev/` (inspect_scene, make_ual_bone_map, measure_gait_speed).
+  Stairs = visible steps + one sloped collision box. Solid props = StaticBody3D root with meshes as children (needed for occlusion fade).
   Some files in `Game Images/` are screenshots from other games: **mood reference only, never use them as assets.**
 
 ## Code conventions (GDScript)
