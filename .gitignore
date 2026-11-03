@@ -1,0 +1,86 @@
+# =====================================================================
+# Aethelgard .gitignore
+# =====================================================================
+
+# --- Godot -----------------------------------------------------------
+# Editor/import cache; Godot rebuilds it when the project is opened
+.godot/
+# Export output and Android build template
+/build/
+/exports/
+/android/
+# .NET/Mono leftovers (the project uses GDScript, not C#)
+.mono/
+data_*/
+mono_crash.*.json
+# Temporary files and logs
+*.tmp
+*.log
+
+# --- Images & audio: NOT uploaded for now (owner decision, 2026-11-03) ---
+# Reference images and the owner's music stay on this PC only
+/Game Images/
+/Audio_music/
+
+# Every image and audio file anywhere in the project...
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.bmp
+*.tga
+*.svg
+*.exr
+*.hdr
+*.psd
+*.kra
+*.mp3
+*.wav
+*.ogg
+*.flac
+*.aiff
+*.m4a
+# ...and the Godot import settings that belong to them
+*.png.import
+*.jpg.import
+*.jpeg.import
+*.webp.import
+*.gif.import
+*.bmp.import
+*.tga.import
+*.svg.import
+*.exr.import
+*.hdr.import
+*.mp3.import
+*.wav.import
+*.ogg.import
+
+# ...except the add-ons' own icons: GUT and Dialogue Manager need them to work
+!addons/**/*.png
+!addons/**/*.svg
+!addons/**/*.png.import
+!addons/**/*.svg.import
+
+# Note: placeholder art in assets/art/placeholders/ is ignored too. After a fresh clone, re-create it with:
+#   godot --headless --path . --script res://tools/placeholders/generate_placeholders.gd
+
+# --- Tools & editors ---------------------------------------------------
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+# Code editors
+.vscode/
+.idea/
+*.swp
+# Claude Code personal settings
+.claude/settings.local.json
+
+# --- OS files --------------------------------------------------------
+Thumbs.db
+ehthumbs.db
+desktop.ini
+.DS_Store
+$RECYCLE.BIN/
