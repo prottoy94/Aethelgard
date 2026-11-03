@@ -15,7 +15,7 @@ waiting for the owner's approval.
 | Tamsin | A village child, an explorer at heart; chases dragonflies | draft (Phase 6a) |
 
 ## Places
-Elderroot Meadow · the World Tree · Lantern Shrines · the old shrine ruins (east of the pond) · Azure Coast ·
+Elderroot Meadow · Elderroot Village (south of the meadow: Maren's herb garden, the well) · the World Tree · Lantern Shrines · the old shrine ruins (east of the pond) · Azure Coast ·
 Ruined Valley · Stormspire Highlands · Floating Isle / Sky Rift
 
 ## Magic

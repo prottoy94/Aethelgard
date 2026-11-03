@@ -235,7 +235,19 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 > (text speed, auto-advance, graphics, saved) pages, and the HUD shows the tracked quest. Conversations are drafts in
 > `dialogue/` waiting for your approval. **138/138 tests pass.** 1080p RTX 3050 High: 202–235 FPS, ~0.8 GB RAM.
 > Try it: `-- --spawn=ruins`, `-- --talk=maren` (or elder, tamsin), `-- --open=journal`.
-> **Next: 6b** (save/load, title screen, day/night, rain, region change), then **6c** (audio and your music).
+> **6b, persistence & atmosphere: ✅ done 2026-11-04.** The game now opens on a **title screen** (Continue, New Game,
+> Load Game, Options, Quit) over a painted Elderroot dusk. **Saving:** resting at a Lantern Shrine autosaves, so does
+> arriving in a new area; **Esc** opens the Save page with 3 manual slots (save while standing by a shrine; load and
+> quit to the title anywhere). Saves are JSON with a version number; quitting and loading puts Aurelia back where she
+> stood with the world as she left it (puzzles, chests, picked plants, quests, items, spells, the clock).
+> **Day and night:** a 20-minute day turns the sun and moon and colours the sky; nights are moonlit blue and the
+> lanterns glow. **Weather:** every few game hours it may turn rainy (rain, darker light) or foggy. **A second area:**
+> walk through the gate at the meadow's south edge to **Elderroot Village**: cottages around a well, a Lantern Shrine,
+> Maren's herb garden; the Elder and Maren now live there. The HUD shows the day, time and weather.
+> **158/158 tests pass.** 1080p RTX 3050 High: 207–276 FPS (title 366); Intel UHD Low at night in rain: 60 FPS;
+> ≤ 1.3 GB RAM. Try it: `-- --region=elderroot_village`, `-- --hour=22 --weather=rain`, `-- --open=save`
+> (any option skips the title, with saving off; add `--saves` to keep saving).
+> **Next: 6c** (the audio system and your music, including analysing your four new tracks).
 - Conversations with portraits and choices (Dialogue Manager), NPCs, quests, journal, first puzzles (brazier, push block, hidden path), Lumen hints.
 - **Save/Load** (JSON), rest points, day/night cycle, rain, region transitions.
 - **Audio system** with your music: title song *Sunlight on Ancient Stone*, region music, adaptive explore↔combat music, placeholder sound effects.

@@ -103,7 +103,7 @@ func test_choices_lead_to_different_replies() -> void:
 	var first := await _talk("elder", [0])
 	GameState.reset()
 	var second := await _talk("elder", [1])
-	assert_true(first.has("Maren is out of Sunpetal for her remedies. She's by the flowers near the shrine."))
+	assert_true(first.has("Maren is out of Sunpetal for her remedies. She's in her herb garden, just there."))
 	assert_true(second.has("Every lantern in Elderroot was lit from one small spark."))
 	assert_ne(first, second)
 

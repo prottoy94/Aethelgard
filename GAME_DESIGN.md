@@ -390,8 +390,12 @@ Puzzles use **the spells the player has**, so learning a spell feels useful outs
 | 5. **Floating Isle / Sky Rift** | Ginkgo trees, pagoda, the portal | **Adult dragon flight** | Golden mist |
 
 - **Rest points** (Lantern Shrines): save, heal, learn spells, change the loadout, fast travel to other shrines.
+  *Built (Phase 6b): resting autosaves; the 3 manual save slots can be used while standing by a shrine (Save page, Esc); loading and quitting work anywhere. Arriving in a new area also autosaves.*
 - **Day/night cycle:** ~20 real minutes per game day. Some enemies, NPCs and puzzles change with time.
+  *Built (Phase 6b): a new game starts at 15:00 (the golden afternoon); night is 20:30–05:30, moonlit and readable.*
 - **Weather:** clear, rain, fog, storm. Some secrets only appear in certain weather.
+  *Built (Phase 6b): every 3 game hours the weather is rolled (clear 65%, rain 20%, fog 15%; tune in `data/world/time_settings.tres`). Storms and per-region weather come later.*
+- **Elderroot** so far has two connected areas: the meadow (World Tree view, ruins, pond) and **Elderroot Village** south of it (cottages, well, Lantern Shrine, Maren's herb garden), where the Elder and Maren live (Phase 6b).
 - Region sizes are kept small: each region is a few connected 3D areas, small and dense rather than huge and empty.
 
 ---

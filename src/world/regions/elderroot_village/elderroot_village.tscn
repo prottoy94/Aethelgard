@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/world/regions/elderroot_village/elderroot_village.gd" id="1_village"]
+
+[node name="ElderrootVillage" type="Node3D"]
+script = ExtResource("1_village")

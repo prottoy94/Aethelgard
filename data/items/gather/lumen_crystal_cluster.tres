@@ -11,4 +11,4 @@ item = ExtResource("2")
 look = 3
 min_amount = 1
 max_amount = 1
-regrow_time = 75.0
+regrow_hours = 2.0

@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="DayNightData" format=3]
+
+[ext_resource type="Script" path="res://src/world/environment/day_night_data.gd" id="1"]
+
+; Light through the day (TECHNICAL_DESIGN.md §4.8). 15:00 matches the golden afternoon look of the earlier phases.
+; Keyframes: midnight, dawn starts, sunrise, morning, noon, golden afternoon, sunset glow, sunset, dusk, night, midnight.
+[resource]
+script = ExtResource("1")
+hours = PackedFloat32Array(0, 4.8, 6, 8, 12, 15, 18, 19.5, 20.5, 22, 24)
+light_colors = PackedColorArray(0.55, 0.65, 1, 1, 0.6, 0.66, 0.95, 1, 1, 0.62, 0.42, 1, 1, 0.84, 0.7, 1, 1, 0.98, 0.94, 1, 1, 0.88, 0.7, 1, 1, 0.72, 0.48, 1, 1, 0.6, 0.45, 1, 0.6, 0.66, 0.95, 1, 0.55, 0.65, 1, 1, 0.55, 0.65, 1, 1)
+light_energy = PackedFloat32Array(0.35, 0.3, 0.35, 1.2, 1.7, 1.6, 1.25, 0.35, 0.3, 0.35, 0.35)
+ambient_energy = PackedFloat32Array(1.1, 1.05, 0.75, 0.6, 0.55, 0.55, 0.6, 0.85, 1.05, 1.1, 1.1)
+sky_top = PackedColorArray(0.03, 0.05, 0.16, 1, 0.08, 0.1, 0.25, 1, 0.3, 0.4, 0.7, 1, 0.33, 0.55, 0.88, 1, 0.3, 0.55, 0.9, 1, 0.36, 0.55, 0.85, 1, 0.3, 0.4, 0.72, 1, 0.2, 0.2, 0.45, 1, 0.08, 0.08, 0.24, 1, 0.03, 0.05, 0.16, 1, 0.03, 0.05, 0.16, 1)
+sky_horizon = PackedColorArray(0.1, 0.14, 0.3, 1, 0.3, 0.26, 0.45, 1, 1, 0.66, 0.5, 1, 0.92, 0.86, 0.78, 1, 0.85, 0.88, 0.9, 1, 1, 0.82, 0.64, 1, 1, 0.68, 0.46, 1, 0.82, 0.48, 0.55, 1, 0.3, 0.24, 0.45, 1, 0.12, 0.15, 0.32, 1, 0.1, 0.14, 0.3, 1)
+sunrise_hour = 6.0
+sunset_hour = 19.5
+max_elevation_deg = 50.0
+sunrise_yaw_deg = 60.0
+sunset_yaw_deg = 195.0
+moon_elevation_deg = 38.0
+moon_yaw_deg = -40.0
+clear_fog = 0.004
+rain_fog = 0.014
+fog_fog = 0.016
+rain_light = 0.45
+rain_ambient = 0.8
+rain_sky_tint = Color(0.55, 0.6, 0.68, 1)
+blend_speed = 0.25
+rain_drops = 1600

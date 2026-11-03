@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="RegionLibrary" format=3]
+
+[ext_resource type="Script" path="res://src/world/regions/region_library.gd" id="1"]
+[ext_resource type="Script" path="res://src/world/regions/region_data.gd" id="2"]
+
+[sub_resource type="Resource" id="meadow"]
+script = ExtResource("2")
+id = &"elderroot_meadow"
+display_name = "Elderroot Meadow"
+scene_path = "res://src/world/test/test_level_3d.tscn"
+
+[sub_resource type="Resource" id="village"]
+script = ExtResource("2")
+id = &"elderroot_village"
+display_name = "Elderroot Village"
+scene_path = "res://src/world/regions/elderroot_village/elderroot_village.tscn"
+
+; Every region (an area of the world) the game can travel to. Elderroot Meadow is still the test meadow scene.
+[resource]
+script = ExtResource("1")
+regions = Array[ExtResource("2")]([SubResource("meadow"), SubResource("village")])

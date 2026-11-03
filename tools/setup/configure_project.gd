@@ -58,7 +58,7 @@ func _apply_settings() -> void:
 		"application/config/name": "Aethelgard",
 		"application/config/description": "3D anime action-RPG (high-angle hybrid camera).",
 		"application/config/features": PackedStringArray(["4.7", "Forward Plus"]),
-		"application/run/main_scene": "res://src/world/test/test_level_3d.tscn",
+		"application/run/main_scene": "res://src/ui/title/title_screen.tscn",
 		# Rendering: Forward+ (Vulkan) for the anime 3D look; measured ~5 ms/frame on the RTX 3050 (3D_PROPOSAL.md §1).
 		"rendering/renderer/rendering_method": "forward_plus",
 		"rendering/renderer/rendering_method.mobile": "mobile",

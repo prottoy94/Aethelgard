@@ -9,5 +9,5 @@ enum Look { FLOWER, ORE, WOOD, CRYSTAL }
 @export var look := Look.FLOWER
 @export var min_amount := 1
 @export var max_amount := 2
-## s until it can be gathered again. Becomes in-game hours once the TimeOfDay clock exists (Phase 6).
-@export var regrow_time := 60.0
+## Game hours until it can be gathered again (1 game hour ≈ 50 real seconds, data/world/time_settings.tres).
+@export var regrow_hours := 1.0

@@ -11,11 +11,11 @@ Elder: [#worried] Aurelia. Up with the sun again, nose in that spellbook?
 Aurelia: [#embarrassed] Chapter twelve! Lantern charms. I only set my sleeve on fire twice.
 Elder: Hm. Practice is good. But the village needs hands as much as spells today.
 - Who needs help?
-	Elder: Maren is out of Sunpetal for her remedies. She's by the flowers near the shrine.
-	Elder: [#worried] And little Tamsin lost something. She keeps staring at the ruins east of the pond.
+	Elder: Maren is out of Sunpetal for her remedies. She's in her herb garden, just there.
+	Elder: [#worried] And little Tamsin lost something. She's up in the meadow, by the pond.
 - But I'm only a Spark...
 	Elder: [#proud] Every lantern in Elderroot was lit from one small spark.
-	Elder: Go and see Maren by the shrine, or Tamsin by the pond. Helping is practice too.
+	Elder: Go and see Maren in her garden, or Tamsin up by the pond. Helping is practice too.
 Aurelia: [#determined] Right. I'll do my best!
 => END
 
@@ -26,7 +26,7 @@ if QuestManager.is_done("herbs_for_maren") and QuestManager.is_done("lost_satche
 elif PlayerData.rank >= 1
 	Elder: [#proud] Your lantern burns brighter than it did. Don't let it go to your head.
 else
-	Elder: Maren is by the flowers near the shrine. Tamsin is by the pond.
+	Elder: Maren is in her herb garden. Tamsin is up in the meadow, by the pond.
 => END
 
 ~ elder_bark
@@ -41,7 +41,7 @@ if QuestManager.is_done("herbs_for_maren")
 if QuestManager.is_on_step("herbs_for_maren", 1)
 	=> maren_hand_over
 if QuestManager.is_active("herbs_for_maren")
-	Maren: Three Sunpetal, dear. The golden ones, near the shrine and along the path.
+	Maren: Three Sunpetal, dear. The golden ones, here in my garden or out in the meadow.
 	=> END
 Maren: [#worried] Oh, Aurelia! Half the village is coughing, and my Sunpetal jar is empty.
 Maren: Could you pick me three? Golden flowers. Gently, they bruise.

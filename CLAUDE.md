@@ -22,7 +22,12 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   `StatusEffectComponent` + `data/combat/status_rules.tres`. World: `src/world/items/spell_tome.gd`, `src/world/rest_point/`,
   menu `src/ui/menus/grimoire.gd` (Tab). New enemy `src/actors/enemies/ember_wisp/` (ranged, uses `src/magic/projectile.gd`).
 - **Phase 6 is built in 3 parts with an owner check-in after each** (6a world systems → 6b persistence & atmosphere → 6c audio).
-  **6a done** 2026-11-03, **138/138 tests pass. Next: 6b** (save/load JSON + title screen, day/night, rain, region transitions).
+  **6a done** 2026-11-03. **6b done** 2026-11-04, **158/158 tests pass. Next: 6c** (AudioManager, owner's music, 4 new tracks).
+  6b code: `SaveManager` (JSON slots auto + slot_1..3, version/migrate, `capture_player`), `SceneLoader` (regions from
+  `data/world/regions.tres`, fades, `scene_parent` for tests), `TimeOfDay` (clock + weather, `data/world/time_settings.tres`),
+  `src/world/environment/` (DayNightCycle + `data/world/day_night.tres`), `src/world/regions/` (RegionRuntime = shared
+  player/camera/HUD/menus/sky setup, RegionExit, RegionSpawn, `elderroot_village/`), `src/ui/title/` (main scene),
+  `src/ui/menus/save_menu.gd` (Esc). Tests use `SaveManager.save_dir = "user://test_saves/"` and `SceneLoader.scene_parent`.
   6a code: `src/ui/dialogue/` (DialogueBox, PortraitView, BarkSpeaker), `src/actors/npcs/` (Npc + placeholder look),
   `src/actors/lumen/` (Lumen, approved by the owner), `src/quests/` + `QuestManager` autoload, `src/world/puzzles/`
   (ElementalReceiver in `src/components/`, LanternBrazier, PushBlock, PressurePlate, HiddenSteps, PuzzleGate, Puzzle),
@@ -40,9 +45,11 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   RecipeScroll), `src/world/props/crafting_station.gd`, `src/components/loot_dropper_component.gd`. Menus share
   `src/ui/menus/menu_screen.gd`; `GameMenu` (Tab) holds the Inventory and Grimoire pages; `CraftingMenu` opens at stations.
   Tests reset with `Inventory.reset()`, `PlayerData.reset([...])` and `GameState.reset()` in `before_each`.
-  Main scene = `src/world/test/test_level_3d.tscn` (Elderroot test meadow: Player + CameraRig + PerfOverlay). Start options after `--`:
-  `--spawn=viewpoint|combat|wisp|ruins`, `--open=inventory|grimoire|journal|options|crafting`, `--talk=elder|maren|tamsin`,
-  `--give=materials`, `--visual=animated`, `--benchmark=<dir>`, `--graphics=low|medium|high`.
+  Main scene = `src/ui/title/title_screen.tscn`. **Any start option after `--` skips the title** into a new game with saving
+  off (`--saves` keeps it on; `--title` keeps the title): `--region=elderroot_meadow|elderroot_village`,
+  `--spawn=start|viewpoint|combat|wisp|ruins|from_village|from_meadow`, `--open=inventory|grimoire|journal|save|options|crafting`,
+  `--talk=elder|maren|tamsin`, `--hour=<0-24>`, `--weather=clear|rain|fog`, `--give=materials`, `--visual=animated`,
+  `--benchmark=<dir>`, `--graphics=low|medium|high`. The meadow is `src/world/test/test_level_3d.tscn` (region elderroot_meadow).
   Key code: `src/actors/player/` (Player, states, placeholder model, MovementStats), `src/game/camera/` (CameraRig, CameraSettings),
   `src/world/camera/scenic_viewpoint.gd`, `src/components/interactable_component.gd`, `src/core/` (StateMachine, Cooldown, ToonMaterials).
   Git repo exists (branch `main`, no remote). **The owner makes commits manually: never commit or push.**
@@ -107,10 +114,10 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
 ## Commands (`godot` = `D:\Tools\Godot\godot.cmd` until it's added to PATH)
 ```bash
 godot --path . --editor            # open the editor
-godot --path .                     # run the game
+godot --path .                     # run the game (title screen)
 godot --headless --import          # import resources (before headless tests)
 godot --headless -s addons/gut/gut_cmdln.gd -gdir=res://tests -ginclude_subdirs -gexit   # run unit tests
-godot --path . --fullscreen -- --benchmark=<dir>   # measure 300 frames, save benchmark.txt + benchmark.png, quit
+godot --path . --fullscreen -- --benchmark=<dir>   # skips the title: measure 300 frames in the meadow, save benchmark.txt + .png, quit
 godot --path . --fullscreen --gpu-index 1 -- --benchmark=<dir> --graphics=low   # same on the Intel UHD, Low preset
 godot --headless --path . --export-release "Windows Desktop" build/windows/Aethelgard.exe   # Windows build (run from PowerShell:
 #   cmd.exe splits the quoted preset name). Templates: Windows x86_64 only, in D:\Tools\Godot\editor_data\export_templates.7.2.stable

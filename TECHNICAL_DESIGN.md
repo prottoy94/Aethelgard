@@ -228,16 +228,19 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 - **Navigation:** `NavigationRegion3D` baked per area for enemies and the dragon (`NavigationAgent3D`).
 - **Performance:** automatic mesh LODs on import, `visibility_range` on small props, `OccluderInstance3D` for big ruins/cliffs, shadows only near the camera, fog hides the far distance.
 - **Persistent objects** (chests, puzzle states, bosses) have a unique `persist_id` and read/write `GameState` when spawned or changed.
+- **Built in Phase 6b:** regions are listed in `data/world/regions.tres` (`RegionLibrary` of `RegionData`: id, name, scene). A region script builds its world with `RegionSpawn` markers and `RegionExit` areas, then adds a `RegionRuntime`, which makes the sky/sun/`DayNightCycle`, spawns Aurelia (SceneLoader arrival → saved position → `--spawn=<id>` → "start"), the camera, HUD, Tab menu, crafting menu, dialogue box, Lumen and toasts, and links NPCs, stations and shrines by group. `SceneLoader.change_region(id, spawn, player_state)` fades, swaps the scene (or, in tests, a child of `scene_parent`), fades in and autosaves. The game starts on `src/ui/title/`.
 
 ### 4.8 Day/night & weather
 - `TimeOfDay` rotates the sun (`DirectionalLight3D`) and blends sun colour, sky, ambient light and fog colour (dawn gold → day → dusk violet → night blue moonlight).
 - `OmniLight3D` on Aurelia's lantern, braziers and windows (stronger at night); emissive materials + glow for magic.
 - `GPUParticles3D` for rain, fireflies, light motes, waterfall spray. A `WeatherController` per region with allowed weather types.
+- **Built in Phase 6b:** `TimeOfDay` keeps day, minutes and the weather (rolled every few game hours from `data/world/time_settings.tres`) and runs only while a region is played. Each region's `DayNightCycle` reads it and sets the sun/moon angle, light colour and energy, sky colours, ambient and fog from keyframes in `data/world/day_night.tres`, and blends rain (particles around the player, darker light) and fog in and out. (The "WeatherController" became part of `DayNightCycle`.) Gather nodes regrow in game hours.
 
 ### 4.9 Save system
 - **JSON files in `user://saves/slot_N.json`.** Never load `.tres`/`.res` from `user://`: Godot resources can embed scripts, so a modified save file could run code (GDQuest save-system notes).
 - Each saveable autoload implements `to_dict() -> Dictionary` and `from_dict(d: Dictionary)`. Every file has a `"version"` field, used to migrate old saves.
 - **Autosave** at rest points and region changes. 3 manual slots.
+- **Built in Phase 6b:** `SaveManager` writes `auto.json` and `slot_1..3.json` (temp file, then rename). A save holds `version`, `saved_at`, `play_time`, `region`, `player` (position, facing, health, stamina, respawn) and the `to_dict()` of GameState, Inventory, PlayerData, QuestManager, TimeOfDay and DragonManager. Loading applies Inventory before PlayerData (gear Magic Power), then loads the region. `migrate()` upgrades old versions; newer or damaged files are refused. Tests use `save_dir = "user://test_saves/"`; quick test runs set `writes_enabled = false`.
 - Items, spells and quests are saved **by ID** and resolved through a registry (`data/` lookup), never as object references.
 
 ### 4.10 Quests & dialogue

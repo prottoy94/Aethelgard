@@ -90,7 +90,7 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 |---|---|---|---|---|
 | FR-ITM-01 | Inventory with materials, consumables, equipment, key items and spell tomes. | MVP | Items stack and sort by category. | ✅ Phase 5 (Inventory autoload: stacks by id with a stack limit, sorted by category; unread tomes listed; tested) |
 | FR-ITM-02 | Equipment slots: 1 staff, 1 cloak, 3 accessories, with stat modifiers and passives. | MVP | Equipping changes stats immediately. | ✅ Phase 5 (staff, cloak, 3 accessories; equipping changes stats at once, tested). Special passives (e.g. Frostbite Band) arrive with the accessories that need them (V1) |
-| FR-ITM-03 | Gather nodes (herbs, ore, wood, crystals) that respawn over time. | MVP | Gathering adds items; the node respawns after N in-game hours. | 🟨 Sunpetal, Moonbloom, Elderwood, Iron Ore, Lumen Crystal nodes that grow back (tested). Regrow time is in seconds until the TimeOfDay clock exists (Phase 6); regrowth isn't saved yet |
+| FR-ITM-03 | Gather nodes (herbs, ore, wood, crystals) that respawn over time. | MVP | Gathering adds items; the node respawns after N in-game hours. | ✅ Phase 6b (Sunpetal, Moonbloom, Elderwood, Iron Ore, Lumen Crystal grow back after 1–2 game hours; saved; tested) |
 | FR-ITM-04 | Crafting at the workbench using recipes and materials. | MVP | Crafting consumes inputs and adds the output. | ✅ Phase 5 (workbench makes everything, the shrine's crafting kit makes potions; inputs used up; tested) |
 | FR-ITM-05 | Recipes are found, given, bought or earned from bosses. | MVP | Unknown recipes are hidden or shown as "???". | 🟨 Recipes found as scrolls in the world; unknown ones show as "???" (tested). Given/bought/boss recipes come with NPCs and bosses |
 | FR-ITM-06 | Equipment upgrades +1 to +3. | V1 | Upgrading raises stats and consumes materials. | ⬜ |
@@ -106,7 +106,7 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-PUZ-03 | Rune-sequence puzzles. | V1 | Correct order opens the door; a wrong one resets. | ⬜ |
 | FR-PUZ-04 | Day/night-dependent puzzles. | V1 | A moon door opens only at night. | ⬜ |
 | FR-PUZ-05 | Dragon-assisted puzzles. | V1 | The dragon hits a switch the player can't reach. | ⬜ |
-| FR-PUZ-06 | Solved puzzles stay solved (persisted). | MVP | Reloading keeps the puzzle solved. | 🟨 Solved puzzles, lit braziers, block positions and revealed steps are kept in GameState and come back solved (tested); surviving a reload needs the save system (6b) |
+| FR-PUZ-06 | Solved puzzles stay solved (persisted). | MVP | Reloading keeps the puzzle solved. | ✅ Phase 6b (puzzle states live in GameState, which is saved; tested) |
 | FR-PUZ-07 | Lumen gives an optional hint after the player is stuck for a while. | V1 | Hint appears after N seconds without progress. | ✅ Phase 6a, early (Lumen hints after time near a puzzle without progress; Lumen approved 2026-11-03) |
 
 ### 1.8 Quests, dialogue & story (QST)
@@ -126,31 +126,31 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 |---|---|---|---|---|
 | FR-WLD-01 | 3D world built from terrain and modular kits (ruins, rocks, trees), seen through the hybrid camera. | MVP | Aurelia walks on terrain and around/behind objects; collisions work. | 🟨 Elderroot test meadow with collisions (Phase 2) |
 | FR-WLD-02 | Real 3D height: stairs and ramps are walkable, ledges block; no free jump in v1. | MVP | Aurelia climbs the test stairs automatically and can't step up a ledge. | ✅ Phase 2 (stairs ramp climbed, 1.2 m ledge blocks; tested) |
-| FR-WLD-03 | Hub + 5 regions connected around the World Tree. | V1 (MVP: Elderroot) | All regions reachable. | ⬜ |
+| FR-WLD-03 | Hub + 5 regions connected around the World Tree. | V1 (MVP: Elderroot) | All regions reachable. | 🟨 Elderroot has two connected areas so far: the meadow and Elderroot Village (Phase 6b). Other regions after the vertical slice |
 | FR-WLD-04 | Spell-gated paths (Gust, Glacial Path, Stone Spire, dragon flight). | V1 | A gated path can't be crossed without its spell. | ⬜ |
-| FR-WLD-05 | Rest points: save, heal, learn spells, change loadout, fast travel. | MVP (save, heal, learn) / V1 (travel) | All functions available at a shrine. | 🟨 Lantern Shrine heals, refills, clears effects, sets the respawn point and reads tomes (Phase 4, tested); saving comes with the save system (Phase 6); loadout is changed in the Grimoire anywhere; travel in V1 |
-| FR-WLD-06 | Day/night cycle (~20 real minutes per day) affecting lighting, enemies and NPCs. | MVP (lighting) / V1 | The screen tint changes over time. | ⬜ |
-| FR-WLD-07 | Weather: clear, rain, fog, storm, per region. | V1 (MVP: rain particles) | Stormspire is always stormy. | ⬜ |
+| FR-WLD-05 | Rest points: save, heal, learn spells, change loadout, fast travel. | MVP (save, heal, learn) / V1 (travel) | All functions available at a shrine. | 🟨 MVP part done: Lantern Shrines heal, refill, clear effects, set the respawn point, read tomes and autosave; manual saves next to a shrine (Phases 4–6b, tested). The loadout changes in the Grimoire anywhere; fast travel in V1 |
+| FR-WLD-06 | Day/night cycle (~20 real minutes per day) affecting lighting, enemies and NPCs. | MVP (lighting) / V1 | The screen tint changes over time. | 🟨 MVP part done: a 20-minute day turns the sun and moon and blends light, sky, ambient and fog (Phase 6b, tested). Enemies and NPCs changing with time in V1 |
+| FR-WLD-07 | Weather: clear, rain, fog, storm, per region. | V1 (MVP: rain particles) | Stormspire is always stormy. | 🟨 MVP part done: clear/rain/fog rolled every few game hours, rain particles and darker light, fog (Phase 6b, tested). Per-region weather and storms in V1 |
 | FR-WLD-08 | Objects between the camera and Aurelia fade out (occlusion fade). | V1 | A wall in front of the camera becomes see-through while Aurelia is behind it. | ✅ Phase 2 (dithered occlusion fade, tested) |
-| FR-WLD-09 | Opened chests, gathered nodes, defeated bosses and solved puzzles persist. | MVP | State survives a region change and a reload. | 🟨 Chests, puzzles, tomes, scrolls and placed items remember their state in GameState (Phases 4–6a); gather nodes and the reload come with the save system (6b) |
+| FR-WLD-09 | Opened chests, gathered nodes, defeated bosses and solved puzzles persist. | MVP | State survives a region change and a reload. | ✅ Phase 6b (chests, puzzles, tomes, scrolls, placed items and gather nodes keep their state through region changes and save/load; tested) |
 
 ### 1.10 UI (UI)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
 | FR-UI-01 | HUD: HP, stamina (Exhausted flash), 4 spell slots with radial cooldowns, rank badge, quest tracker. | MVP | All elements update live. | ✅ HP, stamina with Exhausted warning, radial cooldowns (Phase 3), rank badge, status chips (Phase 4), quest tracker (Phase 6a) |
 | FR-UI-02 | HUD dragon panel: portrait, HP, current command. | V1 | Shows after hatching. | ⬜ |
-| FR-UI-03 | Menus: Inventory, Equipment, Grimoire, Crafting, Journal, Map, Settings. | MVP (Inventory, Grimoire, Crafting, Settings) / V1 | Each opens and closes with keyboard and gamepad. | 🟨 Tab/Start menu: Inventory, Grimoire, Journal, Options (Q/R turns the page, J opens the Journal); Crafting at stations; all pause and close with Esc/B/Start (tested). Map later |
+| FR-UI-03 | Menus: Inventory, Equipment, Grimoire, Crafting, Journal, Map, Settings. | MVP (Inventory, Grimoire, Crafting, Settings) / V1 | Each opens and closes with keyboard and gamepad. | 🟨 Tab/Start menu: Inventory, Grimoire, Journal, Save (Esc), Options (Q/R turns the page, J opens the Journal); Crafting at stations; all pause and close with Esc/B/Start (tested). Map later |
 | FR-UI-04 | Dragon menu (stats, bond, skills, name). | V1 | — | ⬜ |
-| FR-UI-05 | Title screen with New / Continue / Settings / Quit. | MVP | Continue loads the latest save. | ⬜ |
+| FR-UI-05 | Title screen with New / Continue / Settings / Quit. | MVP | Continue loads the latest save. | ✅ Phase 6b (title screen: Continue = latest save, New Game, Load Game, Options, Quit; the owner's song comes with the audio work, 6c) |
 | FR-UI-06 | Dialogue box with portraits and text speed option. | MVP | Text speed setting is applied. | ✅ Phase 6a (dialogue box with placeholder portraits; text speed applies at once) |
 
 ### 1.11 Save (SAV)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-SAV-01 | Saves are JSON files in `user://saves/`, never Godot resources. | MVP | No `.tres`/`.res` loaded from `user://`. | ⬜ |
-| FR-SAV-02 | Autosave at rest points and region changes; 3 manual slots. | MVP | — | ⬜ |
-| FR-SAV-03 | Save files carry a version number and are migrated when the format changes. | MVP | Loading an older-version save works or shows a clear message. | ⬜ |
-| FR-SAV-04 | Save → load round-trip restores player, inventory, quests, dragon and world state exactly. | MVP | Unit test compares dictionaries before and after. | ⬜ |
+| FR-SAV-01 | Saves are JSON files in `user://saves/`, never Godot resources. | MVP | No `.tres`/`.res` loaded from `user://`. | ✅ Phase 6b (JSON files in user://saves/; only JSON is ever read from user://, by id; tested) |
+| FR-SAV-02 | Autosave at rest points and region changes; 3 manual slots. | MVP | — | ✅ Phase 6b (autosave when resting at a Lantern Shrine and on arriving in a region; 3 manual slots on the Save page, saving next to a shrine; tested) |
+| FR-SAV-03 | Save files carry a version number and are migrated when the format changes. | MVP | Loading an older-version save works or shows a clear message. | ✅ Phase 6b (format version 1; older saves upgraded step by step, newer or damaged ones refused with a message; tested) |
+| FR-SAV-04 | Save → load round-trip restores player, inventory, quests, dragon and world state exactly. | MVP | Unit test compares dictionaries before and after. | ✅ Phase 6b (region, position, health, world state, items, spells, quests, clock round-trip; tested. The dragon joins in Phase 7) |
 
 ### 1.12 Dialogue & cutscenes (DLG) — details in [DIALOGUE_DESIGN.md](DIALOGUE_DESIGN.md)
 | ID | Requirement | Priority | Acceptance check | Status |
@@ -210,9 +210,9 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | NFR-TEC-02 | All tunable numbers live in `data/*.tres`, not hard-coded in scripts. | MVP | Code review: no magic numbers for gameplay values. | ⬜ |
 | NFR-TEC-03 | Project in git; large binary assets in Git LFS. | MVP | `git status` clean after a build; LFS tracks png/ogg/wav. | 🟨 Repo + LFS rules ready (Phase 1). For now images/audio are git-ignored by owner decision (2026-11-03); owner makes commits manually |
 | NFR-PRF-01 | 60 FPS on a mid-range PC at 1080p in the busiest scene. | MVP | Profiler shows ≥60 FPS in a boss fight. | ⬜ |
-| NFR-PRF-03 | Runs within the owner's laptop limits: 60 FPS at 1080p on the RTX 3050 (High), playable on the Intel UHD (Low), game RAM ≤ 2.5 GB, video memory ≤ 2.5 GB. | MVP | Overlay + `--benchmark` on both GPUs each phase. | 🟨 Phase 1b test level: 273 FPS RTX/High, 74 FPS Intel/Low, ~0.9–1.0 GB RAM |
+| NFR-PRF-03 | Runs within the owner's laptop limits: 60 FPS at 1080p on the RTX 3050 (High), playable on the Intel UHD (Low), game RAM ≤ 2.5 GB, video memory ≤ 2.5 GB. | MVP | Overlay + `--benchmark` on both GPUs each phase. | 🟨 Phase 1b test level: 273 FPS RTX/High, 74 FPS Intel/Low. Phase 6b meadow at night in rain: 207–250 FPS RTX/High, 60 FPS Intel/Low, ≤ 1.3 GB RAM (695 draw calls: merge placeholder meshes later) |
 | NFR-DEV-01 | The whole project can be developed on the owner's PC (8 GB RAM); all tools and files live on D:, Godot in self-contained mode. | MVP | Setup in BUILD_PLAN.md Phase 0 completed without using C: for project data. | ✅ Phase 0–1: Godot + project on D:, self-contained mode |
-| NFR-PRF-02 | Region load under 3 seconds. | V1 | Measured from fade-out to fade-in. | ⬜ |
+| NFR-PRF-02 | Region load under 3 seconds. | V1 | Measured from fade-out to fade-in. | 🟨 Meadow ↔ village in under 2.5 s including both fades (tests); measured properly later |
 | NFR-ART-01 | Placeholders are simple 3D shapes at real size using the final shaders; swapping in real models needs no gameplay-code change. | MVP | Replacing a visual child scene works without script edits. | 🟨 Primitive placeholders in the test level (Phase 1b) |
 | NFR-ART-02 | Base resolution 1920×1080; 1 unit = 1 m; Aurelia ≈ 1.6 m; characters ~20–40k triangles; textures mostly 1K–2K. | MVP | Checked on import and in the overlay. | 🟨 Resolution + units set (Phase 1b) |
 | NFR-ART-03 | No assets copied from existing games; reference screenshots are for mood only. | MVP | All shipped assets are original or properly licensed (tracked in CREDITS.md). | ⬜ |

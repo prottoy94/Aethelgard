@@ -50,6 +50,13 @@ func control_yaw() -> float:
 	return _yaw
 
 
+## Turns the camera to look along `yaw` straight away (e.g. the way Aurelia faces when she arrives somewhere).
+func set_yaw(yaw: float) -> void:
+	_yaw = yaw
+	_target_yaw = yaw
+	_update_camera()
+
+
 func snap_to_target() -> void:
 	if target:
 		global_position = _focus_point()

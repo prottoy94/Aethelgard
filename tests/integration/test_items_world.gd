@@ -96,9 +96,9 @@ func test_potion_heals_and_is_used_up() -> void:
 
 func test_gathering_and_regrowth() -> void:
 	var data: GatherNodeData = SUNPETAL_PATCH.duplicate()
-	data.regrow_time = 0.3
 	var node := GatherNode.new()
 	node.data = data
+	node.persist_id = &"test_patch"
 	node.position = Vector3(0, 0, -1)
 	world.add_child(node)
 	watch_signals(EventBus)
@@ -108,8 +108,10 @@ func test_gathering_and_regrowth() -> void:
 	assert_signal_emitted(EventBus, "item_collected")
 	assert_false(node.can_gather(), "picked")
 	assert_eq(node.gather(player), 0, "nothing more until it grows back")
-	await wait_seconds(0.5)
-	assert_true(node.can_gather(), "grown back")
+	assert_true(GameState.get_object_state(&"test_patch").has("regrow_at"), "remembered (FR-WLD-09)")
+	TimeOfDay.advance(data.regrow_hours * 60.0 + 1.0)
+	await wait_process_frames(2)
+	assert_true(node.can_gather(), "grown back after its game hours")
 
 
 func test_thornling_drops_fibre_and_walking_over_collects_it() -> void:

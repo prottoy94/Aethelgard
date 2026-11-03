@@ -2,7 +2,7 @@ class_name Hud
 extends CanvasLayer
 ## In-game HUD (FR-UI-01): health and stamina bars (with the Exhausted warning), Arcane Rank badge with progress,
 ## status effect icons with timers, the 4 spell slots, a banner when Aurelia ranks up or finishes a quest, a feed of
-## picked-up items, and the tracked quest's current step (top right).
+## picked-up items, and the clock, weather and tracked quest's current step (top right).
 ## Call bind(player) once the player exists.
 
 const BAR_SIZE := Vector2(320, 20)
@@ -32,6 +32,7 @@ var _banner: Label
 var _banner_time := 0.0
 var _feed: VBoxContainer
 var _tracker: Label
+var _clock: Label
 var _time := 0.0
 
 
@@ -84,13 +85,18 @@ func _ready() -> void:
 	_feed.alignment = BoxContainer.ALIGNMENT_END
 	add_child(_feed)
 	EventBus.item_collected.connect(_on_item_collected)
+	var top_right := VBoxContainer.new()
+	top_right.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	top_right.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	top_right.offset_right = -28.0
+	top_right.offset_top = 18.0
+	add_child(top_right)
+	_clock = _text("", 17, Color(1, 1, 1, 0.85))
+	_clock.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	top_right.add_child(_clock)
 	_tracker = _text("", 19, Color.WHITE)
-	_tracker.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	_tracker.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	_tracker.offset_right = -28.0
-	_tracker.offset_top = 22.0
 	_tracker.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	add_child(_tracker)
+	top_right.add_child(_tracker)
 	QuestManager.quest_started.connect(func(_quest: QuestData) -> void: _refresh_tracker())
 	QuestManager.quest_updated.connect(func(_quest: QuestData) -> void: _refresh_tracker())
 	QuestManager.quest_completed.connect(func(quest: QuestData) -> void:
@@ -153,6 +159,7 @@ func _process(delta: float) -> void:
 	_stamina_bar.queue_redraw()
 	_update_status_row()
 	_update_feed(delta)
+	_clock.text = "%s  ·  %s" % [TimeOfDay.clock_text(), String(TimeOfDay.weather).capitalize()]
 	if _banner_time > 0.0:
 		_banner_time -= delta
 		_banner.modulate.a = clampf(_banner_time, 0.0, 1.0)

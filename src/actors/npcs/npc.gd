@@ -65,6 +65,26 @@ func _process(_delta: float) -> void:
 		speaker.bark(bark_cue, 0, BARK_COOLDOWN)
 
 
+## A villager whose conversation and passing remark are the cues named after its id ("maren", "maren_bark").
+static func villager(id: StringName, name_: String, look_: NpcLook, dialogue_: DialogueResource) -> Npc:
+	var npc := Npc.new()
+	npc.npc_id = id
+	npc.display_name = name_
+	npc.look = look_
+	npc.dialogue = dialogue_
+	npc.cue = String(id)
+	npc.bark_cue = "%s_bark" % id
+	return npc
+
+
+## Turns the whole villager to face `point` (call once it is in the tree).
+func face_point(point: Vector3) -> void:
+	var offset := point - global_position
+	offset.y = 0.0
+	if offset.length() > 0.01:
+		rotation.y = Player.yaw_of(offset)
+
+
 ## Turns to the speaker and asks the level to open the conversation.
 func talk(by: Node = null) -> void:
 	var other := by as Node3D

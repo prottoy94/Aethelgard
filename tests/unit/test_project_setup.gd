@@ -59,9 +59,9 @@ func test_audio_buses_exist() -> void:
 	assert_eq(AudioServer.get_bus_send(AudioServer.get_bus_index("Player")), &"SFX")
 
 
-func test_main_scene_is_the_3d_test_level() -> void:
+func test_main_scene_is_the_title_screen() -> void:
 	var path: String = ProjectSettings.get_setting("application/run/main_scene")
-	assert_eq(path, "res://src/world/test/test_level_3d.tscn")
+	assert_eq(path, "res://src/ui/title/title_screen.tscn", "FR-UI-05: the game opens on the title screen")
 	assert_true(ResourceLoader.exists(path), "main scene exists")
 
 

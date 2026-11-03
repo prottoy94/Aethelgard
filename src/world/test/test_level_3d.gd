@@ -1,23 +1,17 @@
 extends Node3D
-## Phase 2 test meadow: a corner of Elderroot built from simple shapes, following the world art
-## (World Tree with sunbeams, mossy stone stairs between broken walls, yellow flowers, misty cliffs with a waterfall).
-## Aurelia walks here with the hybrid camera. Solid objects are StaticBody3D roots with their meshes as children,
-## so the camera can fade the whole object when it blocks the view.
-## Start options (after `--`): --spawn=viewpoint puts Aurelia on the scenic platform, --spawn=combat next to a Thornling,
-## --spawn=wisp near an Ember Wisp, --spawn=ruins at the shrine ruins puzzles; --open=inventory|grimoire|journal|options|
-## crafting opens a menu; --talk=elder|maren|tamsin starts a conversation; --give=materials fills the bag with 5 of every
-## material (to try crafting); --visual=animated uses the animated
-## stand-in model; --benchmark=<dir> (PerfOverlay). Press V in game to switch between the placeholder and the animated model.
+## Elderroot Meadow (region "elderroot_meadow"), still the test meadow from Phase 2: a corner of Elderroot built from
+## simple shapes, following the world art (World Tree with sunbeams, mossy stone stairs between broken walls, yellow
+## flowers, misty cliffs with a waterfall), with the systems of Phases 3–6. Solid objects are StaticBody3D roots with
+## their meshes as children, so the camera can fade the whole object when it blocks the view.
+## RegionRuntime adds Aurelia, the camera, interface, sky and day/night; the south gate leads to Elderroot Village.
+## Start options (after `--`, they skip the title): --spawn=start|viewpoint|combat|wisp|ruins|from_village;
+## --open=inventory|grimoire|journal|save|options|crafting; --talk=tamsin; --give=materials; --visual=animated;
+## --benchmark=<dir> (PerfOverlay). Press V in game to switch between the placeholder and the animated model.
 
 const GROUND := preload("res://assets/shaders/ground.gdshader")
 const GRASS := preload("res://assets/shaders/grass.gdshader")
 const STONE := preload("res://assets/shaders/stone_moss.gdshader")
 const WATER := preload("res://assets/shaders/water.gdshader")
-const PLAYER_SCENE := preload("res://src/actors/player/player.tscn")
-const CAMERA_SETTINGS := preload("res://data/camera/follow_camera.tres")
-const ANIM_SET := preload("res://data/animations/humanoid_default.tres")
-const PLACEHOLDER := preload("res://src/actors/player/aurelia_placeholder.gd")
-const STAND_IN_TINT := Color("7a5a8a")  # plum, like Aurelia's cape
 const THORNLING_SCENE := preload("res://src/actors/enemies/thornling/thornling.tscn")
 ## Where Thornlings live (away from the spawn, so Aurelia isn't attacked straight away).
 const THORNLING_SPOTS: Array[Vector3] = [Vector3(11, 0, -9), Vector3(-7, 0, -19), Vector3(15, 0, -18), Vector3(3, 0, -27)]
@@ -31,14 +25,16 @@ const WORKBENCH_POSITION := Vector3(2.0, 0, 8.0)
 const GATHER_DIR := "res://data/items/gather/%s.tres"
 const RECIPE_DIR := "res://data/recipes/%s.tres"
 const RESERVED_RADIUS := 1.6  ## m trees and columns keep away from item spots
+const REGION_ID: StringName = &"elderroot_meadow"
+## The south gate to Elderroot Village (Phase 6b), and how far trees keep from it.
+const VILLAGE_GATE := Vector3(0, 0, 22)
+const VILLAGE_GATE_CLEARANCE := 6.0
 const VILLAGERS_DIALOGUE := preload("res://dialogue/npcs/elderroot_villagers.dialogue")
 const SATCHEL := preload("res://data/items/tamsin_satchel.tres")
 const LUMEN_CRYSTAL := preload("res://data/items/lumen_crystal.tres")
 const HEALING_POTION := preload("res://data/items/healing_potion.tres")
-## Villagers (Phase 6a): [npc id, name, look, position]. Names are drafts (dialogue/glossary.md).
+## Villagers out in the meadow (the Elder and Maren live in Elderroot Village since Phase 6b): [id, name, look, position].
 const VILLAGERS: Array[Array] = [
-	[&"elder", "Elder", "res://data/npcs/elder.tres", Vector3(-6.2, 0, 2.2)],
-	[&"maren", "Maren", "res://data/npcs/maren.tres", Vector3(-8.5, 0, 8.6)],
 	[&"tamsin", "Tamsin", "res://data/npcs/tamsin.tres", Vector3(2.8, 0, -2.4)],
 ]
 ## The old shrine ruins east of the pond (puzzles for Tamsin's satchel): a walled courtyard split by a gated wall.
@@ -65,26 +61,16 @@ const SIGN_TEXT := "Elderroot Meadow, test area. Talk to the villagers (E); J op
 
 var _rng := RandomNumberGenerator.new()
 var _noise: NoiseTexture2D
-var _environment: Environment
-var _sun: DirectionalLight3D
 var _grass: MultiMesh
 var _flowers: MultiMesh
 var _waterfall_material: StandardMaterial3D
-var lumen: Lumen
-var _dialogue: DialogueBox
+var runtime: RegionRuntime
 var _time := 0.0
-var _toast: Label
-var _toast_timer := 0.0
-var player: Player
 var _shrine: RestPoint
-var _crafting: CraftingMenu
-var _game_menu: GameMenu
 ## [gather node or recipe file id, position], planned before the trees, which keep clear of them.
 var _gather_plan: Array[Array] = []
 var _scroll_plan: Array[Array] = []
 var _reserved: Array[Vector3] = []
-var _animated := false
-var camera_rig: CameraRig
 
 
 func _ready() -> void:
@@ -94,7 +80,10 @@ func _ready() -> void:
 	_noise.noise = FastNoiseLite.new()
 	_noise.noise.frequency = 0.02
 	_plan_item_spots()
-	_build_environment()
+	runtime = RegionRuntime.new()
+	runtime.region_id = REGION_ID
+	add_child(runtime)
+	runtime.build_sky(self)
 	_build_ground()
 	_build_grass_and_flowers()
 	_build_trees()
@@ -106,29 +95,17 @@ func _ready() -> void:
 	_build_distant()
 	_build_sign()
 	_build_shrine()
-	_build_toast()
-	_spawn_player()
-	lumen = Lumen.new()
-	add_child(lumen)
-	var hud := Hud.new()
-	add_child(hud)
-	hud.bind(player)
-	_build_menus()
 	_build_tomes()
 	_build_items()
 	_build_ruins_puzzles()
 	_build_villagers()
-	PlayerData.tome_found.connect(func(spell: SpellData) -> void:
-		show_toast("Found the %s tome! Rest at a Lantern Shrine to read it." % spell.display_name, 5.0))
-	Inventory.recipe_learned.connect(func(recipe: RecipeData) -> void:
-		show_toast("Learned a recipe: %s. Make it at the %s." % [recipe.display_name(),
-				RecipeData.STATION_NAMES[recipe.station].to_lower()], 5.0))
-	_apply_start_options()
+	_build_village_gate()
+	_build_spawns()
+	runtime.start()
 	for spot in THORNLING_SPOTS:
 		_spawn_enemy(THORNLING_SCENE, spot)
 	for spot in WISP_SPOTS:
 		_spawn_enemy(EMBER_WISP_SCENE, spot)
-	add_child(PerfOverlay.new())
 	Settings.graphics_changed.connect(_apply_graphics)
 	_apply_graphics(Settings.graphics)
 
@@ -136,70 +113,14 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_time += delta
 	_waterfall_material.uv1_offset.y = -_time * 0.6
-	if _toast_timer > 0.0:
-		_toast_timer -= delta
-		_toast.modulate.a = clampf(_toast_timer, 0.0, 1.0)
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("pause"):
-		get_tree().quit()
-	elif event is InputEventKey and event.pressed and not event.echo and (event as InputEventKey).keycode == KEY_V:
-		_set_animated(not _animated)
-
-
-## Switches Aurelia between the shape placeholder and the animated stand-in (until her VRoid model arrives).
-func _set_animated(on: bool) -> void:
-	_animated = on
-	if on:
-		var humanoid := HumanoidVisual.new()
-		humanoid.model_scene = ANIM_SET.library_scene
-		humanoid.anim_set = ANIM_SET
-		humanoid.stand_in_tint = STAND_IN_TINT
-		player.set_visual(humanoid)
-		show_toast("Animated stand-in model (press V to switch back)", 3.0)
-	else:
-		player.set_visual(PLACEHOLDER.new())
-		show_toast("Placeholder Aurelia (press V for the animated stand-in)", 3.0)
 
 
 func _apply_graphics(preset: GraphicsPreset) -> void:
-	preset.apply_to_environment(_environment)
-	preset.apply_to_sun(_sun)
 	_grass.visible_instance_count = preset.visible_grass(_grass.instance_count)
 	_flowers.visible_instance_count = preset.visible_grass(_flowers.instance_count)
 
 
-func show_toast(text: String, seconds := 6.0) -> void:
-	_toast.text = text
-	_toast_timer = seconds
-	_toast.modulate.a = 1.0
-
-
-# --- Player & camera -----------------------------------------------------------------------
-
-func _spawn_player() -> void:
-	player = PLAYER_SCENE.instantiate()
-	player.position = SPAWN
-	for arg in OS.get_cmdline_user_args():
-		if arg == "--spawn=viewpoint":
-			player.position = PLATFORM_CENTER + Vector3(0, PLATFORM_SIZE.y, 0)
-		elif arg == "--spawn=combat":
-			player.position = THORNLING_SPOTS[0] + Vector3(0, 0, 3.5)  # next to a Thornling
-		elif arg == "--spawn=ruins":
-			player.position = Vector3(RUINS_MIN.x - 2.5, 0, RUINS_DOOR_Z)  # at the courtyard entrance
-		elif arg == "--spawn=wisp":
-			player.position = WISP_SPOTS[0] + Vector3(2, 0, 6.5)  # in an Ember Wisp's range
-	add_child(player)
-	player.respawn_point = _shrine.respawn_position()
-	if "--visual=animated" in OS.get_cmdline_user_args():
-		_set_animated(true)
-	camera_rig = CameraRig.new()
-	camera_rig.settings = CAMERA_SETTINGS
-	camera_rig.target = player
-	add_child(camera_rig)
-	player.camera_rig = camera_rig
-
+# --- Enemies ------------------------------------------------------------------------------
 
 func _spawn_enemy(scene: PackedScene, spot: Vector3) -> void:
 	var enemy: Enemy = scene.instantiate()
@@ -210,41 +131,6 @@ func _spawn_enemy(scene: PackedScene, spot: Vector3) -> void:
 
 
 # --- Environment ---------------------------------------------------------------------------
-
-func _build_environment() -> void:
-	var sky_mat := ProceduralSkyMaterial.new()
-	sky_mat.sky_top_color = Color(0.36, 0.55, 0.85)
-	sky_mat.sky_horizon_color = Color(1.0, 0.82, 0.64)
-	sky_mat.ground_horizon_color = Color(1.0, 0.82, 0.64)
-	sky_mat.ground_bottom_color = Color(0.2, 0.25, 0.15)
-	sky_mat.sun_angle_max = 12.0
-	var sky := Sky.new()
-	sky.sky_material = sky_mat
-	_environment = Environment.new()
-	_environment.background_mode = Environment.BG_SKY
-	_environment.sky = sky
-	_environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	_environment.ambient_light_energy = 0.55
-	_environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	_environment.fog_light_color = Color(1.0, 0.86, 0.7)
-	_environment.fog_density = 0.004
-	_environment.fog_aerial_perspective = 0.4
-	_environment.fog_sky_affect = 0.2
-	_environment.glow_intensity = 0.9
-	_environment.glow_bloom = 0.08
-	_environment.glow_hdr_threshold = 0.9
-	_environment.adjustment_enabled = true
-	_environment.adjustment_saturation = 1.12
-	var world_env := WorldEnvironment.new()
-	world_env.environment = _environment
-	add_child(world_env)
-
-	_sun = DirectionalLight3D.new()
-	_sun.rotation_degrees = Vector3(-42, 150, 0)  # afternoon sun: clear anime shadows
-	_sun.light_color = Color(1.0, 0.88, 0.7)
-	_sun.light_energy = 1.6
-	add_child(_sun)
-
 
 func _build_ground() -> void:
 	var plane := PlaneMesh.new()
@@ -320,7 +206,7 @@ func _build_trees() -> void:
 	while placed < 70:
 		var p := Vector3(_rng.randf_range(-60, 60), 0, _rng.randf_range(-65, 35))
 		if p.distance_to(SPAWN) < 8.0 or _on_path(p, 3.5) or p.distance_to(POND_CENTER) < 6.5 or _on_platform(p, 3.0) \
-				or _is_reserved(p) or _in_ruins(p, 3.0):
+				or _is_reserved(p) or _in_ruins(p, 3.0) or p.distance_to(VILLAGE_GATE) < VILLAGE_GATE_CLEARANCE:
 			continue
 		var tree := _solid_root(p)
 		_add_shape(tree, _cylinder_shape(0.35, 3.2), Vector3(0, 1.6, 0))
@@ -557,7 +443,7 @@ func _build_sign() -> void:
 	range_shape.radius = 0.6
 	_add_shape(interactable, range_shape, Vector3(0, 0.8, 0))
 	sign.add_child(interactable)
-	interactable.interacted.connect(func(_by: Node) -> void: show_toast(SIGN_TEXT))
+	interactable.interacted.connect(func(_by: Node) -> void: runtime.show_toast(SIGN_TEXT))
 
 
 ## The Lantern Shrine near the start: rest here to heal, set the respawn point and read spell tomes.
@@ -565,7 +451,6 @@ func _build_shrine() -> void:
 	_shrine = RestPoint.new()
 	_shrine.position = SHRINE_POSITION
 	add_child(_shrine)
-	_shrine.rested.connect(_on_rested)
 
 
 ## Spell tomes: Gust waits on the scenic platform (a reward for climbing); Mending Bloom is hidden under
@@ -582,16 +467,6 @@ func _build_tomes() -> void:
 	bloom.hidden = true
 	bloom.position = Vector3(_path_x(-6.0), 0, -6.0)
 	add_child(bloom)
-
-
-func _on_rested(_player: Player, result: Dictionary) -> void:
-	var lines: Array[String] = ["You rest at the Lantern Shrine. Health and stamina restored."]
-	for spell: SpellData in result["learned"]:
-		lines.append("You read the tome and learned %s!" % spell.display_name)
-	for spell: SpellData in result["blocked"]:
-		lines.append("The %s tome is too advanced: it needs Magic Power %d (you have %d)." % [
-			spell.display_name, spell.required_magic_power, PlayerData.magic_power])
-	show_toast("\n".join(lines), 6.0)
 
 
 # --- Items & crafting (Phase 5) ----------------------------------------------------------------
@@ -627,25 +502,10 @@ func _is_reserved(p: Vector3) -> bool:
 		return Vector2(p.x - spot.x, p.z - spot.z).length() < RESERVED_RADIUS)
 
 
-## The Tab menu (Inventory and Grimoire pages) and the crafting menu used by the workbench and the shrine's kit.
-func _build_menus() -> void:
-	_game_menu = GameMenu.new()
-	add_child(_game_menu)
-	var inventory_menu := InventoryMenu.new()
-	_game_menu.add_page(inventory_menu)
-	inventory_menu.bind(player)
-	_game_menu.add_page(Grimoire.new())
-	_game_menu.add_page(JournalMenu.new())
-	_game_menu.add_page(OptionsMenu.new())
-	_crafting = CraftingMenu.new()
-	add_child(_crafting)
-	_dialogue = DialogueBox.new()
-	add_child(_dialogue)
-
-
 func _build_items() -> void:
 	for plan: Array in _gather_plan:
 		var node := GatherNode.new()
+		node.persist_id = StringName("meadow_gather_%d" % _gather_plan.find(plan))
 		node.data = load(GATHER_DIR % plan[0])
 		node.position = plan[1]
 		node.rotation.y = _rng.randf() * TAU
@@ -661,25 +521,57 @@ func _build_items() -> void:
 	workbench.position = WORKBENCH_POSITION
 	workbench.rotation.y = PI  # its tools face the start
 	add_child(workbench)
-	for station: CraftingStation in get_tree().get_nodes_in_group(&"crafting_station"):
-		station.used.connect(func(_by: Player, at: RecipeData.Station) -> void: _crafting.open_station(at))
 
 
 ## Elderroot villagers: talk to them (E). Conversations come from dialogue/npcs/elderroot_villagers.dialogue.
 func _build_villagers() -> void:
 	for villager: Array in VILLAGERS:
-		var npc := Npc.new()
-		npc.npc_id = villager[0]
-		npc.display_name = villager[1]
-		npc.look = load(villager[2])
-		npc.dialogue = VILLAGERS_DIALOGUE
-		npc.cue = String(villager[0])
-		npc.bark_cue = "%s_bark" % villager[0]
+		var npc := Npc.villager(villager[0], villager[1], load(villager[2]), VILLAGERS_DIALOGUE)
 		npc.position = villager[3]
 		add_child(npc)
-		npc.look_at_from_position(npc.position, SPAWN, Vector3.UP)  # facing the start
-		npc.rotation.x = 0.0
-		npc.talk_requested.connect(func(who: Npc) -> void: _dialogue.start(who.dialogue, who.cue, [who]))
+		npc.face_point(SPAWN)
+
+
+## Where Aurelia can appear: the start, arrivals from the village, and test spots (`-- --spawn=<id>`).
+func _build_spawns() -> void:
+	var spawns := {
+		&"start": SPAWN,
+		&"from_village": VILLAGE_GATE + Vector3(0, 0, -4.0),
+		&"viewpoint": PLATFORM_CENTER + Vector3(0, PLATFORM_SIZE.y, 0),
+		&"combat": THORNLING_SPOTS[0] + Vector3(0, 0, 3.5),
+		&"wisp": WISP_SPOTS[0] + Vector3(2, 0, 6.5),
+		&"ruins": Vector3(RUINS_MIN.x - 2.5, 0, RUINS_DOOR_Z),
+	}
+	for id: StringName in spawns:
+		var spawn := RegionSpawn.new()
+		spawn.spawn_id = id
+		spawn.position = spawns[id]
+		add_child(spawn)
+
+
+## Two posts with a hanging sign at the meadow's south edge; walking through leads to Elderroot Village.
+func _build_village_gate() -> void:
+	var wood := ToonMaterials.toon(Color(0.5, 0.35, 0.22), 0.25, 0.015)
+	for side: float in [-1.8, 1.8]:
+		var post := _solid_root(VILLAGE_GATE + Vector3(side, 0, 0))
+		_add_shape(post, _cylinder_shape(0.14, 2.8), Vector3(0, 1.4, 0))
+		var pole := CylinderMesh.new()
+		pole.top_radius = 0.11
+		pole.bottom_radius = 0.14
+		pole.height = 2.8
+		_mesh(post, pole, wood, Vector3(0, 1.4, 0))
+	var beam := BoxMesh.new()
+	beam.size = Vector3(4.2, 0.18, 0.2)
+	_mesh(self, beam, wood, VILLAGE_GATE + Vector3(0, 2.75, 0))
+	var board := BoxMesh.new()
+	board.size = Vector3(1.6, 0.45, 0.06)
+	_mesh(self, board, wood, VILLAGE_GATE + Vector3(0, 2.3, 0))
+	var exit := RegionExit.new()
+	exit.target_region = &"elderroot_village"
+	exit.target_spawn = &"from_meadow"
+	exit.size = Vector3(3.4, 3.0, 1.2)
+	exit.position = VILLAGE_GATE + Vector3(0, 0, 1.0)
+	add_child(exit)
 
 
 func _in_ruins(p: Vector3, margin: float) -> bool:
@@ -766,45 +658,6 @@ func _puzzle(id: StringName, hint: String, pos: Vector3, parts: Array[Node], tar
 	add_child(puzzle)
 	puzzle.setup(parts, targets)
 	return puzzle
-
-
-func _apply_start_options() -> void:
-	var args := OS.get_cmdline_user_args()
-	if "--give=materials" in args:
-		for item in Inventory.LIBRARY.items:
-			if item.category == ItemData.Category.MATERIAL:
-				Inventory.add(item, 5)
-	if "--open=inventory" in args:
-		_game_menu.open_page.call_deferred(InventoryMenu)
-	elif "--open=grimoire" in args:
-		_game_menu.open_page.call_deferred(Grimoire)
-	elif "--open=journal" in args:
-		_game_menu.open_page.call_deferred(JournalMenu)
-	elif "--open=options" in args:
-		_game_menu.open_page.call_deferred(OptionsMenu)
-	elif "--open=crafting" in args:
-		_crafting.open_station.call_deferred(RecipeData.Station.WORKBENCH)
-	for arg in args:
-		if arg.begins_with("--talk="):
-			for npc: Npc in get_tree().get_nodes_in_group(&"npc"):
-				if String(npc.npc_id) == arg.trim_prefix("--talk="):
-					player.global_position = npc.global_position + Vector3(0, 0, 1.6)
-					get_tree().create_timer(1.0).timeout.connect(npc.talk.bind(player))  # once the camera is there
-
-
-func _build_toast() -> void:
-	var layer := CanvasLayer.new()
-	add_child(layer)
-	_toast = Label.new()
-	_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_toast.add_theme_font_size_override("font_size", 26)
-	_toast.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
-	_toast.add_theme_constant_override("outline_size", 8)
-	_toast.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-	_toast.offset_top = -160.0
-	_toast.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_toast.modulate.a = 0.0
-	layer.add_child(_toast)
 
 
 # --- Helpers -------------------------------------------------------------------------------

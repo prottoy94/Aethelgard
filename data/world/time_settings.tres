@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TimeSettings" format=3]
+
+[ext_resource type="Script" path="res://src/world/environment/time_settings.gd" id="1"]
+
+; The game clock and weather rolls (GAME_DESIGN.md §12).
+[resource]
+script = ExtResource("1")
+real_seconds_per_day = 1200.0
+start_hour = 15.0
+night_start_hour = 20.5
+night_end_hour = 5.5
+weather_change_hours = 3.0
+weather_ids = Array[StringName]([&"clear", &"rain", &"fog"])
+weather_chances = PackedFloat32Array(0.65, 0.2, 0.15)

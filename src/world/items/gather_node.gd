@@ -1,7 +1,9 @@
 class_name GatherNode
 extends Node3D
 ## Something to gather (FR-ITM-03): a flower patch, ore vein, fallen branch or crystal cluster. Press E to collect
-## a few of its item; it then shrinks and grows back after `data.regrow_time`. Placeholder looks are simple shapes.
+## a few of its item; it then shrinks and grows back after `data.regrow_hours` of game time (TimeOfDay). With a
+## persist_id, GameState remembers when it grows back, so it survives region changes and saves (FR-WLD-09).
+## Placeholder looks are simple shapes.
 
 signal gathered(item: ItemData, amount: int)
 
@@ -11,10 +13,11 @@ const STEM := Color(0.35, 0.55, 0.25)
 const BARK := Color(0.45, 0.31, 0.2)
 
 @export var data: GatherNodeData
+@export var persist_id: StringName
 
 var _interactable: InteractableComponent
 var _visual: Node3D
-var _regrow_left := 0.0
+var _regrow_at := -1.0  ## TimeOfDay total minutes when it can be gathered again (-1 = ready)
 var _rng := RandomNumberGenerator.new()
 
 
@@ -38,19 +41,22 @@ func _ready() -> void:
 	_interactable.add_child(shape)
 	add_child(_interactable)
 	_interactable.interacted.connect(_on_interacted)
+	_regrow_at = float(GameState.get_object_state(persist_id).get("regrow_at", -1.0))
+	if not can_gather():
+		_visual.scale = Vector3.ONE * PICKED_SCALE
+		_interactable.monitorable = false
 
 
-func _process(delta: float) -> void:
-	if _regrow_left <= 0.0:
-		return
-	_regrow_left -= delta
-	if _regrow_left <= 0.0:
+func _process(_delta: float) -> void:
+	if _regrow_at >= 0.0 and TimeOfDay.total_minutes() >= _regrow_at:
+		_regrow_at = -1.0
+		_remember()
 		_interactable.monitorable = true
 		create_tween().tween_property(_visual, "scale", Vector3.ONE, 0.6)
 
 
 func can_gather() -> bool:
-	return _regrow_left <= 0.0
+	return _regrow_at < 0.0 or TimeOfDay.total_minutes() >= _regrow_at
 
 
 ## Collects the node's items. Returns how many were added (0 if it is still growing back or the bag is full).
@@ -64,7 +70,8 @@ func gather(by: Node = null) -> int:
 	gathered.emit(data.item, added)
 	if by is Player:
 		(by as Player).play_role(&"interact")
-	_regrow_left = data.regrow_time
+	_regrow_at = TimeOfDay.total_minutes() + data.regrow_hours * 60.0
+	_remember()
 	_interactable.set_deferred(&"monitorable", false)
 	create_tween().tween_property(_visual, "scale", Vector3.ONE * PICKED_SCALE, 0.25)
 	return added
@@ -72,6 +79,11 @@ func gather(by: Node = null) -> int:
 
 func _on_interacted(by: Node) -> void:
 	gather(by)
+
+
+func _remember() -> void:
+	if persist_id != &"":
+		GameState.set_object_state(persist_id, {"regrow_at": _regrow_at} if _regrow_at >= 0.0 else {})
 
 
 # --- Placeholder looks ---------------------------------------------------------------------

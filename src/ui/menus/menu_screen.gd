@@ -94,7 +94,7 @@ func keep_focus(preferred: Control) -> void:
 
 static func _first_button(node: Node) -> Button:
 	for child in node.get_children():
-		if child is Button and not child.is_queued_for_deletion() and (child as Button).visible:
+		if child is Button and not child.is_queued_for_deletion() and (child as Button).visible 				and not (child as Button).disabled:
 			return child
 		var found := _first_button(child)
 		if found:
