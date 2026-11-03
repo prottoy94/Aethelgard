@@ -140,7 +140,7 @@ Keeping scope small means **choices change the conversation, not the main story*
 `letterbox(on)`, `camera_to(marker, time)`, `camera_follow(actor)`, `camera_zoom(z, time)`, `spawn(actor_id, marker)`, `despawn(actor_id)`,
 `move(actor_id, marker, time)`, `face(actor_id, direction)`, `anim(actor_id, name)`, `emote(actor_id, icon)` (💡 ! ? ♪ … bubbles),
 `wait(seconds)`, `fade_out(time)` / `fade_in(time)`, `flash(color)`, `shake(strength)`, `play(cutscene_scene_id)`.
-Actors and markers are found by ID inside the current region scene (`Marker2D` nodes in a `CutsceneMarkers` group).
+Actors and markers are found by ID inside the current region scene (`Marker3D` nodes in a `CutsceneMarkers` group). The cutscene camera is a separate `Camera3D` that blends from the play camera.
 
 ### 5.3 Rules
 - **Every cutscene can be skipped** (hold a button). Skipping still applies all of its game effects (flags, quests, items),
@@ -155,11 +155,12 @@ Actors and markers are found by ID inside the current region scene (`Marker2D` n
 - **Size:** 512×768 px bust portraits (waist up), transparent background. Drawn facing right; flipped when placed on the right side ❓ (asymmetric details like a single braid may need a separate right-facing version).
 - **Naming:** `portrait_{character}_{expression}.png` in `assets/art/portraits/`.
 - **Placeholders first:** a coloured silhouette with the character name and expression written on it, at the final size.
+- **Final portraits** can be rendered from the VRoid models (pose + expression in VRoid or Godot), keeping characters consistent with the 3D game.
 
 | Character | Expressions (v1) |
 |---|---|
 | Aurelia | neutral, happy, wink (from `pose_2`), excited, embarrassed, sad, scared, determined, angry, surprised, thinking |
-| Lumen | (sprite only, no portrait: a glowing butterfly icon in the name plate) |
+| Lumen | (3D butterfly model only, no portrait: a glowing butterfly icon in the name plate) |
 | Sylvaris | calm, pleased, stern, sad, surprised |
 | Ignis Varos | cold, smirk, angry, amused, wounded |
 | Village Elder | neutral, worried, proud |

@@ -1,6 +1,6 @@
 # Aethelgard — Technical Design & Build Plan
 
-> Status: **v0.1 draft (planning phase)**, written 2026-11-03.
+> Status: **v0.2: converted to 3D** (approved 2026-11-03, see [3D_PROPOSAL.md](3D_PROPOSAL.md)). First written 2026-11-03.
 > **How** we build the game described in [GAME_DESIGN.md](GAME_DESIGN.md). Requirement IDs (e.g. `FR-MAG-03`) refer to [REQUIREMENTS.md](REQUIREMENTS.md).
 
 ---
@@ -9,23 +9,33 @@
 
 | Area | Choice | Why |
 |---|---|---|
-| Engine | **Godot 4.7.x stable, standard build** (4.7.2 is current as of Aug 2026) | Free, strong 2D tools: TileMapLayer, Y-sort, 2D lights, particles, AnimationTree, navigation. |
+| Engine | **Godot 4.7.x stable, standard build** (4.7.2 is current as of Aug 2026) | Free; Forward+ 3D renderer, Jolt physics, AnimationTree, 3D navigation, GPU particles, MultiMesh. |
+| 3D characters | **VRoid Studio** → `.vrm` → **Godot VRM importer** (V-Sekai, MIT, commit `e15199f`) with the **MToon** anime shader | Anime characters without 3D-modelling skill; hair/cape sway via VRM spring bones. |
+| Animations | **Quaternius Universal Animation Library** (CC0), Mixamo optional; retargeted with Godot's humanoid `BoneMap` | 120+ humanoid animations, free for commercial use. |
+| 3D editing | **Blender 5.2.3 LTS** (portable, `D:\Tools\Blender`) | Editing/recolouring models, simple props, exporting glTF. |
+| Physics | **Jolt Physics** (built into Godot 4.4+) | Faster and more stable 3D physics than the default engine. |
 | Language | **GDScript with static typing** | Native to Godot, fast to iterate. No .NET build needed. |
 | Dialogue | **Dialogue Manager** addon (nathanhoad), MIT | Text-based `.dialogue` files: easy to diff in git and easy for Claude to write. Has conditions and mutations that call into game code. *Dialogic 2 is the visual alternative.* |
 | Tests | **GUT** (Godot Unit Test) | Pure-GDScript project; runs headless from the command line. |
-| Version control | **git** + **Git LFS** for art/audio | The project folder isn't a git repo yet. Set this up in milestone M0. |
+| Version control | **git** (+ Git LFS rules ready) | Repo set up in Phase 1. Images/audio are git-ignored for now (owner decision); the owner commits manually. |
 | Target platform | Windows PC first (keyboard/mouse + gamepad) | Linux/Web export later if wanted. |
 
 > Before installing an addon, check that its current release supports the Godot version we're using.
 
-## 2. Rendering & resolution
+## 2. Rendering, camera & performance
 
-- **Renderer: Compatibility (OpenGL)** 💡, chosen for the owner's 8 GB laptop: lowest RAM/VRAM use, also runs on integrated Intel graphics. Switch to Forward+ only if a needed effect requires it. See [BUILD_PLAN.md](BUILD_PLAN.md) §2–3.
-- **Base viewport 1920×1080**, stretch mode `canvas_items`, aspect `expand`. The game is HD painterly anime, not pixel art.
-- **Tile size 64×64 px.** That shows about 30×17 tiles on screen.
-- **Character frames 128×128 px**; Aurelia is ~110 px tall (about 1.7 tiles). Large bosses use 256–512 px frames.
-- Camera2D follows the player with smoothing, limits per map, and a small look-ahead toward the aim direction.
-- These sizes are fixed **now**, so placeholder art and final art are interchangeable (`NFR-ART-01`).
+- **Renderer: Forward+ (Vulkan).** Needed for the anime 3D look (soft shadows, fog, glow, SSAO). Measured on the owner's laptop
+  (3D_PROPOSAL.md §1, BUILD_PLAN.md Phase 1b): the 3D test level runs at **~270 FPS on the RTX 3050 (High, 1080p)** and **~74 FPS on the
+  built-in Intel UHD (Low, 1080p)**, with ~0.9–1.0 GB game RAM.
+- **Base viewport 1920×1080**, stretch mode `canvas_items` (UI), aspect `expand`. 3D renders at `render_scale` × window size (graphics presets).
+- **Graphics presets** Low / Medium / High in `data/graphics/*.tres` (`GraphicsPreset`): render scale + FSR upscaling, MSAA, shadow distance,
+  SSAO, glow, fog, grass density. `Settings.set_graphics_preset()`; levels listen to `Settings.graphics_changed`. Test with `-- --graphics=low`.
+- **Camera (hybrid, approved):** high-angle follow camera (~40–45° down, FOV 40, distance ~13 m, zoom 7–22 m, rotate with Q/R or
+  middle-mouse drag, reset with Z). At **scenic viewpoints** an `Area3D` blends the camera to a low, wide shot of a vista, then back.
+  Objects between camera and player fade out (occlusion fade).
+- **Units:** 1 Godot unit = 1 metre. Aurelia ≈ 1.6 m tall. No free jumping in v1: stairs/steps up to ~0.35 m are climbed automatically; gaps use Gale Step.
+- **Budgets (game):** 60 FPS at 1080p on the RTX 3050 with headroom (aim ≤ 10 ms), game RAM ≤ 2.5 GB, video memory ≤ 2.5 GB,
+  characters ~20–40k triangles, textures mostly 1K–2K, area load ≤ 5 s. Check with the performance overlay (F1–F4) and `--benchmark`.
 
 ---
 
@@ -36,10 +46,13 @@ res://
 ├─ project.godot
 ├─ addons/                    # dialogue_manager/, gut/
 ├─ assets/
-│  ├─ art/                    # placeholders/ (generated), characters/, tiles/, props/, vfx/, ui/
+│  ├─ art/                    # placeholders/ui (generated icons), ui/, portraits/, textures/
+│  ├─ models/                 # characters/ (.vrm), enemies/, props/, environment/ (.glb exports)
+│  ├─ animations/             # retargeted animation libraries
+│  ├─ materials/              # shared .tres materials using the shaders below
 │  ├─ audio/                  # music/, sfx/
 │  ├─ fonts/
-│  └─ shaders/                # hit_flash.gdshader, dissolve, outline, water
+│  └─ shaders/                # toon, toon_outline, ground, grass, stone_moss, water (+ hit_flash, dissolve later)
 ├─ data/                      # ALL tunable game data as .tres Resources
 │  ├─ spells/  items/  recipes/  enemies/  bosses/  dragons/  quests/  loot_tables/
 ├─ src/
@@ -94,8 +107,8 @@ Actors are built from small reusable nodes:
 
 - `HealthComponent`: hp, max_hp, `apply_damage(info: DamageInfo)`, signals `damaged`, `died`.
 - `StaminaComponent`: current/max, regen delay & rate, **exhausted** state, `try_spend(cost) -> bool`.
-- `HitboxComponent` (Area2D): carries a `DamageInfo`; deals damage.
-- `HurtboxComponent` (Area2D): receives hits → forwards to Health + StatusEffects; handles i-frames.
+- `HitboxComponent` (Area3D): carries a `DamageInfo`; deals damage.
+- `HurtboxComponent` (Area3D): receives hits → forwards to Health + StatusEffects; handles i-frames.
 - `StatusEffectComponent`: burn, chill/freeze, stagger, root, daze, ember mark (timers + stacks).
 - `InteractableComponent`: prompt text + `interacted` signal (NPCs, chests, rest points, gather nodes).
 - `LootDropper`: rolls a `LootTable` on death.
@@ -162,17 +175,20 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 4. On successful use, add mastery XP → `PlayerData` recalculates **Magic Power** and **rank** → emit `EventBus.magic_power_changed`.
 5. Puzzle objects implement `on_element_hit(element: Elements.Type)`, so the *same* spell scenes interact with braziers, water, fans and more (`FR-PUZ-01`).
 
-### 4.7 World building
-- **One scene per region**, each made of several connected maps if needed. Transitions use `RegionExit` Area2D → `SceneLoader.change_region(region_id, spawn_id)`.
-- **TileMapLayer layers per map:** `Ground` → `GroundDetail` → `Cliffs` (collision) → `YSortObjects` (trees, ruins, props as Y-sorted scenes) → `Canopy` (fades when the player is under it).
-- **Elevation:** cliffs as separate layers with a Y-sort origin offset; stairs/ramps switch the player's collision mask between height levels. Keep heights to 2–3 levels per map to stay simple.
-- **Navigation:** NavigationRegion2D baked from the tilemap for enemies and the dragon (NavigationAgent2D).
+### 4.7 World building (3D)
+- **One scene per region**, made of a few connected areas. Transitions use a `RegionExit` Area3D → `SceneLoader.change_region(region_id, spawn_id)`.
+- **Terrain:** sculpted ground meshes (Blender or Godot) with the `ground` shader (grass tones + painted dirt paths via vertex colour).
+- **Modular kits:** ruins (arches, columns, walls, stairs), rocks, trees as reusable scenes with the `toon` / `stone_moss` shaders and simple collision shapes.
+- **Grass & flowers:** `MultiMeshInstance3D` with the `grass` shader; density follows the graphics preset.
+- **Elevation:** real 3D height. Stairs/ramps are walkable; ledges block. No free jump (§2).
+- **Navigation:** `NavigationRegion3D` baked per area for enemies and the dragon (`NavigationAgent3D`).
+- **Performance:** automatic mesh LODs on import, `visibility_range` on small props, `OccluderInstance3D` for big ruins/cliffs, shadows only near the camera, fog hides the far distance.
 - **Persistent objects** (chests, puzzle states, bosses) have a unique `persist_id` and read/write `GameState` when spawned or changed.
 
 ### 4.8 Day/night & weather
-- `TimeOfDay` drives a `CanvasModulate` colour from a Gradient (dawn gold → day → dusk violet → night blue).
-- `PointLight2D` on Aurelia's lantern, fireflies, braziers and windows (stronger at night).
-- `GPUParticles2D` for rain, fog, fireflies and light motes. A `WeatherController` per region with allowed weather types.
+- `TimeOfDay` rotates the sun (`DirectionalLight3D`) and blends sun colour, sky, ambient light and fog colour (dawn gold → day → dusk violet → night blue moonlight).
+- `OmniLight3D` on Aurelia's lantern, braziers and windows (stronger at night); emissive materials + glow for magic.
+- `GPUParticles3D` for rain, fireflies, light motes, waterfall spray. A `WeatherController` per region with allowed weather types.
 
 ### 4.9 Save system
 - **JSON files in `user://saves/slot_N.json`.** Never load `.tres`/`.res` from `user://`: Godot resources can embed scripts, so a modified save file could run code (GDQuest save-system notes).
@@ -187,9 +203,9 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 - Dialogue Manager `.dialogue` files reference `GameState`/`QuestManager` for conditions (`if GameState.has_flag("met_sylvaris")`) and actions (`do QuestManager.start("dragon_egg")`).
 
 ### 4.11 Pet dragon AI
-- **Follow:** stay at an offset behind Aurelia; teleport back if more than ~12 tiles away (leash).
+- **Follow:** stay at an offset behind Aurelia; teleport back if more than ~12 m away (leash).
 - **Attack:** target = Aurelia's last-hit or aimed enemy; otherwise the nearest enemy threatening Aurelia.
-- **Guard:** stay within 2 tiles, face the nearest threat, block projectiles (Earth) or counter-attack.
+- **Guard:** stay within ~2 m, face the nearest threat, block projectiles (Earth) or counter-attack.
 - Avoids active telegraph zones (enemies register danger areas in a shared group).
 - Skill on its own cooldown; stats come from `DragonSpeciesData` × stage × bond.
 
@@ -200,9 +216,10 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 
 ### 4.13 Input map (actions)
 `move_up/down/left/right`, `aim` (mouse or right stick), `attack`, `cast_1…cast_4`, `dash`, `interact`, `dragon_command`, `dragon_skill`,
-`menu`, `map`, `journal`, `pause`, `ui_*`. All actions are remappable and saved in `Settings`.
+`menu`, `map`, `journal`, `pause`, `ui_*`, and for the 3D camera `camera_rotate_left` (Q), `camera_rotate_right` (R),
+`camera_zoom_in/out` (mouse wheel), `camera_drag` (middle mouse), `camera_reset` (Z). All actions are remappable and saved in `Settings`.
 
-### 4.14 Physics layers
+### 4.14 Physics layers (3D)
 
 | # | Layer | Used by |
 |---|---|---|
@@ -214,14 +231,18 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 | 6 | enemy_hurtbox | hit by player/dragon attacks |
 | 7 | interactable | NPCs, chests, rest points, gather nodes |
 | 8 | elemental | puzzle objects that react to spells |
-| 9 | water | water tiles (frozen → walkable) |
+| 9 | water | water surfaces (frozen → walkable) |
 | 10 | high_ground | elevated level collision |
 
-### 4.15 Placeholder art pipeline (`NFR-ART-01`)
-- A small tool script generates placeholder art: coloured shapes with labels and a direction arrow, at the final frame sizes.
-- **Animation naming:** `{action}_{direction}`, e.g. `idle_down`, `walk_up_left`, `cast_right`. 8 directions for Aurelia, 4 for most enemies.
-- Swapping in real art = replacing the `SpriteFrames` resource. No code changes.
-- AI-generated reference images (in `Game Images/`) are used for mood only; screenshots of other games are never used as assets.
+### 4.15 Placeholder & art pipeline (`NFR-ART-01`)
+- **Placeholders are simple 3D shapes** (capsules, boxes, cylinders, spheres) at real-world size, using the final shaders, as in
+  `src/world/test/test_level_3d.gd`. Only 2D UI icons are generated as images (`tools/placeholders/`).
+- **Characters:** VRoid Studio → `.vrm` (reduce polygons on export) → `assets/models/characters/`. Animations retargeted to the humanoid skeleton;
+  `AnimationTree` with a locomotion blend space (idle/walk/run) + one-shots (cast, strike, hurt, dash).
+- **Animation naming:** `idle`, `walk`, `run`, `dash`, `staff_strike`, `cast_projectile`, `cast_area`, `hurt`, `death`, `interact` (no per-direction animations in 3D).
+- **Props/environment:** CC0 kits (Quaternius, Kenney) and own models from Blender, exported as `.glb`, recoloured to one palette, using the project shaders.
+- Swapping a placeholder for real art = replacing the mesh/scene of the visual child node. Gameplay nodes (collision, components) don't change.
+- Reference images in `Game Images/` are for mood only; screenshots of other games are never used as assets.
 
 ---
 
@@ -244,8 +265,10 @@ Each milestone ends with something **playable** that can be checked.
 
 | # | Milestone | Main contents | Done when |
 |---|---|---|---|
-| **M0** | Setup | Install Godot 4.7.2, `git init` + LFS, project skeleton (§3), autoload stubs, input map, physics layers, GUT + Dialogue Manager, placeholder art generator | Project opens; empty test runs pass |
-| **M1** | Walk the world | Aurelia 8-direction movement + dash, camera, test map with tile layers, Y-sort, collisions, cliffs/stairs, interaction prompt | You can walk around a test meadow behind trees and ruins |
+| **M0** ✅ | Setup | Install Godot 4.7.2, `git init` + LFS, project skeleton (§3), autoload stubs, input map, physics layers, GUT + Dialogue Manager, placeholder art generator | Project opens; empty test runs pass |
+| **M0b** ✅ | Switch to 3D | Forward+, Jolt, 3D layers, camera actions, graphics presets, shaders, 3D test level, performance overlay + benchmark mode | 3D test level runs at 60+ FPS on both GPUs |
+| **M1** | Walk & camera | Aurelia (capsule) moves in full 360° + dash, steps up stairs; hybrid camera (follow, rotate, zoom, scenic viewpoint, occlusion fade); interaction prompt | You can walk around the 3D test meadow |
+| **M1b** | Look test (style diorama) | VRoid Aurelia + animations, World Tree corner, ruins kit, water, golden hour: locks the art style | A screenshot-worthy scene |
 | **M2** | Combat core | Health, hitbox, hurtbox, staff strike, stamina + exhaustion, SpellCaster with 2 spells + cooldowns, 1 enemy (FSM with telegraphs), death/respawn, basic HUD | Fight and beat a Thornling |
 | **M3** | Magic & progression | Elements + weaknesses, status effects, SpellBook/loadout, spell tomes, learn at a rest point, mastery, Magic Power & rank, rank badges on enemies | Learning a spell visibly raises your rank |
 | **M4** | Items & crafting | Inventory, equipment & accessories with stat modifiers, gather nodes, loot tables, workbench + recipes, consumables | Craft an accessory and see its effect |
@@ -265,9 +288,10 @@ Each milestone ends with something **playable** that can be checked.
 | Risk | Mitigation |
 |---|---|
 | **Scope creep** (open world + crafting + dragons + bosses is a lot) | Build the vertical slice first; enforce GDD §15 content targets; stretch goals only after 1.0. |
-| **Art bottleneck** (anime art is expensive) | Placeholders first, fixed frame sizes, recolour variants, one dragon body for all elements. |
+| **Art bottleneck** (3D characters, animation) | VRoid for characters, CC0 animation library, CC0 kits recoloured to one palette, simple shapes as placeholders, one dragon body for all elements. |
 | **Combat feels floaty** | Do M2 early and iterate on feel (hit-stop, knockback, telegraphs) before building content. |
-| **Y-sort/elevation bugs with tilemaps** | Keep 2–3 height levels; build the M1 test map specifically to try cliffs and stairs. |
+| **Camera problems** (walls blocking the view, motion sickness) | Occlusion fade, limited rotation speed, screen-shake toggle, test early in M1. |
+| **RAM pressure on the 8 GB laptop** | One heavy app at a time (Godot or Blender); budgets checked with the overlay each phase; optional RAM upgrade. |
 | **Save bugs / broken saves after updates** | IDs not references, versioned JSON, round-trip unit tests. |
 | **Balance (power curve)** | All numbers in `data/`; a debug overlay showing Magic Power, DPS and enemy rank; a balance pass after each region. |
 | **Addon breaks on a Godot update** | Pin the Godot version per milestone; check addon compatibility before upgrading. |
@@ -277,10 +301,9 @@ Each milestone ends with something **playable** that can be checked.
 ## 8. Research references
 
 - Godot download, current stable 4.7.2: <https://godotengine.org/download/windows/>
-- GDQuest *Godot Open RPG* (structure reference for a 2D RPG in Godot 4): <https://github.com/gdquest-demos/godot-open-rpg>
+- GDQuest *Godot Open RPG* (structure reference for an RPG in Godot 4; 2D, but the architecture applies): <https://github.com/gdquest-demos/godot-open-rpg>
 - Save-system safety (resources can run code; prefer JSON): <https://www.gdquest.com/library/cheatsheet_save_systems/>
 - Node-based state machines: <https://gamedevacademy.org/godot-state-machine-tutorial/>, <https://ziva.sh/blogs/godot-state-machine>
-- TileMapLayer + Y-sort for stacked cliffs: <https://forum.godotengine.org/t/best-practice-for-stacking-tilemaplayer-nodes-with-ysort-in-godot-4-4/120306>
 - Dialogue Manager addon: <https://godotengine.org/asset-library/asset/edit/15252>
 - Companion AI behaviour modes: <https://www.cs.mcgill.ca/~jtremb59/Papers/Adaptive%20Companions%20in%20FPS%20Games.pdf>
 - Boss design (telegraphs, phases, fairness): <https://www.wayline.io/blog/crafting-legendary-boss-battles>

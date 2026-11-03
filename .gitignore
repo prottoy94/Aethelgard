@@ -56,6 +56,40 @@ mono_crash.*.json
 *.wav.import
 *.ogg.import
 
+# --- 3D models & 3D source files: NOT uploaded for now (owner decision, 2026-11-03) ---
+# VRoid characters, Blender files, asset-pack models
+*.vrm
+*.vroid
+*.glb
+*.gltf
+*.bin
+*.fbx
+*.obj
+*.mtl
+*.dae
+*.blend
+*.blend1
+*.blend2
+# Extra texture formats used by 3D packs
+*.tif
+*.tiff
+*.dds
+*.ktx
+*.ktx2
+# ...and their Godot import settings
+*.vrm.import
+*.glb.import
+*.gltf.import
+*.fbx.import
+*.obj.import
+*.dae.import
+*.blend.import
+*.tif.import
+*.tiff.import
+*.dds.import
+*.ktx.import
+*.ktx2.import
+
 # ...except the add-ons' own icons: GUT and Dialogue Manager need them to work
 !addons/**/*.png
 !addons/**/*.svg

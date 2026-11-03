@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="GraphicsPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/core/graphics/graphics_preset.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"low"
+display_name = "Low"
+render_scale = 0.67
+scaling_mode = 1
+msaa = 0
+shadows = true
+shadow_distance = 30.0
+ssao = false
+glow = true
+fog = true
+grass_density = 0.35

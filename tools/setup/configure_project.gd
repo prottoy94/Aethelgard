@@ -6,7 +6,7 @@ extends SceneTree
 ##   godot --headless --path . --script res://tools/setup/configure_project.gd
 ##
 ## Safe to run again: every setting is overwritten with the values below.
-## Sources: TECHNICAL_DESIGN.md §2, §4.1, §4.13, §4.14 · AUDIO_DESIGN.md §3 · BUILD_PLAN.md §2.
+## Sources: TECHNICAL_DESIGN.md §2, §4.1, §4.13, §4.14 · AUDIO_DESIGN.md §3 · BUILD_PLAN.md §2 · 3D_PROPOSAL.md.
 
 const AUTOLOADS: Array[Array] = [
 	["EventBus", "res://src/autoload/event_bus.gd"],
@@ -32,7 +32,11 @@ const PHYSICS_LAYERS: Array[String] = [
 const EDITOR_PLUGINS: Array[String] = [
 	"res://addons/gut/plugin.cfg",
 	"res://addons/dialogue_manager/plugin.cfg",
+	"res://addons/vrm/plugin.cfg",
 ]
+
+## Settings from the 2D plan that no longer apply; removed from project.godot.
+const OBSOLETE_SETTINGS: Array[String] = ["physics/2d/default_gravity"]
 
 
 func _init() -> void:
@@ -40,6 +44,8 @@ func _init() -> void:
 	_apply_layer_names()
 	_apply_autoloads()
 	_apply_input_map()
+	for key in OBSOLETE_SETTINGS:
+		ProjectSettings.set_setting(key, null)
 	var err := ProjectSettings.save()
 	print("project.godot saved: ", error_string(err))
 	_build_bus_layout()
@@ -49,11 +55,13 @@ func _init() -> void:
 func _apply_settings() -> void:
 	var s := {
 		"application/config/name": "Aethelgard",
-		"application/config/description": "2D top-down anime action-RPG.",
-		"application/run/main_scene": "res://src/game/main.tscn",
-		# Rendering: Compatibility renderer for the 8 GB development laptop (BUILD_PLAN.md §2).
-		"rendering/renderer/rendering_method": "gl_compatibility",
-		"rendering/renderer/rendering_method.mobile": "gl_compatibility",
+		"application/config/description": "3D anime action-RPG (high-angle hybrid camera).",
+		"application/config/features": PackedStringArray(["4.7", "Forward Plus"]),
+		"application/run/main_scene": "res://src/world/test/test_level_3d.tscn",
+		# Rendering: Forward+ (Vulkan) for the anime 3D look; measured ~5 ms/frame on the RTX 3050 (3D_PROPOSAL.md §1).
+		"rendering/renderer/rendering_method": "forward_plus",
+		"rendering/renderer/rendering_method.mobile": "mobile",
+		"rendering/anti_aliasing/quality/msaa_3d": 1,
 		# Display: 1920x1080 base; windowed at 1600x900 so it fits the laptop screen with the taskbar.
 		"display/window/size/viewport_width": 1920,
 		"display/window/size/viewport_height": 1080,
@@ -65,7 +73,7 @@ func _apply_settings() -> void:
 		# Physics at 60 Hz with interpolation, so movement stays smooth on the 144 Hz screen.
 		"physics/common/physics_ticks_per_second": 60,
 		"physics/common/physics_interpolation": true,
-		"physics/2d/default_gravity": 0.0,
+		"physics/3d/physics_engine": "Jolt Physics",
 		"editor_plugins/enabled": PackedStringArray(EDITOR_PLUGINS),
 	}
 	for key: String in s:
@@ -74,7 +82,8 @@ func _apply_settings() -> void:
 
 func _apply_layer_names() -> void:
 	for i in PHYSICS_LAYERS.size():
-		ProjectSettings.set_setting("layer_names/2d_physics/layer_%d" % (i + 1), PHYSICS_LAYERS[i])
+		ProjectSettings.set_setting("layer_names/3d_physics/layer_%d" % (i + 1), PHYSICS_LAYERS[i])
+		ProjectSettings.set_setting("layer_names/2d_physics/layer_%d" % (i + 1), null)
 
 
 func _apply_autoloads() -> void:
@@ -105,6 +114,13 @@ func _apply_input_map() -> void:
 		"map": [_key(KEY_M), _joy(JOY_BUTTON_BACK)],
 		"journal": [_key(KEY_J)],
 		"pause": [_key(KEY_ESCAPE)],
+		# 3D camera (hybrid high-angle camera, 3D_PROPOSAL.md §3)
+		"camera_rotate_left": [_key(KEY_Q), _joy(JOY_BUTTON_DPAD_LEFT)],
+		"camera_rotate_right": [_key(KEY_R), _joy(JOY_BUTTON_DPAD_RIGHT)],
+		"camera_zoom_in": [_mouse(MOUSE_BUTTON_WHEEL_UP)],
+		"camera_zoom_out": [_mouse(MOUSE_BUTTON_WHEEL_DOWN)],
+		"camera_drag": [_mouse(MOUSE_BUTTON_MIDDLE)],
+		"camera_reset": [_key(KEY_Z), _joy(JOY_BUTTON_RIGHT_STICK)],
 	}
 	for action: String in actions:
 		ProjectSettings.set_setting("input/" + action, {"deadzone": 0.2, "events": actions[action]})

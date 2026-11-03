@@ -1,6 +1,6 @@
 # Aethelgard — Design Notes (from the `Game Images` folder)
 
-Small-scale, cozy-but-adventurous **2D anime open-world** game.
+Small-scale, cozy-but-adventurous **3D anime open-world** game (switched from 2D on 2026-11-03; see [3D_PROPOSAL.md](3D_PROPOSAL.md)).
 These notes come from looking at all 14 reference images. Nothing is final yet.
 
 ---
@@ -94,7 +94,8 @@ These notes come from looking at all 14 reference images. Nothing is final yet.
 
 ## 5. Open decisions (need the user's input)
 
-1. ✅ **Camera view: top-down 3/4 view** (decided).
+1. ✅ **Camera: 3D hybrid** (decided 2026-11-03): high-angle play camera + low scenic camera at viewpoints. *Replaces the earlier 2D top-down 3/4 decision; the notes below are kept for history.*
+   - ~~Camera view: top-down 3/4 view~~ (2D, superseded):
    - The reference images are side-on scenic paintings, so they act as **mood/colour targets**, not direct backgrounds.
      They can still be used directly for the title screen, loading screens and region-intro splash art.
    - Ruins, trees and towers are drawn as tall sprites with **Y-sorting** (the player walks behind and in front of them).

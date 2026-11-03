@@ -75,7 +75,7 @@ Master  (limiter)
 
 ### 4.1 `AudioManager` (autoload)
 ```gdscript
-AudioManager.play_sfx(&"spell_frost_shard_cast")                # 2D UI-style sound
+AudioManager.play_sfx(&"spell_frost_shard_cast")                # non-positional sound
 AudioManager.play_sfx_at(&"enemy_brine_crab_hurt", global_pos)  # sound placed in the world
 AudioManager.play_music(&"mus_elderroot", fade := 1.5)
 AudioManager.set_music_state(&"combat")                         # explore ↔ combat ↔ boss phases
@@ -83,8 +83,8 @@ AudioManager.play_ambience(&"amb_elderroot", TimeOfDay.period)
 AudioManager.play_stinger(&"stg_rank_up")
 ```
 - Game code **never references audio files directly**. It plays **sound event IDs**, so files can be swapped at any time.
-- A **voice pool** reuses `AudioStreamPlayer2D` nodes and caps how many copies of one sound can play at once (e.g. max 4 hit sounds), so big fights don't turn into noise.
-- Positional sounds use `AudioStreamPlayer2D` with a max distance about one screen wide.
+- A **voice pool** reuses `AudioStreamPlayer3D` nodes and caps how many copies of one sound can play at once (e.g. max 4 hit sounds), so big fights don't turn into noise.
+- Positional sounds use `AudioStreamPlayer3D` (3D game) with a max distance of about 25–30 m and the listener on the camera rig.
 
 ### 4.2 `SoundEvent` resource
 ```gdscript
@@ -109,7 +109,7 @@ Engine features we use: `AudioStreamRandomizer` (variants, pitch and volume rand
 - **Components** trigger hits and deaths: `HealthComponent.damaged` → hit sound for the element; `died` → death sound.
 - **Spells** trigger cast, travel-loop and impact sounds, with the IDs stored in `SpellData`.
 - **The `EventBus`** triggers stingers: `spell_learned`, `rank_changed`, `quest_completed`, `dragon_hatched`, `secret_found`.
-- **Footsteps change with the surface**: the tile under the player has a custom data field `surface` (grass, stone, wood, water, sand, ice).
+- **Footsteps change with the surface**: a downward ray reads `surface` metadata from the ground material/collider (grass, stone, wood, water, sand, ice).
 
 ---
 

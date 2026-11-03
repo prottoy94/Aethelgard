@@ -1,6 +1,6 @@
 # Aethelgard — Requirements
 
-> Status: **v0.1 draft**, written 2026-11-03. Every requirement starts as ⬜ Planned.
+> Status: **v0.2: updated for 3D** (2026-11-03, [3D_PROPOSAL.md](3D_PROPOSAL.md)). Every requirement starts as ⬜ Planned.
 > Design background: [GAME_DESIGN.md](GAME_DESIGN.md) · How we build it: [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md)
 
 **Priority**
@@ -20,7 +20,7 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
 | FR-PLY-01 | Aurelia is the playable character from the start of the game. | MVP | New game starts with Aurelia in Elderroot Meadow. | ⬜ |
-| FR-PLY-02 | 8-direction movement with matching animations. | MVP | Moving diagonally plays the diagonal animation; speed is the same in all directions. | ⬜ |
+| FR-PLY-02 | Free 360° movement in 3D with blended locomotion animations (idle / walk / run). | MVP | Aurelia turns smoothly toward any direction; speed is the same in all directions. | ⬜ |
 | FR-PLY-03 | Mouse / right-stick aiming for attacks and spells. | MVP | Spells fire toward the cursor/stick direction. | ⬜ |
 | FR-PLY-04 | Dash with a short cooldown and brief invincibility; does not use stamina. | MVP | Dashing through an enemy attack causes no damage. | ⬜ |
 | FR-PLY-05 | Free staff strike (melee, no stamina cost). | MVP | Usable even when stamina is 0. | ⬜ |
@@ -76,7 +76,7 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-DRG-01 | The player receives a dragon egg that hatches after progress. | MVP | The egg hatches at the end of the vertical slice. | ⬜ |
 | FR-DRG-02 | Pet dragon follows Aurelia and fights with her. | V1 (MVP: follow only) | The dragon attacks enemies near the player. | ⬜ |
 | FR-DRG-03 | Commands: Follow / Attack / Guard, plus a dragon skill on cooldown. | V1 | Each command visibly changes behaviour. | ⬜ |
-| FR-DRG-04 | Growth stages: hatchling → juvenile → adult. | V1 | Sprite, stats and skills change per stage. | ⬜ |
+| FR-DRG-04 | Growth stages: hatchling → juvenile → adult. | V1 | Model, stats and skills change per stage. | ⬜ |
 | FR-DRG-05 | Bond level 1–10 raised by battle, treats, petting and training; unlocks skills. | V1 | Feeding a treat raises bond XP. | ⬜ |
 | FR-DRG-06 | Element chosen at hatching (Frost/Wind/Earth/Light), each with its own skill set. (Pending approval.) | V1 | Different element → different skills. | ⬜ |
 | FR-DRG-07 | Knocked-out dragon returns after a delay or at a rest point; never dies permanently. | V1 | Dragon reappears after ~20 s. | ⬜ |
@@ -124,14 +124,14 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ### 1.9 World (WLD)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-WLD-01 | Top-down 3/4 view tile-based maps with Y-sorting (walk behind trees and ruins). | MVP | Player sorts correctly against tall objects. | ⬜ |
-| FR-WLD-02 | Multiple height levels with cliffs and stairs. | MVP | Player can only change level via stairs/ramps. | ⬜ |
+| FR-WLD-01 | 3D world built from terrain and modular kits (ruins, rocks, trees), seen through the hybrid camera. | MVP | Aurelia walks on terrain and around/behind objects; collisions work. | 🟨 Graybox test level with collisions (Phase 1b) |
+| FR-WLD-02 | Real 3D height: stairs and ramps are walkable, ledges block; no free jump in v1. | MVP | Aurelia climbs the test stairs automatically and can't step up a ledge. | ⬜ |
 | FR-WLD-03 | Hub + 5 regions connected around the World Tree. | V1 (MVP: Elderroot) | All regions reachable. | ⬜ |
 | FR-WLD-04 | Spell-gated paths (Gust, Glacial Path, Stone Spire, dragon flight). | V1 | A gated path can't be crossed without its spell. | ⬜ |
 | FR-WLD-05 | Rest points: save, heal, learn spells, change loadout, fast travel. | MVP (save, heal, learn) / V1 (travel) | All functions available at a shrine. | ⬜ |
 | FR-WLD-06 | Day/night cycle (~20 real minutes per day) affecting lighting, enemies and NPCs. | MVP (lighting) / V1 | The screen tint changes over time. | ⬜ |
 | FR-WLD-07 | Weather: clear, rain, fog, storm, per region. | V1 (MVP: rain particles) | Stormspire is always stormy. | ⬜ |
-| FR-WLD-08 | Canopy/roof layer fades when the player is underneath. | V1 | Tree tops become transparent above the player. | ⬜ |
+| FR-WLD-08 | Objects between the camera and Aurelia fade out (occlusion fade). | V1 | A wall in front of the camera becomes see-through while Aurelia is behind it. | ⬜ |
 | FR-WLD-09 | Opened chests, gathered nodes, defeated bosses and solved puzzles persist. | MVP | State survives a region change and a reload. | ⬜ |
 
 ### 1.10 UI (UI)
@@ -169,6 +169,19 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-DLG-12 | Dialogue history log. (Pending approval.) | V1 | Last ~50 lines can be reviewed. | ⬜ |
 | FR-DLG-13 | Translation-ready text (static line IDs, `tr()` for UI); voiced key scenes. | V1 (translation-ready) / Stretch (voice) | Lines can be exported for translation. | ⬜ |
 
+### 1.14 Camera & graphics (CAM) — details in [3D_PROPOSAL.md](3D_PROPOSAL.md) §3
+| ID | Requirement | Priority | Acceptance check | Status |
+|---|---|---|---|---|
+| FR-CAM-01 | High-angle follow camera (~40–45° down) that smoothly follows Aurelia. | MVP | Camera stays on Aurelia while she walks and dashes. | 🟨 Preview camera in test level (Phase 1b) |
+| FR-CAM-02 | Camera rotate (Q/R, middle-mouse drag, D-pad), zoom (wheel, 7–22 m) and reset (Z). | MVP | Each input works and stays within limits. | 🟨 Rotate/zoom/reset in test level (Phase 1b) |
+| FR-CAM-03 | Scenic viewpoints: entering an area blends the camera to a low, wide vista shot, then back. | V1 (MVP: 1 viewpoint) | The World Tree viewpoint shows the vista. | ⬜ |
+| FR-CAM-04 | Occlusion fade (see FR-WLD-08). | V1 | — | ⬜ |
+| FR-CAM-05 | Graphics presets Low / Medium / High (render scale + FSR, MSAA, shadows, SSAO, glow, fog, grass density). | MVP | F1–F3 switch presets live; values from `data/graphics/`. | ✅ Phase 1b (tested) |
+| FR-CAM-06 | Developer performance overlay and `--benchmark` mode. | MVP | Overlay shows FPS/ms/draw calls/memory; benchmark writes results + screenshot. | ✅ Phase 1b |
+| FR-PLY-09 | No free jump in v1; automatic step-up on stairs (≤ ~0.35 m). | MVP | See FR-WLD-02. | ⬜ |
+| NFR-ART-04 | Characters made in VRoid Studio, imported as VRM with anime (MToon/toon) shading and spring-bone hair/cape. | MVP (Aurelia) | Aurelia's VRM imports and animates in Godot. | 🟨 VRM importer installed (Phase 1b) |
+| NFR-ART-05 | One visual style: all assets use the project's toon/stone/ground shaders and one colour palette. | V1 | Style check in the Phase 2b look test. | 🟨 Shaders written (Phase 1b) |
+
 ### 1.13 Audio (AUD) — details in [AUDIO_DESIGN.md](AUDIO_DESIGN.md)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
@@ -177,7 +190,7 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-AUD-03 | Every enemy and boss attack has a telegraph sound that matches the visual wind-up. | MVP | No attack in the slice lacks a telegraph sound. | ⬜ |
 | FR-AUD-04 | Each element has its own sound family for casts, impacts and puzzle reactions. | MVP (Light, Wind, Ember) / V1 | Blind test: elements are recognisable by ear. | ⬜ |
 | FR-AUD-05 | Random pitch/volume and 3–5 variants for frequent sounds; per-sound polyphony limit. | MVP | Repeated hits don't sound identical; big fights don't clip. | ⬜ |
-| FR-AUD-06 | Footsteps change with the ground surface (tile custom data). | MVP (grass, stone, water) / V1 | Walking from grass to stone changes the sound. | ⬜ |
+| FR-AUD-06 | Footsteps change with the ground surface (surface metadata on terrain/materials). | MVP (grass, stone, water) / V1 | Walking from grass to stone changes the sound. | ⬜ |
 | FR-AUD-07 | Adaptive music: explore ↔ combat transitions, day/night versions, boss phase sections. | MVP (explore/combat, boss phases) / V1 | Combat layer fades in when an enemy notices the player. | ⬜ |
 | FR-AUD-08 | Stingers for spell learned, rank up, quest complete, secret found, crafted, dragon hatched, boss defeated. | MVP | Each event plays its stinger and ducks the music. | ⬜ |
 | FR-AUD-09 | Region ambience with day/night and weather variants; positional sources (waterfalls, braziers). | MVP (Elderroot) / V1 | Ambience changes at dusk. | ⬜ |
@@ -193,15 +206,15 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| NFR-TEC-01 | Engine: Godot 4.7.x stable, standard build; GDScript with static typing. | MVP | `project.godot` targets 4.7; no untyped public functions. | 🟨 Project targets 4.7 + Compatibility; static typing enforced as code is written |
+| NFR-TEC-01 | Engine: Godot 4.7.x stable, standard build, **Forward+** renderer, **Jolt** physics; GDScript with static typing. | MVP | `project.godot` targets 4.7 + Forward Plus; no untyped public functions. | 🟨 Set up (Phase 1b); typing enforced as code is written |
 | NFR-TEC-02 | All tunable numbers live in `data/*.tres`, not hard-coded in scripts. | MVP | Code review: no magic numbers for gameplay values. | ⬜ |
 | NFR-TEC-03 | Project in git; large binary assets in Git LFS. | MVP | `git status` clean after a build; LFS tracks png/ogg/wav. | 🟨 Repo + LFS rules ready (Phase 1). For now images/audio are git-ignored by owner decision (2026-11-03); owner makes commits manually |
 | NFR-PRF-01 | 60 FPS on a mid-range PC at 1080p in the busiest scene. | MVP | Profiler shows ≥60 FPS in a boss fight. | ⬜ |
-| NFR-PRF-03 | Runs within the owner's laptop limits: game RAM < 1.5 GB, video memory < 1 GB, 60 FPS on both the RTX 3050 and the built-in Intel UHD graphics (BUILD_PLAN.md §3). | MVP | Measured with Godot's monitors on both GPUs. | ⬜ |
+| NFR-PRF-03 | Runs within the owner's laptop limits: 60 FPS at 1080p on the RTX 3050 (High), playable on the Intel UHD (Low), game RAM ≤ 2.5 GB, video memory ≤ 2.5 GB. | MVP | Overlay + `--benchmark` on both GPUs each phase. | 🟨 Phase 1b test level: 273 FPS RTX/High, 74 FPS Intel/Low, ~0.9–1.0 GB RAM |
 | NFR-DEV-01 | The whole project can be developed on the owner's PC (8 GB RAM); all tools and files live on D:, Godot in self-contained mode. | MVP | Setup in BUILD_PLAN.md Phase 0 completed without using C: for project data. | ✅ Phase 0–1: Godot + project on D:, self-contained mode |
 | NFR-PRF-02 | Region load under 3 seconds. | V1 | Measured from fade-out to fade-in. | ⬜ |
-| NFR-ART-01 | Placeholder art uses final frame sizes and animation names; swapping to real art needs no code change. | MVP | Replacing a SpriteFrames resource works without script edits. | 🟨 Placeholders at final sizes (Phase 1); swap test when sprites are used |
-| NFR-ART-02 | Base resolution 1920×1080, 64 px tiles, 128 px character frames. | MVP | Set in project settings and the art pipeline. | ✅ Phase 1 (project settings + placeholder generator) |
+| NFR-ART-01 | Placeholders are simple 3D shapes at real size using the final shaders; swapping in real models needs no gameplay-code change. | MVP | Replacing a visual child scene works without script edits. | 🟨 Primitive placeholders in the test level (Phase 1b) |
+| NFR-ART-02 | Base resolution 1920×1080; 1 unit = 1 m; Aurelia ≈ 1.6 m; characters ~20–40k triangles; textures mostly 1K–2K. | MVP | Checked on import and in the overlay. | 🟨 Resolution + units set (Phase 1b) |
 | NFR-ART-03 | No assets copied from existing games; reference screenshots are for mood only. | MVP | All shipped assets are original or properly licensed (tracked in CREDITS.md). | ⬜ |
 | NFR-AUD-01 | Audio formats: SFX `.wav` 44.1 kHz/16-bit (mono if positional), music/ambience `.ogg` with loop points; naming per AUDIO_DESIGN.md §2.1. | MVP | Import check: all files follow the rules. | ⬜ |
 | NFR-AUD-02 | Every shipped audio file is original or properly licensed and listed in `CREDITS.md`; no NC/ND licences; nothing taken from other games/anime. | MVP | CREDITS.md covers every file in `assets/audio/` except placeholders. | ⬜ |

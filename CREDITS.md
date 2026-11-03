@@ -25,4 +25,6 @@ Every shipped asset that isn't a generated placeholder gets an entry here (see A
 |---|---|---|---|---|
 | Dialogue Manager | 4.2.0 | Nathan Hoad and contributors | MIT (`addons/dialogue_manager/LICENSE`) | https://github.com/nathanhoad/godot_dialogue_manager |
 | GUT (Godot Unit Test) | 9.7.1 | Butch Wesley | MIT (`addons/gut/LICENSE.md`) | https://github.com/bitwes/Gut |
+| Godot VRM importer | 2.0.1 (commit e15199f) | V-Sekai contributors | MIT (`addons/vrm/LICENSE`); sample models not included | https://github.com/V-Sekai/godot-vrm |
+| Godot MToon shader | (same commit) | V-Sekai contributors, Masataka SUMI | MIT (`addons/Godot-MToon-Shader/LICENSE`) | https://github.com/V-Sekai/godot-vrm |
 | Godot Engine | 4.7.2 | Godot contributors | MIT | https://godotengine.org (engine licence notice must ship with the game) |

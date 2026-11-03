@@ -1,6 +1,6 @@
 # Aethelgard — Game Design Document (GDD)
 
-> Status: **v0.1 draft (planning phase)**, written 2026-11-03.
+> Status: **v0.2: the game is 3D** (approved 2026-11-03: hybrid high-angle camera, VRoid characters, no free jump; see [3D_PROPOSAL.md](3D_PROPOSAL.md)).
 > This document says **what** the game is. [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md) says **how** we build it.
 > [REQUIREMENTS.md](REQUIREMENTS.md) lists the requirements we can check off. [DESIGN_NOTES.md](DESIGN_NOTES.md) holds the art references.
 >
@@ -11,7 +11,7 @@
 
 ## 1. One-line pitch
 
-**A 2D top-down anime action-RPG where Aurelia, a silver-haired elf with almost no magic,
+**A 3D anime action-RPG (high-angle camera with scenic vistas) where Aurelia, a silver-haired elf with almost no magic,
 grows from the weakest mage in Aethelgard into the one who can stand against Ignis Varos,
 Herald of the Final Ember. She does it by finding and learning spells, crafting gear, and raising her own dragon.**
 
@@ -131,7 +131,7 @@ This sets up the ending and a possible sequel. **Optional.** The simple version 
 
 | Action | KB/M | Gamepad |
 |---|---|---|
-| Move (8 directions) | WASD | Left stick |
+| Move (any direction, 3D) | WASD | Left stick |
 | Aim | Mouse | Right stick |
 | Staff strike (free, weak) | Left click | X / □ |
 | Cast spell slot 1–4 | 1 / 2 / 3 / 4 (right click = slot 1) | LB / RB / LT / RT |
@@ -140,8 +140,17 @@ This sets up the ending and a possible sequel. **Optional.** The simple version 
 | Dragon command (Follow → Attack → Guard) | G | D-pad up |
 | Dragon skill | H | D-pad down |
 | Menu / Map / Journal | Tab / M / J | Start / Select |
+| Rotate camera | Q / R (or hold middle mouse and drag) | D-pad left / right |
+| Zoom camera | Mouse wheel | — |
+| Reset camera | Z | Right stick click |
 
 All keys can be remapped.
+
+### 5.4 Camera (3D, hybrid) ✅
+- **Play camera:** high above and behind Aurelia (~40–45° down), follows her smoothly, can rotate and zoom. Clear fights, easy mouse aiming.
+- **Scenic viewpoints:** at special places (first sight of the World Tree, the Azure Coast, the Sky Rift) the camera swings low to show the vista, then returns.
+- Walls or trees between the camera and Aurelia fade out so she is never hidden.
+- **No free jumping in v1.** Steps and stairs are climbed automatically; gaps are crossed with spells (Gale Step) or paths.
 
 ---
 
@@ -214,10 +223,10 @@ All keys can be remapped.
 
 ## 7. Combat
 
-- **Real-time, top-down**, aim with mouse/stick. Fast and readable, not button-mashing.
+- **Real-time 3D with the high-angle camera**, aim with mouse/stick. Fast and readable, not button-mashing.
 - **Feel (the "juice"):** hit-stop (short freeze on impact), knockback, screen shake on big hits, damage numbers (toggleable), particle effects.
 - **Dash** with brief invincibility to dodge attacks.
-- **Telegraphs:** every enemy attack has a visible wind-up (glow, flash, ground marker) and a sound. A hit should never feel unfair.
+- **Telegraphs:** every enemy attack has a visible wind-up (glow, flash, **glowing ring on the ground**) and a sound. A hit should never feel unfair.
 - **Enemies use magic too**, as in the concept: casters, elemental shields, buffs, summons.
 - **Elemental shields** 💡: some enemies have a shield that only one element breaks, which makes fights a small puzzle (inspired by CrossCode's element-mode design).
 - **Defeat:** respawn at the last rest point with no items lost. Regular enemies reset; bosses reset to full.
@@ -324,7 +333,7 @@ Puzzles use **the spells the player has**, so learning a spell feels useful outs
 |---|---|
 | Element interactions | Fire lights braziers; Frost freezes water; Wind spins fans and pushes blocks; Earth raises pillars onto pressure plates |
 | Light & lantern | Dark ruins need Lantern Glow; hidden runes appear only in light; Prism Ray bounces off mirrors |
-| Block / switch | Push or raise blocks to open doors (classic top-down puzzles) |
+| Block / switch | Push or raise blocks to open doors (classic action-adventure puzzles) |
 | Rune sequence | Read clues in the ruins, then activate runes in the right order |
 | Day/night | A door only opens under moonlight; ghosts appear only at night |
 | Dragon-assisted | Dragon breath hits a far switch; the dragon carries a light; adult dragon flight |
@@ -367,7 +376,7 @@ Puzzles use **the spells the player has**, so learning a spell feels useful outs
 - **Rest points** (Lantern Shrines): save, heal, learn spells, change the loadout, fast travel to other shrines.
 - **Day/night cycle:** ~20 real minutes per game day. Some enemies, NPCs and puzzles change with time.
 - **Weather:** clear, rain, fog, storm. Some secrets only appear in certain weather.
-- Region sizes are kept small: each region is a few connected screens/maps, not a huge empty field.
+- Region sizes are kept small: each region is a few connected 3D areas, small and dense rather than huge and empty.
 
 ---
 
@@ -385,7 +394,10 @@ Puzzles use **the spells the player has**, so learning a spell feels useful outs
 ## 14. Art & audio direction (summary)
 
 - Full art references: [DESIGN_NOTES.md](DESIGN_NOTES.md).
-- Painterly anime look, warm light, mist, fireflies, god rays. **Placeholder art first**, real art later.
+- **Painterly anime 3D:** cel-shaded characters (two-tone shading, rim light, thin outlines), soft painterly environments, moss on stone,
+  wind-swayed grass, sparkling water, warm light, fog, glow and fireflies. **Simple 3D shapes as placeholders first**, real art later.
+- Characters made in **VRoid Studio** (anime style, hair/cape sway); animations from a free CC0 library; props from CC0 kits edited in Blender,
+  all recoloured to one palette. Details: [3D_PROPOSAL.md](3D_PROPOSAL.md) §2 and §5.
 - Music: calm, wonder-filled exploration themes per region (flute, strings, harp); stronger battle and boss themes. Ignis gets a heavy, fiery theme.
 - SFX: each element has its own sound family, which helps players read telegraphs.
 - Full audio plan (music list, sound list, mixer, adaptive music, sourcing and licences): [AUDIO_DESIGN.md](AUDIO_DESIGN.md).

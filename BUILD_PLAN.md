@@ -3,6 +3,9 @@
 > Written 2026-11-03. This is the **step-by-step plan for building the game on your laptop**.
 > What the game *is*: [GAME_DESIGN.md](GAME_DESIGN.md). How the code is organised: [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md).
 > What must work: [REQUIREMENTS.md](REQUIREMENTS.md). This file ties them into a plan you can follow.
+>
+> **Update 2026-11-03: the game is now 3D** (approved; see [3D_PROPOSAL.md](3D_PROPOSAL.md)). This plan is updated to match;
+> the 3D look and performance were measured on your laptop before switching.
 
 ---
 
@@ -10,11 +13,11 @@
 
 I checked your laptop's hardware and software:
 
-| Part | Your PC | Enough for a 2D Godot game? |
+| Part | Your PC | Enough for this 3D game? |
 |---|---|---|
 | Laptop | ASUS TUF Gaming F15 (FX507ZC4) | ✅ |
 | Processor | Intel Core i5-12500H, 12 cores / 16 threads | ✅ **Very good.** Fast for Godot, exports and tools |
-| Graphics | NVIDIA **RTX 3050 Laptop (4 GB)** + Intel UHD (built-in) | ✅ **More than enough** for 2D |
+| Graphics | NVIDIA **RTX 3050 Laptop (4 GB)** + Intel UHD (built-in) | ✅ **Yes, measured:** the 3D test level runs at ~270 FPS at 1080p (High); ~74 FPS on the Intel UHD (Low) |
 | Screen | 1920×1080, 144 Hz | ✅ Exactly our game's base resolution |
 | Memory (RAM) | **8 GB** (one 8 GB stick); only ~0.7 GB was free with your usual apps open | ⚠ **The main limit.** Fine if we're careful (§3) |
 | Storage | 512 GB NVMe SSD. **C: 12 GB free** · **D: 109 GB free** | ⚠ C: is nearly full. ✅ D: has plenty, so **everything goes on D:** |
@@ -22,12 +25,13 @@ I checked your laptop's hardware and software:
 | Already installed | Git 2.45 + **Git LFS** ✅ · VS Code ✅ · Python 3.11 ✅ | ✅ Saves setup time |
 
 ### Verdict
-**Yes, your laptop can build the whole game.** A 2D game in Godot is light compared with what an RTX 3050 gaming laptop can do.
+**Yes, your laptop can build the whole game, in 3D too.** Measured on your PC: the 3D test level (shadows, fog, glow, 50,000 grass blades)
+runs at ~270 FPS at 1080p on the RTX 3050 and uses about 1 GB of RAM. The real work in 3D is making the art (3D_PROPOSAL.md §5).
 Only two things need care:
-1. **RAM (8 GB).** Don't keep many heavy apps (Chrome tabs, games, video) open while Godot is running.
+1. **RAM (8 GB).** Don't keep many heavy apps open while Godot is running, and **don't run Blender and Godot at the same time** with big files.
 2. **Drive C: (12 GB free).** Install everything for the game on **D:** and keep C: from filling up.
 
-> 💡 **Optional upgrade (not required):** this laptop model usually has a **second RAM slot**. Adding another 8 GB DDR4-3200 stick (16 GB total)
+> 💡 **Recommended for 3D (not required):** this laptop model usually has a **second RAM slot**. Adding another 8 GB DDR4-3200 stick (16 GB total)
 > would remove the RAM limit and make the built-in graphics faster too. Check the free slot (or ask a shop) before buying.
 
 ---
@@ -37,13 +41,14 @@ Only two things need care:
 | Decision | Choice | Why it fits your PC |
 |---|---|---|
 | Engine | **Godot 4.7.2**, standard build (not .NET) | Small download, starts fast, no extra SDKs. Already chosen |
-| **Graphics renderer** | **Compatibility** (OpenGL) 💡 | Uses the **least RAM and video memory**, starts fastest, and also runs on the built-in Intel graphics, so the game runs on weaker PCs too. All our 2D needs work with it (lights, particles, shaders, day/night tint). Switching to "Forward+" later is one setting if we ever need its extra effects |
+| **Graphics renderer** | **Forward+** (Vulkan) ✅ | Needed for the anime 3D look (shadows, fog, glow). Measured on your RTX 3050: ~3.7 ms per frame at 1080p, so plenty of headroom. Graphics presets (Low/Medium/High) keep it playable on weaker PCs |
 | Where things live | Project on **D:\Aethelgard** (already there), Godot in **D:\Tools\Godot** | Keeps C: free |
 | Godot "self-contained" mode | Settings, caches and export templates stored **next to Godot on D:**, not on C: | Saves ~1–2 GB on C: |
 | Code editor | Godot's **built-in script editor** | Uses less RAM than running VS Code alongside (VS Code stays optional) |
-| Placeholder art | Drawn by a **Godot tool script** | No extra art software needed early on |
+| Placeholder art | **Simple 3D shapes** built by the level scripts | No art software needed early on |
 | Placeholder sounds | Small **Python script** (Python is already installed) | Light; no extra apps |
 | Version control | **Git + Git LFS** (already installed) | Saves every step; you can undo mistakes |
+| 3D tools | **Blender 5.2.3** (portable, `D:\Tools\Blender`) ✅, **VRoid Studio** (you install), **Godot VRM importer** ✅ | All free; everything on D: |
 | Source files Godot shouldn't import | `.gdignore` in `Game Images/` and `Audio_music/` | Godot won't make copies of 23 MB of reference images and the MP3s, so less disk and RAM |
 
 ---
@@ -57,19 +62,19 @@ Only two things need care:
 - Plug in the charger and set Windows power mode to **Best performance** while developing.
 
 **Make Godot use the NVIDIA GPU** (one-time): Windows Settings → System → Display → Graphics → add the Godot `.exe` → **High performance**.
-We also test the game on the Intel graphics sometimes, to be sure it runs on weaker PCs.
+We also test the game on the Intel graphics sometimes (`--gpu-index 1`), to be sure it runs on weaker PCs.
 
 **The game itself (performance budget):** the finished game must also run well on 8 GB PCs like yours.
 
 | Budget | Target |
 |---|---|
-| Frame rate | Solid **60 FPS** on the RTX 3050 **and** on the built-in Intel graphics |
-| Game RAM use | **under 1.5 GB** |
-| Video memory | **under 1 GB** |
-| Area loading time | **under 3 s** (your NVMe SSD helps) |
-| Download size of the finished game | **under 1.5 GB** |
+| Frame rate | Solid **60 FPS** at 1080p on the RTX 3050 (High); playable on the built-in Intel graphics (Low) |
+| Game RAM use | **under 2.5 GB** |
+| Video memory | **under 2.5 GB** |
+| Area loading time | **under 5 s** (your NVMe SSD helps) |
+| Download size of the finished game | **under 3 GB** |
 
-How we stay inside it: textures at most 4096×4096 px; sprite sheets per character; large backgrounds compressed;
+How we stay inside it: textures mostly 1K–2K; characters ~20–40k triangles; automatic detail levels for far objects; grass drawn in batches;
 music **streamed** from OGG files (not loaded fully into RAM); only the current region loaded at a time; object pooling for projectiles.
 
 ---
@@ -123,7 +128,7 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 - **Done when:** Godot opens on your PC and `godot --version` works in the terminal.
 
 ### Phase 1: Project skeleton (M0) · **S** · ✅ Done 2026-11-03 (first Git commit waiting for your OK)
-> **Result:** Godot opens the project; the check screen shows Godot 4.7.2, the Compatibility renderer on the **RTX 3050**
+> **Result:** Godot opens the project; the check screen showed Godot 4.7.2, the Compatibility renderer (switched to Forward+ in Phase 1b) on the **RTX 3050**
 > (it picked the NVIDIA GPU by itself) and all 13 global managers loaded; **12/12 tests pass**; frames take ~0.3 ms to draw.
 > Re-run settings: `godot --headless --path . --script res://tools/setup/configure_project.gd`.
 > Re-draw placeholders: `godot --headless --path . --script res://tools/placeholders/generate_placeholders.gd`.
@@ -136,11 +141,23 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 - Placeholder art script: draws labelled coloured shapes at the final sizes.
 - **You'll see:** the project opens in Godot; pressing F5 shows a test screen; the test runner says "all passed".
 
-### Phase 2: Walk around the world (M1) · **M**
-- Aurelia (placeholder) walks in 8 directions with dash; the camera follows.
-- A small test meadow: ground tiles, trees and ruins you can walk **behind and in front of**, cliffs, stairs, collisions.
+### Phase 1b: Switch to 3D · **S** · ✅ Done 2026-11-03
+> **Result:** Forward+ renderer, Jolt physics, 3D physics layers, camera keys (Q/R rotate, wheel zoom, Z reset),
+> Low/Medium/High graphics presets (F1–F3), shared anime shaders (toon, outline, ground, grass, mossy stone, water),
+> a 3D test level with collisions, a performance overlay (F4) and a `--benchmark` mode. **19/19 tests pass.**
+> Measured at 1080p: **273 FPS on the RTX 3050 (High)**, **74 FPS on the Intel UHD (Low)**, ~0.9–1.0 GB RAM.
+> Blender 5.2.3 and the Godot VRM importer are installed. The 2D check screen and 2D sprite placeholders were retired.
+
+### Phase 2: Walk & camera (M1) · **M**
+- Aurelia (capsule placeholder) moves in any direction, dashes, and climbs stairs automatically (no free jump).
+- The **hybrid camera**: follow, rotate, zoom, reset, a scenic viewpoint test, and occlusion fade.
 - Interact prompt (press E near a sign).
-- **You'll see and play:** walking around a test meadow. You judge the walking speed and feel.
+- **You'll see and play:** walking around the 3D test meadow. You judge the speed, camera and feel.
+
+### Phase 2b: Look test, the "style diorama" · **M**
+- **You make Aurelia in VRoid Studio** (I guide you step by step); I import her with her animations.
+- One small, beautiful corner of Elderroot: World Tree, ruins, grass, water, golden hour.
+- **You'll see:** a screenshot-worthy scene that **locks the art style** before we make lots of art.
 
 ### Phase 3: Combat core (M2) · **M** · *+ first Windows export test*
 - Health, damage, staff strike, **stamina bar + Exhausted**, first 2 spells with **cooldowns**, dodge.
@@ -190,22 +207,20 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 
 ---
 
-## 7. Art & music pipeline on your PC
+## 7. Art & music pipeline on your PC (3D)
 
 | | Early (Phases 1–8) | Final (Phase 9+) |
 |---|---|---|
-| **Art** | Placeholder shapes drawn by a Godot script, at final sizes | ❓ Your choice; options below |
-| **Music** | Your Google-tool tracks (already have 6) | More tracks from the same tool; I analyse, trim, loop and convert them |
+| **Characters** | Simple shapes (capsules) | **VRoid Studio** models (Aurelia first, in Phase 2b) |
+| **Animations** | None or basic | **Quaternius Universal Animation Library** (CC0), Mixamo optional |
+| **World** | Simple shapes with the final shaders | CC0 kits (Quaternius, Kenney) + own models in **Blender**, recoloured to one palette |
+| **Effects** | Particles + glowing materials | Polished spell, hit and weather effects |
+| **Music** | Your Google-tool tracks (6 so far) | More tracks; I analyse, trim, loop and convert them |
 | **Sound effects** | Code-generated placeholders (Python) | Free CC0/CC-BY libraries (Kenney, Freesound), credited in CREDITS.md |
-| **Portraits** | Labelled silhouettes | AI-generated (e.g. Gemini, like your reference images) + cleanup |
+| **Portraits** | Labelled silhouettes | Rendered from the VRoid models, or AI-generated + cleanup |
 
-**Art options for the final sprites** (characters need many animation frames, the hardest art job):
-1. **AI-assisted + cleanup** in a free painting app like **Krita** (runs fine on 8 GB). Fastest, but keeping the character consistent across frames takes care.
-2. **Hand-drawn** in Krita. Best control, but slowest.
-3. **Commission an artist** for the main sprite sheets. Costs money.
-
-Avoid 3D-to-2D rendering in Blender; it's heavy on 8 GB RAM.
-**To keep art work manageable:** 4–8 directions with mirroring, few animation frames, recolour variants for enemies, one dragon body for all elements.
+**RAM tip:** close Blender before testing the game in Godot, and keep browser tabs to a minimum.
+Full details: [3D_PROPOSAL.md](3D_PROPOSAL.md) §5–6.
 
 ---
 
@@ -234,9 +249,9 @@ Avoid 3D-to-2D rendering in Blender; it's heavy on 8 GB RAM.
 
 ## 10. Decisions I need from you
 
-1. ❓ **Renderer:** OK to use **Compatibility** (lightest, recommended for your PC)?
+1. ✅ **3D decided** (2026-11-03): Forward+ renderer, hybrid camera, VRoid characters, no free jump in v1. Blender + VRM importer installed.
 2. ✅ **Godot downloaded and installed** by Claude (2026-11-03). ❓ The two add-ons (GUT, Dialogue Manager) get downloaded in Phase 1, with your OK.
 3. ❓ **Backup:** private GitHub repo, external drive/cloud, or both?
 4. ❓ **Cleanup:** may I delete my temporary music-analysis tools from C: (2.6 GB)?
-5. ❓ **Final art approach** (§7): can wait until Phase 9.
+5. ✅ **Art approach:** VRoid characters + CC0 kits + Blender (§7). Next for you: **install VRoid Studio** before Phase 2b.
 6. Still open from the design docs: the 💡 story/mechanic ideas (GAME_DESIGN.md §16, DIALOGUE_DESIGN.md §15).
