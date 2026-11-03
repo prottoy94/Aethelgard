@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="NpcLook" format=3]
+
+[ext_resource type="Script" path="res://src/actors/npcs/npc_look.gd" id="1"]
+
+; Placeholder look for tamsin (simple shapes at real size).
+[resource]
+script = ExtResource("1")
+height = 1.12
+robe = Color(0.851, 0.643, 0.255, 1)
+accent = Color(0.965, 0.925, 0.824, 1)
+skin = Color(0.961, 0.839, 0.749, 1)
+hair_color = Color(0.541, 0.353, 0.204, 1)
+hair = 3
+prop = 0

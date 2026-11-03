@@ -101,22 +101,22 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ### 1.7 Puzzles (PUZ)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-PUZ-01 | Puzzle objects react to spell elements (brazier, water, fan, push block, pillar plate). | MVP (brazier, push block) / V1 | Fire lights a brazier; Frost freezes water into walkable ice. | ⬜ |
-| FR-PUZ-02 | Light/lantern puzzles: hidden runes and paths revealed by light. | MVP | A hidden path appears under Lantern Glow. | 🟨 Lantern Glow reveals hidden objects (a hidden tome at the arch; tested). Runes and paths come in Phase 6 |
+| FR-PUZ-01 | Puzzle objects react to spell elements (brazier, water, fan, push block, pillar plate). | MVP (brazier, push block) / V1 | Fire lights a brazier; Frost freezes water into walkable ice. | 🟨 MVP part done (Phase 6a, tested): lantern braziers lit by Light (owner decision 2026-11-03: no Fire in the slice) and a push block moved by Gust onto a pressure plate. Water, fans, pillars in V1 |
+| FR-PUZ-02 | Light/lantern puzzles: hidden runes and paths revealed by light. | MVP | A hidden path appears under Lantern Glow. | ✅ Phase 6a (Lantern Glow reveals hidden spirit steps up to a ledge; hidden tome since Phase 4; tested) |
 | FR-PUZ-03 | Rune-sequence puzzles. | V1 | Correct order opens the door; a wrong one resets. | ⬜ |
 | FR-PUZ-04 | Day/night-dependent puzzles. | V1 | A moon door opens only at night. | ⬜ |
 | FR-PUZ-05 | Dragon-assisted puzzles. | V1 | The dragon hits a switch the player can't reach. | ⬜ |
-| FR-PUZ-06 | Solved puzzles stay solved (persisted). | MVP | Reloading keeps the puzzle solved. | ⬜ |
-| FR-PUZ-07 | Lumen gives an optional hint after the player is stuck for a while. | V1 | Hint appears after N seconds without progress. | ⬜ |
+| FR-PUZ-06 | Solved puzzles stay solved (persisted). | MVP | Reloading keeps the puzzle solved. | 🟨 Solved puzzles, lit braziers, block positions and revealed steps are kept in GameState and come back solved (tested); surviving a reload needs the save system (6b) |
+| FR-PUZ-07 | Lumen gives an optional hint after the player is stuck for a while. | V1 | Hint appears after N seconds without progress. | ✅ Phase 6a, early (Lumen hints after time near a puzzle without progress; Lumen approved 2026-11-03) |
 
 ### 1.8 Quests, dialogue & story (QST)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
 | FR-QST-01 | Main quest following the acts in GDD §3.6. | MVP (prologue + Act 1 start) / V1 | Story beats trigger in order. | ⬜ |
-| FR-QST-02 | Side tasks with objectives: talk, collect, defeat, reach, solve, learn spell. | MVP (2 tasks) / V1 (~20) | Objectives update automatically. | ⬜ |
+| FR-QST-02 | Side tasks with objectives: talk, collect, defeat, reach, solve, learn spell. | MVP (2 tasks) / V1 (~20) | Objectives update automatically. | ✅ Phase 6a (QuestManager with talk/collect/defeat/reach/solve/learn/flag objectives; 2 side tasks: Herbs for Maren, Tamsin's Lost Satchel; tested) |
 | FR-QST-03 | Trials (spell shrines) that reward spells. | MVP (1) / V1 (~10) | Completing a trial gives its spell tome. | ⬜ |
-| FR-QST-04 | Branching dialogue with conditions based on game state. | MVP | NPC lines change after quest progress. | ⬜ |
-| FR-QST-05 | Journal: quests, bestiary, spells, materials, lore. | MVP (quests) / V1 (all) | Journal tabs show unlocked entries. | ⬜ |
+| FR-QST-04 | Branching dialogue with conditions based on game state. | MVP | NPC lines change after quest progress. | ✅ Phase 6a (villager lines change with quest progress and flags, tested) |
+| FR-QST-05 | Journal: quests, bestiary, spells, materials, lore. | MVP (quests) / V1 (all) | Journal tabs show unlocked entries. | 🟨 MVP part done: the Journal lists quests with steps (Phase 6a). Bestiary, spells, materials, lore in V1 |
 | FR-QST-06 | Bounties for named elite enemies. | V1 | Bounty board lists active bounties. | ⬜ |
 | FR-QST-07 | Aether Shards: 3 shards = +max stamina. | V1 | Collecting the 3rd shard raises max stamina. | ⬜ |
 | FR-QST-08 | Ending sequence (Ignis defeat → Sky Rift cliffhanger). | V1 | Credits roll after the ending. | ⬜ |
@@ -132,17 +132,17 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-WLD-06 | Day/night cycle (~20 real minutes per day) affecting lighting, enemies and NPCs. | MVP (lighting) / V1 | The screen tint changes over time. | ⬜ |
 | FR-WLD-07 | Weather: clear, rain, fog, storm, per region. | V1 (MVP: rain particles) | Stormspire is always stormy. | ⬜ |
 | FR-WLD-08 | Objects between the camera and Aurelia fade out (occlusion fade). | V1 | A wall in front of the camera becomes see-through while Aurelia is behind it. | ✅ Phase 2 (dithered occlusion fade, tested) |
-| FR-WLD-09 | Opened chests, gathered nodes, defeated bosses and solved puzzles persist. | MVP | State survives a region change and a reload. | ⬜ |
+| FR-WLD-09 | Opened chests, gathered nodes, defeated bosses and solved puzzles persist. | MVP | State survives a region change and a reload. | 🟨 Chests, puzzles, tomes, scrolls and placed items remember their state in GameState (Phases 4–6a); gather nodes and the reload come with the save system (6b) |
 
 ### 1.10 UI (UI)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-UI-01 | HUD: HP, stamina (Exhausted flash), 4 spell slots with radial cooldowns, rank badge, quest tracker. | MVP | All elements update live. | 🟨 HP, stamina with Exhausted warning, radial cooldowns (Phase 3), rank badge + progress, status chips (Phase 4); quest tracker in Phase 6 |
+| FR-UI-01 | HUD: HP, stamina (Exhausted flash), 4 spell slots with radial cooldowns, rank badge, quest tracker. | MVP | All elements update live. | ✅ HP, stamina with Exhausted warning, radial cooldowns (Phase 3), rank badge, status chips (Phase 4), quest tracker (Phase 6a) |
 | FR-UI-02 | HUD dragon panel: portrait, HP, current command. | V1 | Shows after hatching. | ⬜ |
-| FR-UI-03 | Menus: Inventory, Equipment, Grimoire, Crafting, Journal, Map, Settings. | MVP (Inventory, Grimoire, Crafting, Settings) / V1 | Each opens and closes with keyboard and gamepad. | 🟨 Tab/Start menu with Inventory and Grimoire pages (Q/R turns the page), Crafting at stations; all pause the game and close with Esc/B/Start (tested). Settings, Journal, Map later |
+| FR-UI-03 | Menus: Inventory, Equipment, Grimoire, Crafting, Journal, Map, Settings. | MVP (Inventory, Grimoire, Crafting, Settings) / V1 | Each opens and closes with keyboard and gamepad. | 🟨 Tab/Start menu: Inventory, Grimoire, Journal, Options (Q/R turns the page, J opens the Journal); Crafting at stations; all pause and close with Esc/B/Start (tested). Map later |
 | FR-UI-04 | Dragon menu (stats, bond, skills, name). | V1 | — | ⬜ |
 | FR-UI-05 | Title screen with New / Continue / Settings / Quit. | MVP | Continue loads the latest save. | ⬜ |
-| FR-UI-06 | Dialogue box with portraits and text speed option. | MVP | Text speed setting is applied. | ⬜ |
+| FR-UI-06 | Dialogue box with portraits and text speed option. | MVP | Text speed setting is applied. | ✅ Phase 6a (dialogue box with placeholder portraits; text speed applies at once) |
 
 ### 1.11 Save (SAV)
 | ID | Requirement | Priority | Acceptance check | Status |
@@ -155,17 +155,17 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ### 1.12 Dialogue & cutscenes (DLG) — details in [DIALOGUE_DESIGN.md](DIALOGUE_DESIGN.md)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-DLG-01 | Conversations are written in Dialogue Manager `.dialogue` files under `res://dialogue/`. | MVP | No dialogue text is hard-coded in scripts. | 🟨 Dialogue Manager 4.2.0 installed (Phase 1) |
-| FR-DLG-02 | Story/NPC dialogue box: name plate, two portrait positions, expression tags, typewriter text with per-character blips. | MVP | `[#happy]` switches the portrait expression. | ⬜ |
-| FR-DLG-03 | Player choices (keyboard, mouse, gamepad); choices change conversations and some side-quest outcomes, not the main story. | MVP | A choice leads to a different reply. | ⬜ |
-| FR-DLG-04 | Dialogue reads and changes game state only through the allowed objects (GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene, AudioManager). | MVP | Code review + FR-DLG-10 test. | ⬜ |
-| FR-DLG-05 | Barks: speech bubbles with triggers, cooldowns and priority, without pausing gameplay. | MVP (Lumen, enemies) / V1 | Lumen remarks near a secret; the same bark doesn't repeat within its cooldown. | ⬜ |
-| FR-DLG-06 | `Cutscene` API (letterbox, camera, spawn, move, face, anim, emote, wait, fade, shake, play); timed actions are awaited. | MVP | The prologue Ignis scene plays fully from a `.dialogue` file. | ⬜ |
+| FR-DLG-01 | Conversations are written in Dialogue Manager `.dialogue` files under `res://dialogue/`. | MVP | No dialogue text is hard-coded in scripts. | ✅ Phase 6a (villager and Lumen lines in `dialogue/*.dialogue`; system toasts are UI text, not dialogue) |
+| FR-DLG-02 | Story/NPC dialogue box: name plate, two portrait positions, expression tags, typewriter text with per-character blips. | MVP | `[#happy]` switches the portrait expression. | 🟨 Name plate, portraits on two sides, [#mood] expressions, typewriter text (Phase 6a, tested); per-character blips come with the audio work (6c) |
+| FR-DLG-03 | Player choices (keyboard, mouse, gamepad); choices change conversations and some side-quest outcomes, not the main story. | MVP | A choice leads to a different reply. | ✅ Phase 6a (choice buttons work with mouse, keyboard focus and gamepad; a choice changes the reply, tested) |
+| FR-DLG-04 | Dialogue reads and changes game state only through the allowed objects (GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene, AudioManager). | MVP | Code review + FR-DLG-10 test. | ✅ Phase 6a (test checks every do/if/set target is one of the allowed objects) |
+| FR-DLG-05 | Barks: speech bubbles with triggers, cooldowns and priority, without pausing gameplay. | MVP (Lumen, enemies) / V1 | Lumen remarks near a secret; the same bark doesn't repeat within its cooldown. | 🟨 Speech bubbles with cooldowns and priority for Lumen and villagers (Phase 6a, tested); enemy barks come with the boss work (Phase 8) |
+| FR-DLG-06 | `Cutscene` API (letterbox, camera, spawn, move, face, anim, emote, wait, fade, shake, play); timed actions are awaited. | MVP | The prologue Ignis scene plays fully from a `.dialogue` file. | 🟨 Cutscene basics: letterbox, fade out/in, wait, all awaitable from dialogue (Phase 6a, tested); camera, actors and the prologue scene in Phase 8 |
 | FR-DLG-07 | All cutscenes are skippable, and skipping still applies their game effects. | MVP | Skipping the egg cutscene still gives the egg. | ⬜ |
-| FR-DLG-08 | NPCs change lines with story flags (before/during/after) and give short repeat lines. | MVP | The Elder's lines change after the Warden is defeated. | ⬜ |
+| FR-DLG-08 | NPCs change lines with story flags (before/during/after) and give short repeat lines. | MVP | The Elder's lines change after the Warden is defeated. | 🟨 Villagers change lines with quest progress and give short repeat lines (Phase 6a, tested); the Elder's after-Warden lines come with the boss (Phase 8) |
 | FR-DLG-09 | Dragon naming text input at hatching. | MVP | The chosen name appears in later dialogue. | ⬜ |
-| FR-DLG-10 | Automated test: every `do`/`if` target referenced in `.dialogue` files exists. | MVP | Test fails if a referenced function is renamed. | ⬜ |
-| FR-DLG-11 | Text speed, auto-advance and instant-finish options. | MVP | Settings apply immediately. | ⬜ |
+| FR-DLG-10 | Automated test: every `do`/`if` target referenced in `.dialogue` files exists. | MVP | Test fails if a referenced function is renamed. | ✅ Phase 6a (tests/unit/test_dialogue_scripts.gd) |
+| FR-DLG-11 | Text speed, auto-advance and instant-finish options. | MVP | Settings apply immediately. | ✅ Phase 6a (Options page: Slow/Normal/Fast/Instant and auto-advance, saved; pressing during typing shows the whole line) |
 | FR-DLG-12 | Dialogue history log. (Pending approval.) | V1 | Last ~50 lines can be reviewed. | ⬜ |
 | FR-DLG-13 | Translation-ready text (static line IDs, `tr()` for UI); voiced key scenes. | V1 (translation-ready) / Stretch (voice) | Lines can be exported for translation. | ⬜ |
 

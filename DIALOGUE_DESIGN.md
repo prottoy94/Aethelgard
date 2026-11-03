@@ -212,6 +212,8 @@ How each character **sounds in writing**. Use this to keep lines consistent.
 | Character | Voice |
 |---|---|
 | **Village Elder** | Kind, worried, old-fashioned; believes in Aurelia a little more than he shows |
+| **Maren** (herbalist, draft) | Warm and practical; calls everyone "dear"; teases gently |
+| **Tamsin** (village child, draft) | An explorer at heart; dramatic, honest, easily distracted by dragonflies |
 | **Rank Examiner** 💡 | Bored, bureaucratic, dismissive ("Next."); later surprised by Aurelia's growth |
 | **Rival apprentice** 💡 | A high-ranked young mage who mocks Aurelia at the start; grows from rival to friend. Shows "lower than everyone" without a narrator saying it |
 | **Brinecoil** | Pained and confused while corrupted; grateful and deep-voiced when freed |
@@ -258,12 +260,12 @@ How each character **sounds in writing**. Use this to keep lines consistent.
 | `sylvaris_first_meeting` | Sylvaris speaks to Aurelia; Lumen awakens | Story | Aurelia, Sylvaris, Lumen |
 | `elder_quest_start` | The Elder asks Aurelia to find the Trial shrine | NPC | Elder |
 | `trial_gust_intro` / `_complete` | Trial shrine voice and reward | System | Shrine |
-| `quest_lost_satchel` | Side task: find a child's lost satchel | NPC | Villager child |
-| `quest_herbalist` | Side task: gather herbs → first recipe | NPC | Herbalist |
+| `quest_lost_satchel` | Side task: find a child's lost satchel | NPC | Villager child (Tamsin). *Draft written (Phase 6a): `npcs/elderroot_villagers.dialogue`, cues `tamsin`, `tamsin_return`* |
+| `quest_herbalist` | Side task: gather herbs → first recipe | NPC | Herbalist (Maren). *Draft written (Phase 6a): cues `maren`, `maren_hand_over`* |
 | `warden_intro` / `warden_defeat` | Boss intro and defeat | Cutscene | Cinder Warden, Aurelia |
 | `egg_gift` | Sylvaris gives the egg | Story | Sylvaris, Aurelia |
 | `dragon_hatch` | Egg hatches, naming the dragon | Cutscene | Aurelia, dragon, Lumen |
-| `barks_*` | Lumen hints, Emberbound shouts, villager remarks | Barks | Various |
+| `barks_*` | Lumen hints, Emberbound shouts, villager remarks | Barks | Various. *Draft written (Phase 6a): `barks/lumen.dialogue`, villager `*_bark` cues* |
 
 ---
 
@@ -314,7 +316,7 @@ How each character **sounds in writing**. Use this to keep lines consistent.
 | Milestone | Dialogue work |
 |---|---|
 | M0 Setup | Install Dialogue Manager, `dialogue/` folders, glossary file |
-| M5 World systems | Dialogue box + portraits + choices, barks, NPC interaction, flags, `Cutscene` API basics |
+| M5 World systems | Dialogue box + portraits + choices, barks, NPC interaction, flags, `Cutscene` API basics. ✅ Built in Phase 6a; also a first Elder conversation (`elder`, a stand-in until `elder_quest_start`) |
 | M6 Persistence | Flags saved/loaded; repeat-talk handling |
 | M7 Dragon | Hatching cutscene, dragon naming, emote bubbles |
 | M8 Boss | Boss intro/defeat cutscenes, prologue Ignis scenes, skip system |

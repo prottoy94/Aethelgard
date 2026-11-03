@@ -1,0 +1,28 @@
+# status: draft (Phase 6a, 2026-11-03), waiting for the owner's approval
+# Lumen's barks (DIALOGUE_DESIGN.md §7, §8): short, gentle, a little riddle-like. One random line per cue.
+# Cues used by code: lumen_secret_nearby, lumen_low_health (Lumen), and each puzzle's hint_cue.
+
+~ lumen_secret_nearby
+% Lumen: Something sleeps nearby. Light might wake it.
+% Lumen: Do you feel that? A secret, very close.
+% Lumen: Shadows hide things. Lanterns don't.
+=> END
+
+~ lumen_low_health
+Lumen: Careful, little light. A shrine's warmth would help.
+=> END
+
+~ lumen_hint_braziers
+% Lumen: Old lanterns, waiting for a spark. You have one.
+% Lumen: Light them both. The gate remembers.
+=> END
+
+~ lumen_hint_steps
+% Lumen: The steps are still there. They just need to be seen.
+% Lumen: What light reveals, feet can climb.
+=> END
+
+~ lumen_hint_block
+% Lumen: That stone wants to move. Ask the wind.
+% Lumen: A heavy stone. A hungry plate.
+=> END

@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="QuestData" format=3]
+
+[ext_resource type="Script" path="res://src/quests/quest_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/quests/quest_step.gd" id="2"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="3"]
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="4"]
+[ext_resource type="Resource" path="res://data/items/healing_potion.tres" id="5"]
+
+[sub_resource type="Resource" id="step_0"]
+script = ExtResource("2")
+description = "Find Tamsin's satchel in the old shrine ruins"
+objective = 1
+target = &"tamsin_satchel"
+amount = 1
+
+[sub_resource type="Resource" id="step_1"]
+script = ExtResource("2")
+description = "Bring the satchel back to Tamsin"
+objective = 0
+target = &""
+amount = 1
+
+; Side task (DIALOGUE_DESIGN.md §10). Status: draft, waiting for the owner's approval.
+[resource]
+script = ExtResource("1")
+id = &"lost_satchel"
+title = "Tamsin's Lost Satchel"
+kind = 1
+giver = "Tamsin"
+summary = "Tamsin chased a dragonfly into the old shrine ruins east of the pond and dropped her satchel on a high ledge. Then the gate shut, and the steps up to the ledge vanished."
+steps = Array[ExtResource("2")]([SubResource("step_0"), SubResource("step_1")])
+reward_items = Array[ExtResource("3")]([ExtResource("5"), ExtResource("5")])
+reward_recipes = Array[ExtResource("4")]([])

@@ -21,7 +21,17 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   (`data/spells/spell_library.tres`, rebuild with `tools/dev/build_spell_library.gd` after adding a spell), status effects in
   `StatusEffectComponent` + `data/combat/status_rules.tres`. World: `src/world/items/spell_tome.gd`, `src/world/rest_point/`,
   menu `src/ui/menus/grimoire.gd` (Tab). New enemy `src/actors/enemies/ember_wisp/` (ranged, uses `src/magic/projectile.gd`).
-- **Phase 5 (items & crafting) done** 2026-11-03. **112/112 tests pass.** **Next: Phase 6, world systems, story & sound (M5 + M6).**
+- **Phase 6 is built in 3 parts with an owner check-in after each** (6a world systems → 6b persistence & atmosphere → 6c audio).
+  **6a done** 2026-11-03, **138/138 tests pass. Next: 6b** (save/load JSON + title screen, day/night, rain, region transitions).
+  6a code: `src/ui/dialogue/` (DialogueBox, PortraitView, BarkSpeaker), `src/actors/npcs/` (Npc + placeholder look),
+  `src/actors/lumen/` (Lumen, approved by the owner), `src/quests/` + `QuestManager` autoload, `src/world/puzzles/`
+  (ElementalReceiver in `src/components/`, LanternBrazier, PushBlock, PressurePlate, HiddenSteps, PuzzleGate, Puzzle),
+  `src/world/props/chest.gd`, menus `journal_menu.gd`/`options_menu.gd`, `Cutscene` autoload basics, Settings now saves
+  `user://settings.cfg` (tests set `Settings.persist = false`). Data: `data/quests/`, `data/dialogue/`, `data/npcs/`.
+  Dialogue drafts: `dialogue/npcs/elderroot_villagers.dialogue`, `dialogue/barks/lumen.dialogue`, `dialogue/glossary.md`.
+  Elderroot braziers are lit by Light (owner decision). On a fresh clone run `--import` twice (preloads of `.dialogue` files
+  fail until the first import has run). Tests also reset `QuestManager.reset()`.
+- **Phase 5 (items & crafting) done** 2026-11-03.
   Items: `src/items/` (ItemData → ConsumableData / EquipmentData, GearBonus, RecipeData, LootTable, ItemLibrary, NewGameItems);
   the `Inventory` autoload holds the bag, 5 equipment slots, known recipes, crafting and `to_dict/from_dict`. PlayerData reads
   gear Magic Power and cooldown bonus from Inventory; the Player applies the other gear stats (`_apply_stats`). Data:
@@ -31,8 +41,8 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   `src/ui/menus/menu_screen.gd`; `GameMenu` (Tab) holds the Inventory and Grimoire pages; `CraftingMenu` opens at stations.
   Tests reset with `Inventory.reset()`, `PlayerData.reset([...])` and `GameState.reset()` in `before_each`.
   Main scene = `src/world/test/test_level_3d.tscn` (Elderroot test meadow: Player + CameraRig + PerfOverlay). Start options after `--`:
-  `--spawn=viewpoint|combat|wisp`, `--open=inventory|grimoire|crafting`, `--give=materials`, `--visual=animated`,
-  `--benchmark=<dir>`, `--graphics=low|medium|high`.
+  `--spawn=viewpoint|combat|wisp|ruins`, `--open=inventory|grimoire|journal|options|crafting`, `--talk=elder|maren|tamsin`,
+  `--give=materials`, `--visual=animated`, `--benchmark=<dir>`, `--graphics=low|medium|high`.
   Key code: `src/actors/player/` (Player, states, placeholder model, MovementStats), `src/game/camera/` (CameraRig, CameraSettings),
   `src/world/camera/scenic_viewpoint.gd`, `src/components/interactable_component.gd`, `src/core/` (StateMachine, Cooldown, ToonMaterials).
   Git repo exists (branch `main`, no remote). **The owner makes commits manually: never commit or push.**

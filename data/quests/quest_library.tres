@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="QuestLibrary" format=3]
+
+[ext_resource type="Script" path="res://src/quests/quest_library.gd" id="1"]
+[ext_resource type="Script" path="res://src/quests/quest_data.gd" id="2"]
+[ext_resource type="Resource" path="res://data/quests/herbs_for_maren.tres" id="3"]
+[ext_resource type="Resource" path="res://data/quests/lost_satchel.tres" id="4"]
+
+; Every quest, so saves and dialogue can refer to them by id. Add new quests here.
+[resource]
+script = ExtResource("1")
+quests = Array[ExtResource("2")]([ExtResource("3"), ExtResource("4")])

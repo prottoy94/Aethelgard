@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="QuestData" format=3]
+
+[ext_resource type="Script" path="res://src/quests/quest_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/quests/quest_step.gd" id="2"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="3"]
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="4"]
+[ext_resource type="Resource" path="res://data/items/healing_potion.tres" id="5"]
+[ext_resource type="Resource" path="res://data/items/moonbloom.tres" id="6"]
+[ext_resource type="Resource" path="res://data/recipes/stamina_tonic.tres" id="7"]
+
+[sub_resource type="Resource" id="step_0"]
+script = ExtResource("2")
+description = "Gather 3 Sunpetal"
+objective = 1
+target = &"sunpetal"
+amount = 3
+
+[sub_resource type="Resource" id="step_1"]
+script = ExtResource("2")
+description = "Bring the Sunpetal to Maren"
+objective = 0
+target = &""
+amount = 1
+
+; Side task (DIALOGUE_DESIGN.md §10). Status: draft, waiting for the owner's approval.
+[resource]
+script = ExtResource("1")
+id = &"herbs_for_maren"
+title = "Herbs for Maren"
+kind = 1
+giver = "Maren, the herbalist"
+summary = "Half the village is coughing and Maren's Sunpetal jar is empty. Sunpetal are the golden flowers that grow near the Lantern Shrine and along the path."
+steps = Array[ExtResource("2")]([SubResource("step_0"), SubResource("step_1")])
+reward_items = Array[ExtResource("3")]([ExtResource("5"), ExtResource("6"), ExtResource("6")])
+reward_recipes = Array[ExtResource("4")]([ExtResource("7")])

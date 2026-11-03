@@ -16,6 +16,8 @@ signal item_collected(item_id: StringName, amount: int)
 signal item_crafted(item_id: StringName)
 signal quest_started(quest_id: StringName)
 signal quest_completed(quest_id: StringName)
+signal place_reached(place_id: StringName)
+signal npc_talked(npc_id: StringName)
 
 # World & story
 signal region_changed(region_id: StringName)

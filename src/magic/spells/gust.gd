@@ -1,7 +1,7 @@
 class_name GustSpell
 extends Spell
 ## Gust: a cone of wind in front of Aurelia (GAME_DESIGN.md §6.4). Light damage, strong knockback and stagger.
-## Hits every enemy inside the cone once. Later it also pushes puzzle objects (on_element_hit, Phase 6).
+## Hits every enemy inside the cone once, and pushes puzzle objects in it (on_element_hit, e.g. push blocks).
 
 const HEIGHT := 1.0
 const LIFETIME := 0.6
@@ -25,6 +25,11 @@ func _on_cast(aim: Vector3) -> void:
 		if enemy.hurtbox.receive_hit(info):
 			hit_count += 1
 			landed.emit(enemy)
+	for receiver in ElementalReceiver.near(get_tree(), caster.global_position, data.radius):
+		var offset := receiver.global_position - caster.global_position
+		offset.y = 0.0
+		if offset.length() < 0.01 or rad_to_deg(direction.angle_to(offset)) <= data.angle_deg / 2.0:
+			receiver.on_element_hit(data.element, caster.global_position)
 	_build_visual()
 	get_tree().create_timer(LIFETIME).timeout.connect(queue_free)
 

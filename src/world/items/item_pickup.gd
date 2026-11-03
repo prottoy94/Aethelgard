@@ -1,7 +1,8 @@
 class_name ItemPickup
 extends Area3D
-## A dropped item on the ground (enemy loot). Walk over it to collect it (FR-ITM-01). If the bag can't take it all,
-## the rest stays. It fades away after LIFETIME seconds if nobody takes it.
+## An item on the ground: enemy loot, or a placed item such as a quest's lost satchel. Walk over it to collect it
+## (FR-ITM-01). If the bag can't take it all, the rest stays. Loot fades away after LIFETIME seconds; a placed item
+## (with a persist_id) never does, and GameState remembers that it was taken.
 
 const PLAYER_LAYER := 1 << 1  # layer 2
 const RADIUS := 0.9
@@ -13,6 +14,7 @@ const SPIN_SPEED := 1.5
 
 @export var item: ItemData
 @export var amount := 1
+@export var persist_id: StringName  ## set for placed items (not loot)
 
 var _visual: MeshInstance3D
 var _time := 0.0
@@ -20,6 +22,10 @@ var _can_take := true
 
 
 func _ready() -> void:
+	if persist_id != &"" and GameState.get_object_state(persist_id).get("taken", false):
+		set_process(false)
+		queue_free()
+		return
 	collision_layer = 0
 	collision_mask = PLAYER_LAYER
 	monitorable = false
@@ -46,7 +52,7 @@ func _process(delta: float) -> void:
 	_time += delta
 	_visual.position.y = HOVER + sin(_time * 3.0) * 0.06
 	_visual.rotation.y += SPIN_SPEED * delta
-	if _time > LIFETIME:
+	if _time > LIFETIME and persist_id == &"":
 		queue_free()
 
 
@@ -71,6 +77,8 @@ func collect() -> bool:
 		amount -= added
 	if amount > 0:
 		return false
+	if persist_id != &"":
+		GameState.set_object_state(persist_id, {"taken": true})
 	_can_take = false
 	set_deferred(&"monitoring", false)
 	var tween := create_tween()

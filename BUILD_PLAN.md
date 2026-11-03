@@ -223,7 +223,19 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 - Inventory, equipment (staff, cloak, 3 accessories), gathering herbs/ore, loot drops, workbench + recipes, potions.
 - **You'll play:** gather materials, craft an accessory, equip it and feel the difference.
 
-### Phase 6: World systems, story & sound (M5 + M6) · **L**
+### Phase 6: World systems, story & sound (M5 + M6) · **L** · 🟨 In progress (built in 3 parts with a check-in after each, owner decision 2026-11-03)
+> **6a, world systems: ✅ done 2026-11-03.** Three villagers to talk to: the **Elder** by the shrine, **Maren** the
+> herbalist and little **Tamsin** by the pond. Talking opens a parchment **dialogue box** with name plate,
+> placeholder **portraits** that change expression, typing text and **choices**. Two **side quests**: *Herbs for Maren*
+> (gather 3 Sunpetal → her Stamina Tonic recipe) and *Tamsin's Lost Satchel* in the new **old shrine ruins** east of
+> the pond. There, light both **lantern braziers** (Light Mote or Lantern Glow) to sink the gate; **Lantern Glow reveals
+> hidden steps** up to the satchel; optionally **Gust pushes a stone block** onto a plate to unlock a chest. Solved
+> puzzles stay solved. **Lumen** (approved) now follows Aurelia, glows near secrets and gives gentle hints in speech
+> bubbles when you're stuck; villagers make remarks as you pass. The Tab menu gained **Journal** (J) and **Options**
+> (text speed, auto-advance, graphics, saved) pages, and the HUD shows the tracked quest. Conversations are drafts in
+> `dialogue/` waiting for your approval. **138/138 tests pass.** 1080p RTX 3050 High: 202–235 FPS, ~0.8 GB RAM.
+> Try it: `-- --spawn=ruins`, `-- --talk=maren` (or elder, tamsin), `-- --open=journal`.
+> **Next: 6b** (save/load, title screen, day/night, rain, region change), then **6c** (audio and your music).
 - Conversations with portraits and choices (Dialogue Manager), NPCs, quests, journal, first puzzles (brazier, push block, hidden path), Lumen hints.
 - **Save/Load** (JSON), rest points, day/night cycle, rain, region transitions.
 - **Audio system** with your music: title song *Sunlight on Ancient Stone*, region music, adaptive explore↔combat music, placeholder sound effects.

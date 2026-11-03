@@ -1,7 +1,8 @@
 class_name Hud
 extends CanvasLayer
 ## In-game HUD (FR-UI-01): health and stamina bars (with the Exhausted warning), Arcane Rank badge with progress,
-## status effect icons with timers, the 4 spell slots, a banner when Aurelia ranks up, and a feed of picked-up items.
+## status effect icons with timers, the 4 spell slots, a banner when Aurelia ranks up or finishes a quest, a feed of
+## picked-up items, and the tracked quest's current step (top right).
 ## Call bind(player) once the player exists.
 
 const BAR_SIZE := Vector2(320, 20)
@@ -30,6 +31,7 @@ var _status_row: HBoxContainer
 var _banner: Label
 var _banner_time := 0.0
 var _feed: VBoxContainer
+var _tracker: Label
 var _time := 0.0
 
 
@@ -82,6 +84,19 @@ func _ready() -> void:
 	_feed.alignment = BoxContainer.ALIGNMENT_END
 	add_child(_feed)
 	EventBus.item_collected.connect(_on_item_collected)
+	_tracker = _text("", 19, Color.WHITE)
+	_tracker.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	_tracker.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_tracker.offset_right = -28.0
+	_tracker.offset_top = 22.0
+	_tracker.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	add_child(_tracker)
+	QuestManager.quest_started.connect(func(_quest: QuestData) -> void: _refresh_tracker())
+	QuestManager.quest_updated.connect(func(_quest: QuestData) -> void: _refresh_tracker())
+	QuestManager.quest_completed.connect(func(quest: QuestData) -> void:
+		show_banner("Quest complete:  %s" % quest.title)
+		_refresh_tracker())
+	_refresh_tracker()
 
 	var bottom := HBoxContainer.new()
 	bottom.add_theme_constant_override("separation", SLOT_GAP)
@@ -141,6 +156,13 @@ func _process(delta: float) -> void:
 	if _banner_time > 0.0:
 		_banner_time -= delta
 		_banner.modulate.a = clampf(_banner_time, 0.0, 1.0)
+
+
+## The tracked quest's title and current step, e.g. "Herbs for Maren / Gather 3 Sunpetal (1/3)".
+func _refresh_tracker() -> void:
+	var quest := QuestManager.LIBRARY.find(QuestManager.tracked)
+	_tracker.text = "%s
+%s" % [quest.title, QuestManager.step_text(quest.id)] if quest else ""
 
 
 func _on_item_collected(item_id: StringName, amount: int) -> void:

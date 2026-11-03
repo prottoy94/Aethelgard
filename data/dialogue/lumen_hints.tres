@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="LumenHints" format=3]
+
+[ext_resource type="Script" path="res://src/actors/lumen/lumen_hints.gd" id="1"]
+
+; When and how Lumen helps (GAME_DESIGN.md §10, FR-PUZ-07).
+[resource]
+script = ExtResource("1")
+follow_speed = 3.0
+orbit_radius = 0.9
+height = 1.9
+secret_radius = 7.0
+secret_cooldown = 45.0
+stuck_time = 25.0
+hint_cooldown = 40.0
+low_health_ratio = 0.3
+glow_near_secret = 2.2

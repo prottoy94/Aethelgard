@@ -4,8 +4,9 @@ extends Node3D
 ## Aurelia walks here with the hybrid camera. Solid objects are StaticBody3D roots with their meshes as children,
 ## so the camera can fade the whole object when it blocks the view.
 ## Start options (after `--`): --spawn=viewpoint puts Aurelia on the scenic platform, --spawn=combat next to a Thornling,
-## --spawn=wisp near an Ember Wisp; --open=inventory|grimoire|crafting opens a menu; --give=materials fills the bag
-## with 5 of every material (to try crafting); --visual=animated uses the animated
+## --spawn=wisp near an Ember Wisp, --spawn=ruins at the shrine ruins puzzles; --open=inventory|grimoire|journal|options|
+## crafting opens a menu; --talk=elder|maren|tamsin starts a conversation; --give=materials fills the bag with 5 of every
+## material (to try crafting); --visual=animated uses the animated
 ## stand-in model; --benchmark=<dir> (PerfOverlay). Press V in game to switch between the placeholder and the animated model.
 
 const GROUND := preload("res://assets/shaders/ground.gdshader")
@@ -30,6 +31,22 @@ const WORKBENCH_POSITION := Vector3(2.0, 0, 8.0)
 const GATHER_DIR := "res://data/items/gather/%s.tres"
 const RECIPE_DIR := "res://data/recipes/%s.tres"
 const RESERVED_RADIUS := 1.6  ## m trees and columns keep away from item spots
+const VILLAGERS_DIALOGUE := preload("res://dialogue/npcs/elderroot_villagers.dialogue")
+const SATCHEL := preload("res://data/items/tamsin_satchel.tres")
+const LUMEN_CRYSTAL := preload("res://data/items/lumen_crystal.tres")
+const HEALING_POTION := preload("res://data/items/healing_potion.tres")
+## Villagers (Phase 6a): [npc id, name, look, position]. Names are drafts (dialogue/glossary.md).
+const VILLAGERS: Array[Array] = [
+	[&"elder", "Elder", "res://data/npcs/elder.tres", Vector3(-6.2, 0, 2.2)],
+	[&"maren", "Maren", "res://data/npcs/maren.tres", Vector3(-8.5, 0, 8.6)],
+	[&"tamsin", "Tamsin", "res://data/npcs/tamsin.tres", Vector3(2.8, 0, -2.4)],
+]
+## The old shrine ruins east of the pond (puzzles for Tamsin's satchel): a walled courtyard split by a gated wall.
+const RUINS_MIN := Vector3(13, 0, 6)
+const RUINS_MAX := Vector3(25, 0, 16)
+const RUINS_WALL_HEIGHT := 1.7
+const RUINS_DIVIDER_X := 19.0
+const RUINS_DOOR_Z := 11.0
 
 const WORLD_LAYER := 1 << 0
 const OCCLUDER_LAYER := 1 << 10  # camera_occluder
@@ -40,7 +57,7 @@ const SPAWN := Vector3(0, 0, 4)
 const PLATFORM_CENTER := Vector3(-11, 0, -13)
 const PLATFORM_SIZE := Vector3(6, 1.2, 6)
 const WORLD_TREE := Vector3(-6, 0, -75)
-const SIGN_TEXT := "Elderroot Meadow, test area.\nWASD move · Space dash · Q/R rotate camera · Wheel zoom · Z reset\n" + \
+const SIGN_TEXT := "Elderroot Meadow, test area. Talk to the villagers (E); J opens the journal.\nWASD move · Space dash · Q/R rotate camera · Wheel zoom · Z reset\n" + \
 		"Left click staff strike · 1 Light Mote · 2 Lantern Glow · Tab menu (Q/R: Inventory, Grimoire) · E interact\n" + \
 		"Find spell tomes and read them at the shrine. Gather flowers, ore, wood and crystals; enemies drop materials.\n" + \
 		"Craft potions at the kit by the shrine and accessories at the workbench. Recipes are hidden around the meadow.\n" + \
@@ -53,8 +70,8 @@ var _sun: DirectionalLight3D
 var _grass: MultiMesh
 var _flowers: MultiMesh
 var _waterfall_material: StandardMaterial3D
-var _lumen: Node3D
-var _lumen_wings: Array[Node3D] = []
+var lumen: Lumen
+var _dialogue: DialogueBox
 var _time := 0.0
 var _toast: Label
 var _toast_timer := 0.0
@@ -89,15 +106,18 @@ func _ready() -> void:
 	_build_distant()
 	_build_sign()
 	_build_shrine()
-	_build_lumen()
 	_build_toast()
 	_spawn_player()
+	lumen = Lumen.new()
+	add_child(lumen)
 	var hud := Hud.new()
 	add_child(hud)
 	hud.bind(player)
 	_build_menus()
 	_build_tomes()
 	_build_items()
+	_build_ruins_puzzles()
+	_build_villagers()
 	PlayerData.tome_found.connect(func(spell: SpellData) -> void:
 		show_toast("Found the %s tome! Rest at a Lantern Shrine to read it." % spell.display_name, 5.0))
 	Inventory.recipe_learned.connect(func(recipe: RecipeData) -> void:
@@ -116,7 +136,6 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_time += delta
 	_waterfall_material.uv1_offset.y = -_time * 0.6
-	_animate_lumen()
 	if _toast_timer > 0.0:
 		_toast_timer -= delta
 		_toast.modulate.a = clampf(_toast_timer, 0.0, 1.0)
@@ -167,6 +186,8 @@ func _spawn_player() -> void:
 			player.position = PLATFORM_CENTER + Vector3(0, PLATFORM_SIZE.y, 0)
 		elif arg == "--spawn=combat":
 			player.position = THORNLING_SPOTS[0] + Vector3(0, 0, 3.5)  # next to a Thornling
+		elif arg == "--spawn=ruins":
+			player.position = Vector3(RUINS_MIN.x - 2.5, 0, RUINS_DOOR_Z)  # at the courtyard entrance
 		elif arg == "--spawn=wisp":
 			player.position = WISP_SPOTS[0] + Vector3(2, 0, 6.5)  # in an Ember Wisp's range
 	add_child(player)
@@ -299,7 +320,7 @@ func _build_trees() -> void:
 	while placed < 70:
 		var p := Vector3(_rng.randf_range(-60, 60), 0, _rng.randf_range(-65, 35))
 		if p.distance_to(SPAWN) < 8.0 or _on_path(p, 3.5) or p.distance_to(POND_CENTER) < 6.5 or _on_platform(p, 3.0) \
-				or _is_reserved(p):
+				or _is_reserved(p) or _in_ruins(p, 3.0):
 			continue
 		var tree := _solid_root(p)
 		_add_shape(tree, _cylinder_shape(0.35, 3.2), Vector3(0, 1.6, 0))
@@ -591,11 +612,12 @@ func _plan_item_spots() -> void:
 		["lumen_crystal_cluster", beside_path.call(-8.0, 1.0)],
 	]
 	_scroll_plan = [
-		["stamina_tonic", pond_rim.call(-80.0)],
 		["ember_ward_ring", Vector3(17.5, 0, -10.5)],
 		["swift_quill_charm", Vector3(13.5, 0, -22.5)],
 	]
 	_reserved = [WORKBENCH_POSITION]
+	for villager: Array in VILLAGERS:
+		_reserved.append(villager[3])
 	for plan: Array in _gather_plan + _scroll_plan:
 		_reserved.append(plan[1])
 
@@ -613,8 +635,12 @@ func _build_menus() -> void:
 	_game_menu.add_page(inventory_menu)
 	inventory_menu.bind(player)
 	_game_menu.add_page(Grimoire.new())
+	_game_menu.add_page(JournalMenu.new())
+	_game_menu.add_page(OptionsMenu.new())
 	_crafting = CraftingMenu.new()
 	add_child(_crafting)
+	_dialogue = DialogueBox.new()
+	add_child(_dialogue)
 
 
 func _build_items() -> void:
@@ -639,6 +665,109 @@ func _build_items() -> void:
 		station.used.connect(func(_by: Player, at: RecipeData.Station) -> void: _crafting.open_station(at))
 
 
+## Elderroot villagers: talk to them (E). Conversations come from dialogue/npcs/elderroot_villagers.dialogue.
+func _build_villagers() -> void:
+	for villager: Array in VILLAGERS:
+		var npc := Npc.new()
+		npc.npc_id = villager[0]
+		npc.display_name = villager[1]
+		npc.look = load(villager[2])
+		npc.dialogue = VILLAGERS_DIALOGUE
+		npc.cue = String(villager[0])
+		npc.bark_cue = "%s_bark" % villager[0]
+		npc.position = villager[3]
+		add_child(npc)
+		npc.look_at_from_position(npc.position, SPAWN, Vector3.UP)  # facing the start
+		npc.rotation.x = 0.0
+		npc.talk_requested.connect(func(who: Npc) -> void: _dialogue.start(who.dialogue, who.cue, [who]))
+
+
+func _in_ruins(p: Vector3, margin: float) -> bool:
+	return p.x > RUINS_MIN.x - margin and p.x < RUINS_MAX.x + margin and p.z > RUINS_MIN.z - margin \
+			and p.z < RUINS_MAX.z + margin
+
+
+## The old shrine ruins (Phase 6a puzzles, FR-PUZ-01/02/06/07). Teach, then test:
+## 1. Two lantern braziers by the inner gate: light both (Light Mote or Lantern Glow) and the gate sinks.
+## 2. Behind it, a ledge too high to climb: Lantern Glow reveals spirit steps up to Tamsin's satchel.
+## 3. Optional: Gust pushes a stone block onto a plate, unlocking a chest.
+func _build_ruins_puzzles() -> void:
+	var stone := ToonMaterials.shader_material(STONE, {"noise_tex": _noise})
+	var h := RUINS_WALL_HEIGHT
+	var size := RUINS_MAX - RUINS_MIN
+	var center := (RUINS_MIN + RUINS_MAX) * 0.5
+	_solid_box(Vector3(size.x, h, 0.6), stone, Vector3(center.x, h * 0.5, RUINS_MIN.z))  # north wall
+	_solid_box(Vector3(size.x, h, 0.6), stone, Vector3(center.x, h * 0.5, RUINS_MAX.z))  # south wall
+	_solid_box(Vector3(0.6, h, size.z), stone, Vector3(RUINS_MAX.x, h * 0.5, center.z))  # east wall
+	_wall_with_door(RUINS_MIN.x, h, 2.4, stone)  # west wall: open entrance
+	var gate_gap := 2.4
+	_wall_with_door(RUINS_DIVIDER_X, h + 0.5, gate_gap, stone)  # inner wall: the gate fills the gap
+	var gate := PuzzleGate.new()
+	gate.width = gate_gap
+	gate.height = h + 0.5
+	gate.position = Vector3(RUINS_DIVIDER_X, 0, RUINS_DOOR_Z)
+	gate.rotation.y = PI * 0.5
+	add_child(gate)
+	var braziers: Array[Node] = []
+	for dz: float in [-2.2, 2.2]:
+		var brazier := LanternBrazier.new()
+		brazier.persist_id = StringName("ruins_brazier_%d" % braziers.size())
+		brazier.position = Vector3(RUINS_DIVIDER_X - 1.3, 0, RUINS_DOOR_Z + dz)
+		add_child(brazier)
+		braziers.append(brazier)
+	_puzzle(&"ruins_gate", "lumen_hint_braziers", Vector3(RUINS_DIVIDER_X - 2.0, 0, RUINS_DOOR_Z), braziers, [gate])
+	# The ledge with Tamsin's satchel, and the hidden steps up to it (built along -Z).
+	var ledge_height := 1.4
+	var ledge_size := Vector3(3.0, ledge_height, 3.5)
+	var ledge_pos := Vector3(RUINS_MAX.x - ledge_size.x * 0.5 - 0.3, ledge_height * 0.5, RUINS_MIN.z + ledge_size.z * 0.5 + 0.3)
+	_solid_box(ledge_size, stone, ledge_pos)
+	var steps := HiddenSteps.new()
+	steps.persist_id = &"ruins_spirit_steps"
+	steps.height = ledge_height
+	steps.position = Vector3(ledge_pos.x, 0, ledge_pos.z + ledge_size.z * 0.5 + steps.steps * steps.step_depth)
+	add_child(steps)
+	_puzzle(&"ruins_ledge", "lumen_hint_steps", steps.position, [steps], [])
+	var satchel := ItemPickup.new()
+	satchel.item = SATCHEL
+	satchel.persist_id = &"ruins_tamsin_satchel"
+	satchel.position = ledge_pos + Vector3(0.3, ledge_height * 0.5, -0.6)
+	add_child(satchel)
+	# Optional: push the block onto the plate to unlock the chest.
+	var block := PushBlock.new()
+	block.persist_id = &"ruins_push_block"
+	block.position = Vector3(RUINS_DIVIDER_X + 1.6, 0, RUINS_DOOR_Z + 1.6)
+	add_child(block)
+	var plate := PressurePlate.new()
+	plate.position = block.position + Vector3(0, 0, block.cell)
+	add_child(plate)
+	var chest := Chest.new()
+	chest.persist_id = &"ruins_chest"
+	chest.locked = true
+	chest.contents = [LUMEN_CRYSTAL, LUMEN_CRYSTAL, HEALING_POTION] as Array[ItemData]
+	chest.position = Vector3(RUINS_MAX.x - 1.4, 0, RUINS_MAX.z - 1.2)
+	chest.rotation.y = -PI * 0.5  # opening towards the courtyard
+	add_child(chest)
+	_puzzle(&"ruins_block", "lumen_hint_block", block.position, [plate], [chest])
+
+
+## A wall along Z at `x` across the ruins, with a doorway of `gap` metres centred on RUINS_DOOR_Z.
+func _wall_with_door(x: float, h: float, gap: float, material: Material) -> void:
+	var north_len := RUINS_DOOR_Z - gap * 0.5 - RUINS_MIN.z
+	var south_len := RUINS_MAX.z - (RUINS_DOOR_Z + gap * 0.5)
+	_solid_box(Vector3(0.6, h, north_len), material, Vector3(x, h * 0.5, RUINS_MIN.z + north_len * 0.5))
+	_solid_box(Vector3(0.6, h, south_len), material, Vector3(x, h * 0.5, RUINS_MAX.z - south_len * 0.5))
+
+
+func _puzzle(id: StringName, hint: String, pos: Vector3, parts: Array[Node], targets: Array[Node]) -> Puzzle:
+	var puzzle := Puzzle.new()
+	puzzle.puzzle_id = id
+	puzzle.hint_cue = hint
+	puzzle.position = pos
+	add_child(puzzle)
+	puzzle.setup(parts, targets)
+	return puzzle
+
+
 func _apply_start_options() -> void:
 	var args := OS.get_cmdline_user_args()
 	if "--give=materials" in args:
@@ -646,44 +775,21 @@ func _apply_start_options() -> void:
 			if item.category == ItemData.Category.MATERIAL:
 				Inventory.add(item, 5)
 	if "--open=inventory" in args:
-		_game_menu.open.call_deferred(0)
+		_game_menu.open_page.call_deferred(InventoryMenu)
 	elif "--open=grimoire" in args:
-		_game_menu.open.call_deferred(1)
+		_game_menu.open_page.call_deferred(Grimoire)
+	elif "--open=journal" in args:
+		_game_menu.open_page.call_deferred(JournalMenu)
+	elif "--open=options" in args:
+		_game_menu.open_page.call_deferred(OptionsMenu)
 	elif "--open=crafting" in args:
 		_crafting.open_station.call_deferred(RecipeData.Station.WORKBENCH)
-
-
-## Lumen, the blue spirit butterfly (pose_3 art), flutters around the spawn.
-func _build_lumen() -> void:
-	_lumen = Node3D.new()
-	add_child(_lumen)
-	var wing_mat := ToonMaterials.glow(Color(0.45, 0.75, 1.0), 4.0)
-	wing_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	for side: float in [-1.0, 1.0]:
-		var hinge := Node3D.new()
-		_lumen.add_child(hinge)
-		var wing := QuadMesh.new()
-		wing.size = Vector2(0.16, 0.12)
-		var mi := _mesh(hinge, wing, wing_mat, Vector3(side * 0.08, 0, 0))
-		mi.rotation_degrees.x = -90.0
-		_lumen_wings.append(hinge)
-	var light := OmniLight3D.new()
-	light.light_color = Color(0.5, 0.75, 1.0)
-	light.light_energy = 0.6
-	light.omni_range = 2.0
-	_lumen.add_child(light)
-
-
-func _animate_lumen() -> void:
-	var center := SPAWN + Vector3(0.5, 0, -1.0)
-	var pos := center + Vector3(sin(_time * 0.7) * 2.2, 1.7 + sin(_time * 1.3) * 0.3, cos(_time * 0.5) * 1.6)
-	var ahead := center + Vector3(sin((_time + 0.1) * 0.7) * 2.2, 1.7, cos((_time + 0.1) * 0.5) * 1.6)
-	_lumen.position = pos
-	if not pos.is_equal_approx(ahead):
-		_lumen.look_at(ahead, Vector3.UP)
-	var flap := sin(_time * 18.0) * 55.0
-	_lumen_wings[0].rotation_degrees.z = flap
-	_lumen_wings[1].rotation_degrees.z = -flap
+	for arg in args:
+		if arg.begins_with("--talk="):
+			for npc: Npc in get_tree().get_nodes_in_group(&"npc"):
+				if String(npc.npc_id) == arg.trim_prefix("--talk="):
+					player.global_position = npc.global_position + Vector3(0, 0, 1.6)
+					get_tree().create_timer(1.0).timeout.connect(npc.talk.bind(player))  # once the camera is there
 
 
 func _build_toast() -> void:

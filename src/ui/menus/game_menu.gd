@@ -1,7 +1,8 @@
 class_name GameMenu
 extends Node
-## The Tab / Start menu (FR-UI-03): a book whose pages are menu screens (Inventory, Grimoire). It opens on the
-## last page used; Q/R (D-pad left/right) or the tabs turn the page. Crafting is opened by stations instead.
+## The Tab / Start menu (FR-UI-03): a book whose pages are menu screens (Inventory, Grimoire, Journal, Options).
+## It opens on the last page used; Q/R (D-pad left/right) or the tabs turn the page; J opens the Journal.
+## Crafting is opened by stations instead.
 
 var pages: Array[MenuScreen] = []
 var current := 0
@@ -40,8 +41,19 @@ func page_of(type: Script) -> MenuScreen:
 	return null
 
 
+func open_page(type: Script) -> void:
+	var page := page_of(type)
+	if page:
+		open(pages.find(page))
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	# Open pages receive input first and close themselves; this only opens the menu during play.
-	if event.is_action_pressed("menu") and not get_tree().paused and not pages.is_empty():
+	if get_tree().paused or pages.is_empty():
+		return
+	if event.is_action_pressed("menu"):
 		open()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("journal") and page_of(JournalMenu):
+		open_page(JournalMenu)
 		get_viewport().set_input_as_handled()

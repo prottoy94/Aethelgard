@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=18
+type="Resource"
+uid="uid://b851d4wuas4gi"
+path="res://.godot/imported/elderroot_villagers.dialogue-fde869ead36565ef7830ca7bcd497c9b.tres"
+
+[deps]
+
+source_file="res://dialogue/npcs/elderroot_villagers.dialogue"
+dest_files=["res://.godot/imported/elderroot_villagers.dialogue-fde869ead36565ef7830ca7bcd497c9b.tres"]
+
+[params]
+
+defaults=true

@@ -1,0 +1,115 @@
+# status: draft (Phase 6a, 2026-11-03), waiting for the owner's approval
+# Elderroot villagers: the Elder, Maren the herbalist and young Tamsin (DIALOGUE_DESIGN.md §10).
+# Voices: DIALOGUE_DESIGN.md §7. Names and terms: dialogue/glossary.md.
+# Only GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene and AudioManager may be called.
+
+~ elder
+if GameState.has_flag("met_elder")
+	=> elder_repeat
+do GameState.set_flag("met_elder")
+Elder: [#worried] Aurelia. Up with the sun again, nose in that spellbook?
+Aurelia: [#embarrassed] Chapter twelve! Lantern charms. I only set my sleeve on fire twice.
+Elder: Hm. Practice is good. But the village needs hands as much as spells today.
+- Who needs help?
+	Elder: Maren is out of Sunpetal for her remedies. She's by the flowers near the shrine.
+	Elder: [#worried] And little Tamsin lost something. She keeps staring at the ruins east of the pond.
+- But I'm only a Spark...
+	Elder: [#proud] Every lantern in Elderroot was lit from one small spark.
+	Elder: Go and see Maren by the shrine, or Tamsin by the pond. Helping is practice too.
+Aurelia: [#determined] Right. I'll do my best!
+=> END
+
+~ elder_repeat
+if QuestManager.is_done("herbs_for_maren") and QuestManager.is_done("lost_satchel")
+	Elder: [#proud] Maren's remedies, Tamsin's smile... The whole village is talking about you.
+	Aurelia: [#embarrassed] It was mostly running around. And a few braziers.
+elif PlayerData.rank >= 1
+	Elder: [#proud] Your lantern burns brighter than it did. Don't let it go to your head.
+else
+	Elder: Maren is by the flowers near the shrine. Tamsin is by the pond.
+=> END
+
+~ elder_bark
+% Elder: Lovely morning. Too lovely, perhaps.
+% Elder: Read less, sleep more, Aurelia.
+=> END
+
+~ maren
+if QuestManager.is_done("herbs_for_maren")
+	Maren: [#happy] The Sunpetal tea is working wonders. Brew yourself a tonic, dear.
+	=> END
+if QuestManager.is_on_step("herbs_for_maren", 1)
+	=> maren_hand_over
+if QuestManager.is_active("herbs_for_maren")
+	Maren: Three Sunpetal, dear. The golden ones, near the shrine and along the path.
+	=> END
+Maren: [#worried] Oh, Aurelia! Half the village is coughing, and my Sunpetal jar is empty.
+Maren: Could you pick me three? Golden flowers. Gently, they bruise.
+- Of course! Three Sunpetal, coming up.
+	Maren: [#happy] Bless you. Bring them here when you have them.
+- Can a Spark even pick flowers properly?
+	Maren: [#happy] Ha! Flowers don't care about rank, dear. Neither do I.
+do QuestManager.start("herbs_for_maren")
+if QuestManager.is_on_step("herbs_for_maren", 1)
+	Aurelia: [#happy] Oh! I already have some.
+	=> maren_hand_over
+=> END
+
+~ maren_hand_over
+Maren: [#happy] Is that Sunpetal I smell?
+- Here you go. Three of them.
+	if Inventory.has("sunpetal", 3)
+		do Inventory.remove("sunpetal", 3)
+		do QuestManager.advance("herbs_for_maren")
+		Maren: [#happy] Perfect! Take my Stamina Tonic recipe, and a potion for the road.
+		Maren: Moonbloom grows by the pond. Brew at the kit beside any Lantern Shrine.
+	else
+		Maren: [#worried] I only count a few here. Three, dear. Three!
+- Can I keep them a little longer?
+	Maren: Of course. Just don't brew them into potions, or I'll cough at you.
+=> END
+
+~ maren_bark
+% Maren: Sunpetal for coughs, Moonbloom for tired feet...
+% Maren: Mind the flowers, dear!
+=> END
+
+~ tamsin
+if QuestManager.is_done("lost_satchel")
+	Tamsin: [#happy] I wear my satchel on BOTH shoulders now. Like a real explorer!
+	=> END
+if QuestManager.is_on_step("lost_satchel", 1)
+	=> tamsin_return
+if QuestManager.is_active("lost_satchel")
+	Tamsin: [#sad] It's in the old ruins, east of the pond. Past the gate with the big lanterns.
+	=> END
+Tamsin: [#sad] Aurelia... I lost my satchel. My pressed-flower book is inside.
+Tamsin: I chased a dragonfly into the old ruins and dropped it up on the high ledge.
+Tamsin: Then the gate shut behind me, and the steps... they just weren't there anymore!
+- Steps that disappear? That sounds like old magic.
+	Tamsin: [#happy] You know magic! You can find it, right?
+- Don't worry. I'll bring it back.
+	Tamsin: [#happy] Really? Thank you!
+Aurelia: [#thinking] Old lanterns, a shut gate, vanishing steps... Maybe they just need some light.
+do QuestManager.start("lost_satchel")
+if QuestManager.is_on_step("lost_satchel", 1)
+	=> tamsin_return
+=> END
+
+~ tamsin_return
+Aurelia: [#happy] Is this the satchel you lost?
+do Inventory.remove("tamsin_satchel", 1)
+do QuestManager.advance("lost_satchel")
+Tamsin: [#happy] My satchel! And my flower book isn't even squashed!
+Tamsin: Mum says these are for emergencies. You're always having emergencies.
+Aurelia: [#embarrassed] That's... fair.
+=> END
+
+~ tamsin_bark
+if QuestManager.is_done("lost_satchel")
+	% Tamsin: [#happy] Look, a dragonfly! ...I'm not chasing it. Not today.
+	% Tamsin: [#happy] Thank you, Aurelia!
+else
+	% Tamsin: [#sad] My satchel...
+	% Tamsin: Have you seen a dragonfly this big?
+=> END

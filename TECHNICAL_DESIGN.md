@@ -243,6 +243,21 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 ### 4.10 Quests & dialogue
 - `QuestData` holds steps; each step has objectives of type `talk | collect | defeat | reach | solve | learn_spell | custom`.
 - `QuestManager` subscribes to `EventBus` signals and advances matching objectives.
+- **Built in Phase 6a:** `QuestStep` (one objective per step: TALK, COLLECT, DEFEAT, REACH, SOLVE, LEARN_SPELL, FLAG;
+  "custom" became FLAG), `QuestData` (steps + reward items/recipes), `QuestLibrary` (`data/quests/quest_library.tres`).
+  COLLECT checks what is in the bag; TALK steps are advanced by the conversation (`do QuestManager.advance(...)`).
+  `QuestManager.tracked` feeds the HUD tracker; `JournalMenu` lists quests. Saved with `to_dict/from_dict`.
+- **Conversations:** `DialogueBox` (`src/ui/dialogue/`) drives Dialogue Manager lines itself (no example balloon):
+  `DialogueLabel` typewriter, `PortraitView` placeholders from `data/dialogue/portraits.tres`, choice buttons,
+  text speed/auto-advance from `Settings` (`data/dialogue/dialogue_tuning.tres`). `Npc` emits `talk_requested`; the level
+  connects it to the box. `BarkSpeaker` shows speech bubbles (random `%` lines, cooldown, priority).
+- **Lumen** (`src/actors/lumen/`) follows the player, glows near `revealable` nodes and barks hints from
+  `dialogue/barks/lumen.dialogue`; tuning in `data/dialogue/lumen_hints.tres` (a `hints` property per instance).
+- **Puzzles** (`src/world/puzzles/`): spells call `on_element_hit(element, from)` on `ElementalReceiver` components
+  (group `elemental`, found by distance, no extra physics layer). Parts (`LanternBrazier`, `PressurePlate`,
+  `HiddenSteps`) have `is_on()` + `state_changed`; a `Puzzle` node checks them, calls `activate(instant)` on its targets
+  (`PuzzleGate`, `Chest`), emits `EventBus.puzzle_solved` and keeps its state in GameState. `PushBlock` slides one grid
+  cell away from the caster. `Cutscene` autoload has letterbox/fade/wait so far.
 - Full dialogue and cutscene plan (file layout, allowed calls, `Cutscene` API, portraits, barks): [DIALOGUE_DESIGN.md](DIALOGUE_DESIGN.md).
 - Dialogue Manager `.dialogue` files reference `GameState`/`QuestManager` for conditions (`if GameState.has_flag("met_sylvaris")`) and actions (`do QuestManager.start("dragon_egg")`).
 

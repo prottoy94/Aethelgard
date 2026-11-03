@@ -1,7 +1,7 @@
 class_name LightMoteSpell
 extends Spell
 ## Light Mote: Aurelia's first spell (GAME_DESIGN.md §6.4). A weak glowing bolt that gently homes in on the
-## nearest enemy in front of it, and bursts on impact.
+## nearest enemy in front of it, and bursts on impact. It lights puzzle objects it touches (on_element_hit).
 
 const HEIGHT := 1.1              ## m above the caster's feet
 const SPAWN_AHEAD := 0.6         ## m in front of the caster
@@ -14,6 +14,7 @@ var _direction := Vector3.FORWARD
 var _travelled := 0.0
 var _hitbox: HitboxComponent
 var _done := false
+var _touched: Array[ElementalReceiver] = []
 
 
 func _on_cast(aim: Vector3) -> void:
@@ -54,8 +55,21 @@ func _physics_process(delta: float) -> void:
 	var step := data.speed * delta
 	global_position += _direction * step
 	_travelled += step
-	if _travelled >= data.spell_range:
+	if _touch_elements():
 		_burst()
+	elif _travelled >= data.spell_range:
+		_burst()
+
+
+## Tells puzzle objects in reach that light touched them. Returns true if any was new.
+func _touch_elements() -> bool:
+	var touched_new := false
+	for receiver in ElementalReceiver.near(get_tree(), global_position, data.radius):
+		if not receiver in _touched:
+			_touched.append(receiver)
+			receiver.on_element_hit(data.element, caster.global_position if is_instance_valid(caster) else Vector3.INF)
+			touched_new = true
+	return touched_new
 
 
 func _find_target() -> Node3D:
@@ -78,6 +92,7 @@ func _burst() -> void:
 	if _done:
 		return
 	_done = true
+	_touch_elements()  # e.g. it hit a brazier's solid body before reaching its centre
 	_hitbox.deactivate()
 	for child in get_children():
 		if child != _hitbox:

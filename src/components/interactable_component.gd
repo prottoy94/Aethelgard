@@ -12,6 +12,7 @@ const INTERACTABLE_LAYER := 1 << 6  # layer 7
 @export var prompt_height := 1.7
 
 var _label: Label3D
+var _shown := false
 
 
 func _ready() -> void:
@@ -31,7 +32,14 @@ func _ready() -> void:
 
 
 func show_prompt(visible_now: bool) -> void:
-	_label.visible = visible_now
+	_shown = visible_now
+	_label.visible = visible_now and not get_tree().paused
+
+
+## Prompts hide while the game is paused (conversations, menus).
+func _notification(what: int) -> void:
+	if _label and (what == NOTIFICATION_PAUSED or what == NOTIFICATION_UNPAUSED):
+		_label.visible = _shown and what == NOTIFICATION_UNPAUSED
 
 
 func interact(by: Node) -> void:

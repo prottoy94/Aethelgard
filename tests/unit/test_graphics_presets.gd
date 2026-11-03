@@ -2,6 +2,14 @@ extends GutTest
 ## Graphics presets: Low → High must get strictly more expensive, and applying them sets the right values.
 
 
+func before_all() -> void:
+	Settings.persist = false  # don't overwrite the player's user://settings.cfg
+
+
+func after_all() -> void:
+	Settings.persist = true
+
+
 func _presets() -> Array[GraphicsPreset]:
 	return Settings.get_graphics_presets()
 

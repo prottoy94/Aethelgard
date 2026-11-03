@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1"]
+
+; Key item for the side task "Tamsin's Lost Satchel" (DIALOGUE_DESIGN.md §10).
+[resource]
+script = ExtResource("1")
+id = &"tamsin_satchel"
+display_name = "Tamsin's Satchel"
+description = "A small leather satchel with a pressed-flower book inside. It belongs to Tamsin."
+category = 3
+color = Color(0.627, 0.408, 0.235, 1)
+max_stack = 1

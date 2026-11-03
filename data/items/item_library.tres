@@ -14,6 +14,7 @@
 [ext_resource type="Resource" path="res://data/items/stamina_tonic.tres" id="12_g7duf"]
 [ext_resource type="Resource" path="res://data/items/sunpetal.tres" id="13_0veud"]
 [ext_resource type="Resource" path="res://data/items/swift_quill_charm.tres" id="14_d0onr"]
+[ext_resource type="Resource" path="res://data/items/tamsin_satchel.tres" id="15_p5kop"]
 [ext_resource type="Resource" path="res://data/items/thorn_fibre.tres" id="15_y1idx"]
 [ext_resource type="Script" path="res://src/items/recipe_data.gd" id="16_jbq0g"]
 [ext_resource type="Resource" path="res://data/recipes/healing_potion.tres" id="17_p5da3"]
@@ -25,5 +26,5 @@
 
 [resource]
 script = ExtResource("22_13rcy")
-items = Array[ExtResource("1_aphmk")]([ExtResource("2_p5kop"), ExtResource("3_h2gbl"), ExtResource("4_3eis8"), ExtResource("5_q0eum"), ExtResource("6_6rwhr"), ExtResource("7_i0xg1"), ExtResource("8_yxxwj"), ExtResource("9_auh2v"), ExtResource("10_1vp2d"), ExtResource("11_qvabq"), ExtResource("12_g7duf"), ExtResource("13_0veud"), ExtResource("14_d0onr"), ExtResource("15_y1idx")])
+items = Array[ExtResource("1_aphmk")]([ExtResource("2_p5kop"), ExtResource("3_h2gbl"), ExtResource("4_3eis8"), ExtResource("5_q0eum"), ExtResource("6_6rwhr"), ExtResource("7_i0xg1"), ExtResource("8_yxxwj"), ExtResource("9_auh2v"), ExtResource("10_1vp2d"), ExtResource("11_qvabq"), ExtResource("12_g7duf"), ExtResource("13_0veud"), ExtResource("14_d0onr"), ExtResource("15_p5kop"), ExtResource("15_y1idx")])
 recipes = Array[ExtResource("16_jbq0g")]([ExtResource("17_p5da3"), ExtResource("18_01ama"), ExtResource("19_ey4tn"), ExtResource("20_wayq6"), ExtResource("21_wvphu")])

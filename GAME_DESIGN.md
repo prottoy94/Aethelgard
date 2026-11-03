@@ -43,7 +43,7 @@ Every feature should support at least one of these. If it doesn't, cut it.
 | Character | Role | Notes |
 |---|---|---|
 | **Aurelia** | Player character | Silver-haired elf, staff with a hanging lantern, plum hooded cape. Cheerful, curious, bookish. Starts with **very little magic**, far below everyone else. |
-| **Lumen** 💡 | Spirit companion (blue butterfly) | From the `pose_3` art. A fragment of the World Tree's spirit. Gives hints, points toward goals, glows near secrets. Doesn't fight. |
+| **Lumen** ✅ | Spirit companion (blue butterfly) | From the `pose_3` art. A fragment of the World Tree's spirit. Gives hints, points toward goals, glows near secrets. Doesn't fight. *Approved by the owner 2026-11-03; built in Phase 6a.* |
 | **Pet dragon** | Battle companion | Hatched by the player from an egg. Player names it. Grows hatchling → juvenile → adult. See §8. |
 | **Sylvaris** 💡 | Good elder dragon | Ancient guardian of the World Tree. Mentor figure, gives Aurelia her dragon egg. |
 | **Ignis Varos, Herald of the Final Ember** | Main antagonist | Powerful fire mage-general, sent by an unknown master. Goal: take over Aethelgard. Commands the **Emberbound**. |
@@ -334,7 +334,7 @@ All keys can be remapped.
 | Recipe | Station | Materials | Effect | Found |
 |---|---|---|---|---|
 | Healing Potion | Kit | 2 Sunpetal | Restores 40 HP | Start |
-| Stamina Tonic | Kit | 2 Moonbloom | Restores 40 stamina | Scroll by the pond |
+| Stamina Tonic | Kit | 2 Moonbloom | Restores 40 stamina | Reward from Maren's side task (Phase 6a) |
 | Lantern Heart Amulet | Workbench | 2 Lumen Crystal, 1 Iron Ore, 1 Sunpetal | +20 max stamina | Start |
 | Ember-Ward Ring | Workbench | 3 Ember Cinder, 1 Iron Ore | −30% Ember damage | Scroll near the Ember Wisps |
 | Swift Quill Charm | Workbench | 3 Thorn Fibre, 2 Elderwood | −10% spell cooldowns | Scroll among the Thornlings |
@@ -347,7 +347,7 @@ Puzzles use **the spells the player has**, so learning a spell feels useful outs
 
 | Puzzle type | Example |
 |---|---|
-| Element interactions | Fire lights braziers; Frost freezes water; Wind spins fans and pushes blocks; Earth raises pillars onto pressure plates |
+| Element interactions | Fire lights braziers; Frost freezes water; Wind spins fans and pushes blocks; Earth raises pillars onto pressure plates. **Elderroot's old lantern braziers are lit by Light** (owner decision 2026-11-03: the slice has no Fire spell); fire braziers come with Fire spells |
 | Light & lantern | Dark ruins need Lantern Glow; hidden runes appear only in light; Prism Ray bounces off mirrors |
 | Block / switch | Push or raise blocks to open doors (classic action-adventure puzzles) |
 | Rune sequence | Read clues in the ruins, then activate runes in the right order |
@@ -457,7 +457,7 @@ More pet dragons, riding the dragon in real time, New Game+, the Unknown One bos
 3. ❓ Approve the 💡 **Ember Core** mechanic (Ignis weakens as cores are destroyed)?
 4. ❓ Spell loadout changes: anywhere outside combat, or only at rest points?
 5. ❓ Pet dragon: one dragon with element choice (recommended), or a fixed dragon?
-6. ❓ Keep the names suggested here (Lumen, Sylvaris, Brinecoil, Hollow King, Vharka, Aurorath)?
+6. ❓ Keep the names suggested here (Sylvaris, Brinecoil, Hollow King, Vharka, Aurorath)? *Lumen approved 2026-11-03. Draft villager names from Phase 6a: Maren, Tamsin (dialogue/glossary.md).*
 
 ---
 

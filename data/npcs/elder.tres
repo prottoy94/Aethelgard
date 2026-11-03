@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="NpcLook" format=3]
+
+[ext_resource type="Script" path="res://src/actors/npcs/npc_look.gd" id="1"]
+
+; Placeholder look for elder (simple shapes at real size).
+[resource]
+script = ExtResource("1")
+height = 1.62
+robe = Color(0.420, 0.353, 0.243, 1)
+accent = Color(0.788, 0.635, 0.420, 1)
+skin = Color(0.925, 0.804, 0.706, 1)
+hair_color = Color(0.949, 0.941, 0.918, 1)
+hair = 2
+prop = 1

@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=18
+type="Resource"
+uid="uid://c644m0bkwk5h4"
+path="res://.godot/imported/lumen.dialogue-84ef691707f27e3dfaa6774caae50b0b.tres"
+
+[deps]
+
+source_file="res://dialogue/barks/lumen.dialogue"
+dest_files=["res://.godot/imported/lumen.dialogue-84ef691707f27e3dfaa6774caae50b0b.tres"]
+
+[params]
+
+defaults=true
