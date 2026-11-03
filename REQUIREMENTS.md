@@ -25,8 +25,8 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-PLY-04 | Dash with a short cooldown and brief invincibility; does not use stamina. | MVP | Dashing through an enemy attack causes no damage. | ✅ Phase 3 (dashing through a Thornling attack avoids the hit; tested) |
 | FR-PLY-05 | Free staff strike (melee, no stamina cost). | MVP | Usable even when stamina is 0. | ✅ Phase 3 (wind-up, active window, recovery; tested) |
 | FR-PLY-06 | Interact with NPCs, chests, rest points and gather nodes, with a visible prompt. | MVP | A prompt appears in range; the interact key triggers it. | ✅ Phase 2 (prompt + E, tested) |
-| FR-PLY-07 | Stats: HP, Stamina, Magic Power, Defense, Move speed. | MVP | Visible in the status menu; changed by equipment. | 🟨 HP, stamina, defense and speed exist (Phase 3); Magic Power in Phase 4; status menu later |
-| FR-PLY-08 | On defeat, respawn at the last rest point without losing items. | MVP | Inventory is identical before and after respawn. | ✅ Phase 3 (respawn at the shrine, tested; nothing to lose yet, inventory comes in Phase 5) |
+| FR-PLY-07 | Stats: HP, Stamina, Magic Power, Defense, Move speed. | MVP | Visible in the status menu; changed by equipment. | ✅ Phase 5 (shown on the Inventory page; equipment changes them at once, tested) |
+| FR-PLY-08 | On defeat, respawn at the last rest point without losing items. | MVP | Inventory is identical before and after respawn. | ✅ Phase 3/5 (respawn at the shrine; the inventory is identical before and after, tested) |
 
 ### 1.2 Magic (MAG)
 | ID | Requirement | Priority | Acceptance check | Status |
@@ -35,28 +35,28 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-MAG-02 | Stamina regenerates after a short delay since the last cast. | MVP | Regen starts ~0.8 s after the last cast (data-driven value). | ✅ Phase 3 (0.8 s delay, exact refill timing; tested) |
 | FR-MAG-03 | Each spell has its own cooldown, plus a short global cooldown. | MVP | A spell can't be recast until its radial cooldown is complete. | ✅ Phase 3 (per-slot cooldowns + 0.25 s global cooldown, radial HUD sweep; tested) |
 | FR-MAG-04 | **Exhausted** state at 0 stamina: no casting until ~30% refill. | MVP | Casting is blocked until the threshold; strike and dash still work. | ✅ Phase 3 (Exhausted until 30%, strike and dash still work; tested) |
-| FR-MAG-05 | 4 equipped spell slots; loadout editable in the Grimoire. | MVP | Swapping a spell updates the HUD slot. | 🟨 4 slots work and show in the HUD (Phase 3); editing the loadout in the Grimoire comes in Phase 4 |
+| FR-MAG-05 | 4 equipped spell slots; loadout editable in the Grimoire. | MVP | Swapping a spell updates the HUD slot. | ✅ Phase 4 (Grimoire: choose a spell, then a slot or key 1–4; the HUD slot follows; tested) |
 | FR-MAG-06 | Elements Light, Wind, Frost, Earth, Fire (+ enemy Ember) with strong/weak pairs (×1.5 / ×0.5). | MVP | Frost on an Ember enemy deals 1.5× damage (unit tested). | ✅ Phase 3 (element pairs + Frost/Ember special cases; tested) |
-| FR-MAG-07 | Spells are obtained from tomes, trials, quests, bosses, teachers and dragons. | MVP (tomes, trials) / V1 (rest) | Picking up a tome adds it to "unlearned". | ⬜ |
-| FR-MAG-08 | Spells are learned by reading the tome at a rest point; some need a minimum Magic Power. | MVP | A gated tome shows the required MP and can't be learned below it. | ⬜ |
-| FR-MAG-09 | Spell mastery I–V gained by use; improves the spell and adds Magic Power. | MVP | Using a spell enough raises its level and the MP total. | ⬜ |
-| FR-MAG-10 | Magic Power is computed from spells, mastery and equipment and maps to Arcane Rank F–S. | MVP | Rank badge updates when MP crosses a threshold. | ⬜ |
-| FR-MAG-11 | Each new rank gives +max stamina and opens Arcane Seals of that rank. | V1 | Reaching rank D opens D-seals. | ⬜ |
+| FR-MAG-07 | Spells are obtained from tomes, trials, quests, bosses, teachers and dragons. | MVP (tomes, trials) / V1 (rest) | Picking up a tome adds it to "unlearned". | 🟨 Tomes work (pick up → carried as unread; tested). Trials, quests, bosses, teachers, dragons come later |
+| FR-MAG-08 | Spells are learned by reading the tome at a rest point; some need a minimum Magic Power. | MVP | A gated tome shows the required MP and can't be learned below it. | ✅ Phase 4 (read at a Lantern Shrine; gated tomes show the needed Magic Power and wait; tested) |
+| FR-MAG-09 | Spell mastery I–V gained by use; improves the spell and adds Magic Power. | MVP | Using a spell enough raises its level and the MP total. | ✅ Phase 4 (xp per cast and per hit; I–V raise damage, cut cost and cooldown, add Magic Power; tested) |
+| FR-MAG-10 | Magic Power is computed from spells, mastery and equipment and maps to Arcane Rank F–S. | MVP | Rank badge updates when MP crosses a threshold. | ✅ Phase 4 (Magic Power from spells + mastery + equipment slot; rank badge and RANK UP banner; tested) |
+| FR-MAG-11 | Each new rank gives +max stamina and opens Arcane Seals of that rank. | V1 | Reaching rank D opens D-seals. | 🟨 +10 max stamina and +5 max HP per rank (Phase 4, tested); Arcane Seals come with puzzles (Phase 6) |
 | FR-MAG-12 | The staff gem colour matches the element of the last cast. | V1 | Casting Frost turns the gem blue. | ⬜ |
-| FR-MAG-13 | Status effects: Burn, Chill→Freeze, Stagger, Root, Daze, Ember Mark. | MVP (Burn, Chill, Stagger) / V1 (rest) | Each effect has a visible icon and timer. | ⬜ |
-| FR-MAG-14 | ~16 player spells in total. | V1 | All listed in GDD §6.4 are implemented. | 🟨 2 of ~16 spells: Light Mote, Gust (Phase 3) |
+| FR-MAG-13 | Status effects: Burn, Chill→Freeze, Stagger, Root, Daze, Ember Mark. | MVP (Burn, Chill, Stagger) / V1 (rest) | Each effect has a visible icon and timer. | 🟨 Burn, Chill→Freeze, Daze, Ember Mark with HUD chips and timers (Phase 4, tested); Stagger from Phase 3; Root in V1 |
+| FR-MAG-14 | ~16 player spells in total. | V1 | All listed in GDD §6.4 are implemented. | 🟨 4 of ~16 spells: Light Mote, Gust (Phase 3), Lantern Glow, Mending Bloom (Phase 4) |
 
 ### 1.3 Combat & enemies (CMB)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
 | FR-CMB-01 | Real-time combat with hit-stop, knockback and hit flash. | MVP | Every hit visibly reacts. | ✅ Phase 3 (hit-stop, knockback, hit flash, plus screen shake and damage numbers) |
-| FR-CMB-02 | Enemies have HP, element, weakness and rank, shown above them. | MVP | Rank letter + HP bar appear when engaged. | 🟨 HP bar, element and weakness work (Phase 3); rank letter shown in Phase 4 |
-| FR-CMB-03 | Enemies can use magic (projectiles, shields, buffs, summons). | MVP (projectiles) / V1 | At least one caster enemy in the slice. | ⬜ |
+| FR-CMB-02 | Enemies have HP, element, weakness and rank, shown above them. | MVP | Rank letter + HP bar appear when engaged. | ✅ Phase 4 (rank letter, HP bar and status text above enemies while engaged) |
+| FR-CMB-03 | Enemies can use magic (projectiles, shields, buffs, summons). | MVP (projectiles) / V1 | At least one caster enemy in the slice. | 🟨 Ember Wisp shoots aimed Burning bolts after a telegraph (Phase 4, tested); shields, buffs, summons in V1 |
 | FR-CMB-04 | Some enemies have elemental shields broken only by a specific element. | V1 | Wrong elements deal no damage while the shield is up. | ⬜ |
 | FR-CMB-05 | Every enemy attack follows Telegraph → Attack → Recover, with a visual and audio cue. | MVP | No attack deals damage without a preceding telegraph. | 🟨 Visual telegraph ring before every attack (Phase 3, tested); telegraph sounds come with audio (Phase 6) |
-| FR-CMB-06 | Enemies drop loot from loot tables. | MVP | Defeated enemies drop materials per their table. | ⬜ |
+| FR-CMB-06 | Enemies drop loot from loot tables. | MVP | Defeated enemies drop materials per their table. | ✅ Phase 5 (LootTable per enemy: Thornling → Thorn Fibre, Ember Wisp → Ember Cinder; walk over drops to collect; tested) |
 | FR-CMB-07 | Difficulty settings: Story / Normal / Hard. | V1 | Changing difficulty changes damage taken and telegraph length. | ⬜ |
-| FR-CMB-08 | ~12 enemy types across the regions. | V1 | All types listed in GDD §7.1 exist. | ⬜ |
+| FR-CMB-08 | ~12 enemy types across the regions. | V1 | All types listed in GDD §7.1 exist. | 🟨 2 of ~12 types: Thornling (Phase 3), Ember Wisp (Phase 4) |
 
 ### 1.4 Bosses (BOS)
 | ID | Requirement | Priority | Acceptance check | Status |
@@ -88,21 +88,21 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ### 1.6 Items, equipment & crafting (ITM)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-ITM-01 | Inventory with materials, consumables, equipment, key items and spell tomes. | MVP | Items stack and sort by category. | ⬜ |
-| FR-ITM-02 | Equipment slots: 1 staff, 1 cloak, 3 accessories, with stat modifiers and passives. | MVP | Equipping changes stats immediately. | ⬜ |
-| FR-ITM-03 | Gather nodes (herbs, ore, wood, crystals) that respawn over time. | MVP | Gathering adds items; the node respawns after N in-game hours. | ⬜ |
-| FR-ITM-04 | Crafting at the workbench using recipes and materials. | MVP | Crafting consumes inputs and adds the output. | ⬜ |
-| FR-ITM-05 | Recipes are found, given, bought or earned from bosses. | MVP | Unknown recipes are hidden or shown as "???". | ⬜ |
+| FR-ITM-01 | Inventory with materials, consumables, equipment, key items and spell tomes. | MVP | Items stack and sort by category. | ✅ Phase 5 (Inventory autoload: stacks by id with a stack limit, sorted by category; unread tomes listed; tested) |
+| FR-ITM-02 | Equipment slots: 1 staff, 1 cloak, 3 accessories, with stat modifiers and passives. | MVP | Equipping changes stats immediately. | ✅ Phase 5 (staff, cloak, 3 accessories; equipping changes stats at once, tested). Special passives (e.g. Frostbite Band) arrive with the accessories that need them (V1) |
+| FR-ITM-03 | Gather nodes (herbs, ore, wood, crystals) that respawn over time. | MVP | Gathering adds items; the node respawns after N in-game hours. | 🟨 Sunpetal, Moonbloom, Elderwood, Iron Ore, Lumen Crystal nodes that grow back (tested). Regrow time is in seconds until the TimeOfDay clock exists (Phase 6); regrowth isn't saved yet |
+| FR-ITM-04 | Crafting at the workbench using recipes and materials. | MVP | Crafting consumes inputs and adds the output. | ✅ Phase 5 (workbench makes everything, the shrine's crafting kit makes potions; inputs used up; tested) |
+| FR-ITM-05 | Recipes are found, given, bought or earned from bosses. | MVP | Unknown recipes are hidden or shown as "???". | 🟨 Recipes found as scrolls in the world; unknown ones show as "???" (tested). Given/bought/boss recipes come with NPCs and bosses |
 | FR-ITM-06 | Equipment upgrades +1 to +3. | V1 | Upgrading raises stats and consumes materials. | ⬜ |
-| FR-ITM-07 | Consumables: potions, stamina tonics, element oils, cleansing water, dragon treats. | MVP (potion, tonic) / V1 | Using a potion heals. | ⬜ |
+| FR-ITM-07 | Consumables: potions, stamina tonics, element oils, cleansing water, dragon treats. | MVP (potion, tonic) / V1 | Using a potion heals. | 🟨 MVP part done: Healing Potion and Stamina Tonic, used from the Inventory (tested). Oils, cleansing water, treats in V1 |
 | FR-ITM-08 | The journal shows where each material can be found. | V1 | Material entries list regions/enemies. | ⬜ |
-| FR-ITM-09 | ~25 recipes, ~15 accessories, ~5 staffs. | V1 | Content counts met. | ⬜ |
+| FR-ITM-09 | ~25 recipes, ~15 accessories, ~5 staffs. | V1 | Content counts met. | 🟨 5 of ~25 recipes, 3 of ~15 accessories, 1 of ~5 staffs (the vertical-slice amounts, GDD §15.1) |
 
 ### 1.7 Puzzles (PUZ)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
 | FR-PUZ-01 | Puzzle objects react to spell elements (brazier, water, fan, push block, pillar plate). | MVP (brazier, push block) / V1 | Fire lights a brazier; Frost freezes water into walkable ice. | ⬜ |
-| FR-PUZ-02 | Light/lantern puzzles: hidden runes and paths revealed by light. | MVP | A hidden path appears under Lantern Glow. | ⬜ |
+| FR-PUZ-02 | Light/lantern puzzles: hidden runes and paths revealed by light. | MVP | A hidden path appears under Lantern Glow. | 🟨 Lantern Glow reveals hidden objects (a hidden tome at the arch; tested). Runes and paths come in Phase 6 |
 | FR-PUZ-03 | Rune-sequence puzzles. | V1 | Correct order opens the door; a wrong one resets. | ⬜ |
 | FR-PUZ-04 | Day/night-dependent puzzles. | V1 | A moon door opens only at night. | ⬜ |
 | FR-PUZ-05 | Dragon-assisted puzzles. | V1 | The dragon hits a switch the player can't reach. | ⬜ |
@@ -128,7 +128,7 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-WLD-02 | Real 3D height: stairs and ramps are walkable, ledges block; no free jump in v1. | MVP | Aurelia climbs the test stairs automatically and can't step up a ledge. | ✅ Phase 2 (stairs ramp climbed, 1.2 m ledge blocks; tested) |
 | FR-WLD-03 | Hub + 5 regions connected around the World Tree. | V1 (MVP: Elderroot) | All regions reachable. | ⬜ |
 | FR-WLD-04 | Spell-gated paths (Gust, Glacial Path, Stone Spire, dragon flight). | V1 | A gated path can't be crossed without its spell. | ⬜ |
-| FR-WLD-05 | Rest points: save, heal, learn spells, change loadout, fast travel. | MVP (save, heal, learn) / V1 (travel) | All functions available at a shrine. | ⬜ |
+| FR-WLD-05 | Rest points: save, heal, learn spells, change loadout, fast travel. | MVP (save, heal, learn) / V1 (travel) | All functions available at a shrine. | 🟨 Lantern Shrine heals, refills, clears effects, sets the respawn point and reads tomes (Phase 4, tested); saving comes with the save system (Phase 6); loadout is changed in the Grimoire anywhere; travel in V1 |
 | FR-WLD-06 | Day/night cycle (~20 real minutes per day) affecting lighting, enemies and NPCs. | MVP (lighting) / V1 | The screen tint changes over time. | ⬜ |
 | FR-WLD-07 | Weather: clear, rain, fog, storm, per region. | V1 (MVP: rain particles) | Stormspire is always stormy. | ⬜ |
 | FR-WLD-08 | Objects between the camera and Aurelia fade out (occlusion fade). | V1 | A wall in front of the camera becomes see-through while Aurelia is behind it. | ✅ Phase 2 (dithered occlusion fade, tested) |
@@ -137,9 +137,9 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ### 1.10 UI (UI)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-UI-01 | HUD: HP, stamina (Exhausted flash), 4 spell slots with radial cooldowns, rank badge, quest tracker. | MVP | All elements update live. | 🟨 HP, stamina with Exhausted warning, 4 spell slots with radial cooldowns (Phase 3); rank badge and quest tracker later |
+| FR-UI-01 | HUD: HP, stamina (Exhausted flash), 4 spell slots with radial cooldowns, rank badge, quest tracker. | MVP | All elements update live. | 🟨 HP, stamina with Exhausted warning, radial cooldowns (Phase 3), rank badge + progress, status chips (Phase 4); quest tracker in Phase 6 |
 | FR-UI-02 | HUD dragon panel: portrait, HP, current command. | V1 | Shows after hatching. | ⬜ |
-| FR-UI-03 | Menus: Inventory, Equipment, Grimoire, Crafting, Journal, Map, Settings. | MVP (Inventory, Grimoire, Crafting, Settings) / V1 | Each opens and closes with keyboard and gamepad. | ⬜ |
+| FR-UI-03 | Menus: Inventory, Equipment, Grimoire, Crafting, Journal, Map, Settings. | MVP (Inventory, Grimoire, Crafting, Settings) / V1 | Each opens and closes with keyboard and gamepad. | 🟨 Tab/Start menu with Inventory and Grimoire pages (Q/R turns the page), Crafting at stations; all pause the game and close with Esc/B/Start (tested). Settings, Journal, Map later |
 | FR-UI-04 | Dragon menu (stats, bond, skills, name). | V1 | — | ⬜ |
 | FR-UI-05 | Title screen with New / Continue / Settings / Quit. | MVP | Continue loads the latest save. | ⬜ |
 | FR-UI-06 | Dialogue box with portraits and text speed option. | MVP | Text speed setting is applied. | ⬜ |

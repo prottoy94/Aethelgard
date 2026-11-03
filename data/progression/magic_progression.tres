@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="MagicProgression" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/magic/progression/magic_progression.gd" id="1"]
+
+; GAME_DESIGN.md §5.2: F Spark 0, E Glimmer 50, D Lantern 150, C Beacon 300, B Star 500, A Radiant 800, S Sovereign 1200.
+[resource]
+script = ExtResource("1")
+rank_letters = PackedStringArray("F", "E", "D", "C", "B", "A", "S")
+rank_names = PackedStringArray("Spark", "Glimmer", "Lantern", "Beacon", "Star", "Radiant", "Sovereign")
+rank_thresholds = PackedInt32Array(0, 50, 150, 300, 500, 800, 1200)
+stamina_bonus_per_rank = 10.0
+health_bonus_per_rank = 5.0
+max_mastery = 5
+xp_to_next = PackedInt32Array(20, 50, 100, 200)
+xp_per_cast = 1
+xp_per_hit = 1
+power_bonus_per_level = 0.25
+damage_bonus_per_level = 0.1
+cost_reduction_per_level = 0.05
+cooldown_reduction_per_level = 0.05
+damage_per_power = 0.002

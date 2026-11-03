@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://src/actors/player/player.gd" id="1_player"]
 [ext_resource type="Resource" path="res://data/player/aurelia_movement.tres" id="2_stats"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://src/magic/spell_caster.gd" id="14_caster"]
 [ext_resource type="Script" path="res://src/components/hurtbox_component.gd" id="15_hurtbox"]
 [ext_resource type="Script" path="res://src/components/hitbox_component.gd" id="16_hitbox"]
+[ext_resource type="Script" path="res://src/components/status_effect_component.gd" id="17_status"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.3
@@ -55,10 +56,15 @@ script = ExtResource("13_stamina")
 script = ExtResource("14_caster")
 stamina = NodePath("../Stamina")
 
-[node name="Hurtbox" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+[node name="StatusEffects" type="Node" parent="." node_paths=PackedStringArray("health")]
+script = ExtResource("17_status")
+health = NodePath("../Health")
+
+[node name="Hurtbox" type="Area3D" parent="." node_paths=PackedStringArray("health", "status_effects")]
 script = ExtResource("15_hurtbox")
 team = 0
 health = NodePath("../Health")
+status_effects = NodePath("../StatusEffects")
 
 [node name="Shape" type="CollisionShape3D" parent="Hurtbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)

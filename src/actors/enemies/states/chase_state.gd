@@ -1,5 +1,6 @@
 extends State
-## Runs at the player. Winds up an attack when close; gives up beyond the leash range.
+## Runs at the player (or, for ranged enemies, keeps a distance). Winds up an attack when in range;
+## gives up beyond the leash range.
 
 
 func physics_update(delta: float) -> void:
@@ -8,7 +9,11 @@ func physics_update(delta: float) -> void:
 	if distance > enemy.data.leash_range:
 		machine.transition_to(&"Idle")
 		return
+	var towards := enemy.direction_to(enemy.target.global_position)
+	if distance < enemy.data.min_range:
+		enemy.move(-towards * enemy.data.move_speed, delta)  # too close: back away
+		return
 	if distance <= enemy.data.attack_range:
 		machine.transition_to(&"Telegraph")
 		return
-	enemy.move(enemy.direction_to(enemy.target.global_position) * enemy.data.move_speed, delta)
+	enemy.move(towards * enemy.data.move_speed, delta)

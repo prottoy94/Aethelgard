@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="ItemLibrary" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1_aphmk"]
+[ext_resource type="Resource" path="res://data/items/apprentice_staff.tres" id="2_p5kop"]
+[ext_resource type="Resource" path="res://data/items/elderwood.tres" id="3_h2gbl"]
+[ext_resource type="Resource" path="res://data/items/ember_cinder.tres" id="4_3eis8"]
+[ext_resource type="Resource" path="res://data/items/ember_ward_ring.tres" id="5_q0eum"]
+[ext_resource type="Resource" path="res://data/items/healing_potion.tres" id="6_6rwhr"]
+[ext_resource type="Resource" path="res://data/items/iron_ore.tres" id="7_i0xg1"]
+[ext_resource type="Resource" path="res://data/items/lantern_heart_amulet.tres" id="8_yxxwj"]
+[ext_resource type="Resource" path="res://data/items/lumen_crystal.tres" id="9_auh2v"]
+[ext_resource type="Resource" path="res://data/items/moonbloom.tres" id="10_1vp2d"]
+[ext_resource type="Resource" path="res://data/items/plum_capelet.tres" id="11_qvabq"]
+[ext_resource type="Resource" path="res://data/items/stamina_tonic.tres" id="12_g7duf"]
+[ext_resource type="Resource" path="res://data/items/sunpetal.tres" id="13_0veud"]
+[ext_resource type="Resource" path="res://data/items/swift_quill_charm.tres" id="14_d0onr"]
+[ext_resource type="Resource" path="res://data/items/thorn_fibre.tres" id="15_y1idx"]
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="16_jbq0g"]
+[ext_resource type="Resource" path="res://data/recipes/healing_potion.tres" id="17_p5da3"]
+[ext_resource type="Resource" path="res://data/recipes/stamina_tonic.tres" id="18_01ama"]
+[ext_resource type="Resource" path="res://data/recipes/ember_ward_ring.tres" id="19_ey4tn"]
+[ext_resource type="Resource" path="res://data/recipes/lantern_heart_amulet.tres" id="20_wayq6"]
+[ext_resource type="Resource" path="res://data/recipes/swift_quill_charm.tres" id="21_wvphu"]
+[ext_resource type="Script" path="res://src/items/item_library.gd" id="22_13rcy"]
+
+[resource]
+script = ExtResource("22_13rcy")
+items = Array[ExtResource("1_aphmk")]([ExtResource("2_p5kop"), ExtResource("3_h2gbl"), ExtResource("4_3eis8"), ExtResource("5_q0eum"), ExtResource("6_6rwhr"), ExtResource("7_i0xg1"), ExtResource("8_yxxwj"), ExtResource("9_auh2v"), ExtResource("10_1vp2d"), ExtResource("11_qvabq"), ExtResource("12_g7duf"), ExtResource("13_0veud"), ExtResource("14_d0onr"), ExtResource("15_y1idx")])
+recipes = Array[ExtResource("16_jbq0g")]([ExtResource("17_p5da3"), ExtResource("18_01ama"), ExtResource("19_ey4tn"), ExtResource("20_wayq6"), ExtResource("21_wvphu")])

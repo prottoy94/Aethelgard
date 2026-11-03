@@ -4,6 +4,8 @@ extends GutTest
 
 const PLAYER_SCENE := preload("res://src/actors/player/player.tscn")
 const THORNLING_SCENE := preload("res://src/actors/enemies/thornling/thornling.tscn")
+const LIGHT_MOTE := preload("res://data/spells/light_mote.tres")
+const GUST := preload("res://data/spells/gust.tres")
 
 var world: Node3D
 var player: Player
@@ -19,6 +21,9 @@ func after_all() -> void:
 
 
 func before_each() -> void:
+	Inventory.reset()
+	PlayerData.reset([LIGHT_MOTE, GUST] as Array[SpellData])  # slot 1 Light Mote, slot 2 Gust
+	GameState.reset()
 	world = Node3D.new()
 	add_child_autofree(world)
 	var floor_body := StaticBody3D.new()
@@ -75,10 +80,12 @@ func test_light_mote_flies_and_hits() -> void:
 	await wait_physics_frames(3)
 	_face(Vector3.FORWARD)
 	assert_true(player.try_cast(0), "Light Mote cast")
-	assert_eq(player.stamina.current, player.combat.max_stamina - 8.0)
+	assert_eq(player.stamina.current, player.stamina.max_stamina - 8.0)
 	await wait_physics_frames(45)
-	# Light vs Earth is neutral: 12 damage.
-	assert_almost_eq(enemy.health.current, enemy.data.max_health - 12.0, 0.01, "homing bolt hit")
+	# Light vs Earth is neutral: 12 × Magic Power scaling.
+	var expected := 12.0 * PlayerData.modifiers_for(LIGHT_MOTE).damage
+	assert_almost_eq(enemy.health.current, enemy.data.max_health - expected, 0.01, "homing bolt hit")
+	assert_true(enemy.status_effects.has(StatusEffectComponent.DAZE), "Light Mote dazes")
 
 
 func test_gust_knocks_back_and_staggers() -> void:
@@ -89,8 +96,8 @@ func test_gust_knocks_back_and_staggers() -> void:
 	assert_true(player.try_cast(1), "Gust cast")
 	await wait_physics_frames(2)
 	assert_true(enemy.state_machine.is_in(&"Stagger"), "staggered")
-	# Wind vs Earth is strong: 4 × 1.5 = 6 damage.
-	assert_almost_eq(enemy.health.current, enemy.data.max_health - 6.0, 0.01)
+	# Wind vs Earth is strong: 4 × 1.5 × Magic Power scaling.
+	assert_almost_eq(enemy.health.current, enemy.data.max_health - 6.0 * PlayerData.modifiers_for(GUST).damage, 0.01)
 	await wait_physics_frames(20)
 	assert_lt(enemy.global_position.z, start_z - 1.0, "pushed away from Aurelia")
 

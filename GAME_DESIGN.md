@@ -149,7 +149,7 @@ All keys can be remapped.
 ### 5.4 Camera (3D, hybrid) ✅
 - **Play camera:** high above and behind Aurelia (~40–45° down), follows her smoothly, can rotate and zoom. Clear fights, easy mouse aiming.
 - **Scenic viewpoints:** at special places (first sight of the World Tree, the Azure Coast, the Sky Rift) the camera swings low to show the vista, then returns.
-- Walls or trees between the camera and Aurelia fade out so she is never hidden.
+- Walls or trees between the camera and Aurelia fade out so she is never hidden. Treetops right in front of the camera fade too.
 - **No free jumping in v1.** Steps and stairs are climbed automatically; gaps are crossed with spells (Gale Step) or paths.
 
 ---
@@ -322,6 +322,22 @@ All keys can be remapped.
 - **~25 recipes in v1.** Every recipe should be useful. Early recipes use common materials to teach the system; top recipes need boss materials.
 - **Upgrading:** staffs and accessories can be upgraded +1 to +3 with extra materials.
 - **Consumables:** healing potions, stamina tonics, element oils (temporarily add an element to the staff strike), cleansing water (removes Ember Mark), dragon treats.
+- The workbench can make every recipe (including potions); the crafting kit only makes kit recipes. Unknown recipes show as "???".
+
+### 9.4 Vertical-slice items (built in Phase 5; numbers in `data/items/`, tune later)
+- **Start:** Apprentice Staff and Plum Capelet (no bonuses: she starts with almost nothing), 1 Healing Potion,
+  recipes for Healing Potion and Lantern Heart Amulet.
+- **Elderroot materials:** Sunpetal, Moonbloom (flowers), Elderwood (fallen branches), Iron Ore (rocks), Lumen Crystal
+  (crystals), Thorn Fibre (Thornling drop), Ember Cinder (Ember Wisp drop).
+- **Each accessory adds +5 Magic Power**, so crafting gear helps Aurelia rank up.
+
+| Recipe | Station | Materials | Effect | Found |
+|---|---|---|---|---|
+| Healing Potion | Kit | 2 Sunpetal | Restores 40 HP | Start |
+| Stamina Tonic | Kit | 2 Moonbloom | Restores 40 stamina | Scroll by the pond |
+| Lantern Heart Amulet | Workbench | 2 Lumen Crystal, 1 Iron Ore, 1 Sunpetal | +20 max stamina | Start |
+| Ember-Ward Ring | Workbench | 3 Ember Cinder, 1 Iron Ore | −30% Ember damage | Scroll near the Ember Wisps |
+| Swift Quill Charm | Workbench | 3 Thorn Fibre, 2 Elderwood | −10% spell cooldowns | Scroll among the Thornlings |
 
 ---
 

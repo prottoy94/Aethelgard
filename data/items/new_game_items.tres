@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="NewGameItems" format=3]
+
+[ext_resource type="Script" path="res://src/items/new_game_items.gd" id="1"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="2"]
+[ext_resource type="Script" path="res://src/items/equipment_data.gd" id="3"]
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="4"]
+[ext_resource type="Resource" path="res://data/items/healing_potion.tres" id="5"]
+[ext_resource type="Resource" path="res://data/items/apprentice_staff.tres" id="6"]
+[ext_resource type="Resource" path="res://data/items/plum_capelet.tres" id="7"]
+[ext_resource type="Resource" path="res://data/recipes/healing_potion.tres" id="8"]
+[ext_resource type="Resource" path="res://data/recipes/lantern_heart_amulet.tres" id="9"]
+
+; Aurelia's belongings at the start (GAME_DESIGN.md §5).
+[resource]
+script = ExtResource("1")
+items = Array[ExtResource("2")]([ExtResource("5")])
+equipment = Array[ExtResource("3")]([ExtResource("6"), ExtResource("7")])
+recipes = Array[ExtResource("4")]([ExtResource("8"), ExtResource("9")])

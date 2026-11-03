@@ -21,9 +21,10 @@ func _on_cast(aim: Vector3) -> void:
 		offset.y = 0.0
 		if offset.length() > data.radius or rad_to_deg(direction.angle_to(offset)) > data.angle_deg / 2.0:
 			continue
-		var info := DamageInfo.create(data.base_damage, data.element, offset.normalized() * data.knockback, caster, data.stagger)
+		var info := DamageInfo.create(damage(), data.element, offset.normalized() * data.knockback, caster, data.stagger)
 		if enemy.hurtbox.receive_hit(info):
 			hit_count += 1
+			landed.emit(enemy)
 	_build_visual()
 	get_tree().create_timer(LIFETIME).timeout.connect(queue_free)
 

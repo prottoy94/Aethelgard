@@ -21,6 +21,10 @@ extends Resource
 @export var spell_range := 12.0             ## m
 @export var radius := 0.25                  ## m: projectile size, or cone/area radius
 @export var angle_deg := 0.0                ## cone width for cone spells
+@export var duration := 0.0                 ## s for lasting spells (auras, heals over time)
+@export var status_effect := &""          ## applied on hit (StatusEffectComponent id)
+@export var status_duration := 0.0
+@export var status_power := 0.0
 
 @export_group("Progression (Phase 4)")
 @export var power_value := 10               ## contribution to Magic Power

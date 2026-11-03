@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://src/actors/enemies/enemy.gd" id="1_enemy"]
 [ext_resource type="Resource" path="res://data/enemies/thornling.tres" id="2_data"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://src/actors/enemies/states/recover_state.gd" id="12_recover"]
 [ext_resource type="Script" path="res://src/actors/enemies/states/stagger_state.gd" id="13_stagger"]
 [ext_resource type="Script" path="res://src/actors/enemies/states/dead_state.gd" id="14_dead"]
+[ext_resource type="Script" path="res://src/components/status_effect_component.gd" id="15_status"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_body"]
 radius = 0.6
@@ -40,10 +41,15 @@ script = ExtResource("3_visual")
 [node name="Health" type="Node" parent="."]
 script = ExtResource("4_health")
 
-[node name="Hurtbox" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+[node name="StatusEffects" type="Node" parent="." node_paths=PackedStringArray("health")]
+script = ExtResource("15_status")
+health = NodePath("../Health")
+
+[node name="Hurtbox" type="Area3D" parent="." node_paths=PackedStringArray("health", "status_effects")]
 script = ExtResource("5_hurtbox")
 team = 1
 health = NodePath("../Health")
+status_effects = NodePath("../StatusEffects")
 
 [node name="Shape" type="CollisionShape3D" parent="Hurtbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)

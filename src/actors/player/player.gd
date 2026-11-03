@@ -3,6 +3,7 @@ extends CharacterBody3D
 ## Aurelia, the player character. Movement is relative to the camera on the ground plane.
 ## Behaviour lives in StateMachine states (Idle, Move, Dash, Strike, Hurt, Dead); tuning comes from
 ## `stats` (movement) and `combat`. Components: Health, Stamina, SpellCaster, Hurtbox, StrikeHitbox.
+## Arcane Rank (PlayerData) and equipped gear (Inventory) raise her maximums and other stats.
 ## Visuals are the "Visual" child, so the placeholder can be swapped for the VRoid model later.
 
 signal dashed
@@ -29,6 +30,8 @@ var dash_cooldown := Cooldown.new()
 var strike_cooldown := Cooldown.new()
 ## Velocity added by hits; decays over time (applied in apply_movement).
 var knockback := Vector3.ZERO
+## Bonuses of the equipped gear (FR-ITM-02), refreshed when the equipment changes.
+var gear := GearBonus.new()
 
 var _dash_buffer := 0.0
 var _strike_buffer := 0.0
@@ -46,6 +49,7 @@ var _reticle: MeshInstance3D
 @onready var stamina: StaminaComponent = $Stamina
 @onready var spell_caster: SpellCaster = $SpellCaster
 @onready var hurtbox: HurtboxComponent = $Hurtbox
+@onready var status_effects: StatusEffectComponent = $StatusEffects
 @onready var strike_hitbox: HitboxComponent = $StrikeHitbox
 @onready var _detector: Area3D = $InteractionDetector
 
@@ -58,6 +62,8 @@ func _ready() -> void:
 	_detector.area_entered.connect(_on_area_entered)
 	_detector.area_exited.connect(_on_area_exited)
 	_apply_combat_stats()
+	_connect_progression()
+	_connect_inventory()
 	hurtbox.invulnerable_check = func() -> bool: return is_invulnerable or health.is_dead()
 	hurtbox.hurt.connect(_on_hurt)
 	health.died.connect(_on_died)
@@ -146,7 +152,8 @@ func grant_invulnerability(seconds: float) -> void:
 ## Moves the horizontal velocity towards `target` (plus any knockback) and applies gravity, then slides.
 func apply_movement(target: Vector3, rate: float, delta: float) -> void:
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z) - knockback
-	horizontal = horizontal.move_toward(target, rate * delta) + knockback
+	var speed := status_effects.speed_multiplier() * (1.0 + gear.move_speed)
+	horizontal = horizontal.move_toward(target * speed, rate * delta) + knockback
 	velocity.x = horizontal.x
 	velocity.z = horizontal.z
 	if is_on_floor():
@@ -241,6 +248,7 @@ func respawn() -> void:
 	knockback = Vector3.ZERO
 	health.reset()
 	stamina.reset()
+	status_effects.clear()
 	if visual.has_method(&"reset_pose"):
 		visual.reset_pose()
 	grant_invulnerability(combat.respawn_invulnerable)
@@ -266,10 +274,96 @@ func _apply_combat_stats() -> void:
 	stamina.recover_ratio = combat.exhausted_recover_ratio
 	stamina.reset()
 	spell_caster.global_cooldown = combat.global_cooldown
-	for i in mini(combat.starting_spells.size(), SpellCaster.SLOT_COUNT):
-		spell_caster.set_slot(i, combat.starting_spells[i])
 	strike_hitbox.damage = combat.strike_damage
 	strike_hitbox.knockback = combat.strike_knockback
+
+
+## Links the spell slots, mastery XP and rank bonuses to PlayerData (starts a new game if nothing is learned yet).
+func _connect_progression() -> void:
+	if PlayerData.learned.is_empty():
+		PlayerData.reset(combat.starting_spells)
+	spell_caster.modifiers_provider = PlayerData.modifiers_for
+	spell_caster.cast_succeeded.connect(_on_cast_succeeded)
+	spell_caster.spell_landed.connect(_on_spell_landed)
+	PlayerData.loadout_changed.connect(sync_loadout)
+	PlayerData.rank_changed.connect(_on_rank_changed)
+	sync_loadout()
+
+
+## Links the equipment to her stats (starts a new inventory if there is none yet).
+func _connect_inventory() -> void:
+	if not Inventory.started:
+		Inventory.reset()
+	Inventory.equipment_changed.connect(_on_equipment_changed)
+	gear = Inventory.gear_bonus()
+	_apply_stats(false)
+
+
+## Copies PlayerData's 4-slot loadout into the spell caster.
+func sync_loadout() -> void:
+	var spells := PlayerData.loadout_spells()
+	for i in SpellCaster.SLOT_COUNT:
+		if spell_caster.loadout[i] != spells[i]:
+			spell_caster.set_slot(i, spells[i])
+
+
+## Maximums and stats from the base numbers, the Arcane Rank (GAME_DESIGN.md §5.2: +stamina and HP per rank)
+## and the equipped gear. With `top_up`, a higher maximum is also added to the current amount (rank-ups, new gear).
+func _apply_stats(top_up: bool) -> void:
+	var progression := PlayerData.PROGRESSION
+	health.set_max_health(combat.max_health + progression.health_bonus_per_rank * PlayerData.rank + gear.max_health, top_up)
+	stamina.set_max_stamina(combat.max_stamina + progression.stamina_bonus_per_rank * PlayerData.rank + gear.max_stamina,
+			top_up)
+	if not top_up:
+		health.reset()
+		stamina.reset()
+	health.defense = combat.defense + gear.defense
+	health.resistances = gear.resistances
+	stamina.regen_rate = combat.stamina_regen + gear.stamina_regen
+	strike_hitbox.damage = combat.strike_damage + gear.strike_damage
+
+
+func _on_rank_changed(_rank: int, _previous: int) -> void:
+	_apply_stats(true)
+
+
+func _on_equipment_changed() -> void:
+	gear = Inventory.gear_bonus()
+	_apply_stats(true)
+
+
+## Drinks a potion or tonic from the bag (FR-ITM-07). Refused (nothing used) if it would do nothing.
+func use_item(item: ConsumableData) -> bool:
+	if health.is_dead() or not Inventory.has(item.id):
+		return false
+	var helps_health := item.heal > 0.0 and health.current < health.max_health
+	var helps_stamina := item.stamina > 0.0 and (stamina.current < stamina.max_stamina or stamina.exhausted)
+	if not (helps_health or helps_stamina):
+		return false
+	Inventory.remove(item.id)
+	health.heal(item.heal)
+	stamina.restore(item.stamina)
+	play_role(&"interact")
+	return true
+
+
+func _on_cast_succeeded(_slot: int, spell: SpellData) -> void:
+	PlayerData.add_mastery_xp(spell.id, PlayerData.PROGRESSION.xp_per_cast)
+
+
+func _on_spell_landed(spell: SpellData, _target: Node) -> void:
+	PlayerData.add_mastery_xp(spell.id, PlayerData.PROGRESSION.xp_per_hit)
+
+
+## Rest at a Lantern Shrine: full health and stamina, effects cleared, respawn here, read carried tomes.
+## Returns PlayerData.read_tomes()'s result ({"learned": [...], "blocked": [...]}).
+func rest(at: Vector3) -> Dictionary:
+	respawn_point = at
+	health.reset()
+	stamina.reset()
+	status_effects.clear()
+	play_role(&"rest")
+	return PlayerData.read_tomes()
 
 
 func _on_hurt(info: DamageInfo, _amount: float) -> void:

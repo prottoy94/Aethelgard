@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EnemyData" format=3]
 
 [ext_resource type="Script" path="res://src/actors/enemies/enemy_data.gd" id="1"]
+[ext_resource type="Resource" path="res://data/loot_tables/thornling.tres" id="loot"]
 
 ; Thornling: a corrupted plant of Elderroot Meadow (GAME_DESIGN.md §7.1). Earth element, weak to Wind.
 [resource]
@@ -8,6 +9,7 @@ script = ExtResource("1")
 id = &"thornling"
 display_name = "Thornling"
 element = 4
+loot = ExtResource("loot")
 rank = "F"
 max_health = 30.0
 defense = 0.0

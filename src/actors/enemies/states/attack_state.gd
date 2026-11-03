@@ -6,13 +6,11 @@ var _time := 0.0
 
 func enter(_previous: StringName, _data: Dictionary) -> void:
 	_time = 0.0
-	var enemy := actor as Enemy
-	enemy.attack_hitbox.activate()
-	enemy.visual.play_attack()
+	(actor as Enemy).perform_attack()
 
 
 func exit() -> void:
-	(actor as Enemy).attack_hitbox.deactivate()
+	(actor as Enemy).end_attack()
 
 
 func physics_update(delta: float) -> void:

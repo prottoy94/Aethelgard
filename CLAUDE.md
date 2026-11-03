@@ -11,13 +11,28 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   `tools/dev/inspect_scene.gd`, view it with `character_viewer.tscn -- --model=res://assets/models/characters/aurelia.vrm`,
   then make it the Player's default visual (HumanoidVisual) and build the style diorama.
 - **Phase 3 (combat core) done** 2026-11-03: health/stamina/spells/strike/hurt/death, Thornling enemy, HUD. **62/62 tests pass.**
-  **Next: Phase 4, magic & growth** (elements in play, Grimoire, learning spells, mastery, Magic Power & rank).
   Combat code: `src/components/` (Health, Stamina, Hitbox, Hurtbox), `src/magic/` (Elements, SpellData, SpellCaster, spells/),
   `src/actors/enemies/` (Enemy, EnemyData, states, thornling/), `src/core/fx/combat_fx.gd`, `src/ui/hud/`. Data: `data/spells/`,
   `data/enemies/`, `data/player/aurelia_combat.tres` (starting spells set via ResourceSaver so the typed array is valid).
   Tests that need hit-stop off set `CombatFx.hit_stop_enabled = false`. `--spawn=combat` starts next to a Thornling.
+- **Phase 4 (magic & growth) done** 2026-11-03.
+  Growth state lives in the `PlayerData` autoload (learned spells + mastery, unread tomes, loadout, Magic Power, rank; signals;
+  `to_dict/from_dict` for saves). Rules: `MagicProgression` (`data/progression/magic_progression.tres`), `SpellLibrary`
+  (`data/spells/spell_library.tres`, rebuild with `tools/dev/build_spell_library.gd` after adding a spell), status effects in
+  `StatusEffectComponent` + `data/combat/status_rules.tres`. World: `src/world/items/spell_tome.gd`, `src/world/rest_point/`,
+  menu `src/ui/menus/grimoire.gd` (Tab). New enemy `src/actors/enemies/ember_wisp/` (ranged, uses `src/magic/projectile.gd`).
+- **Phase 5 (items & crafting) done** 2026-11-03. **112/112 tests pass.** **Next: Phase 6, world systems, story & sound (M5 + M6).**
+  Items: `src/items/` (ItemData → ConsumableData / EquipmentData, GearBonus, RecipeData, LootTable, ItemLibrary, NewGameItems);
+  the `Inventory` autoload holds the bag, 5 equipment slots, known recipes, crafting and `to_dict/from_dict`. PlayerData reads
+  gear Magic Power and cooldown bonus from Inventory; the Player applies the other gear stats (`_apply_stats`). Data:
+  `data/items/` (+ `gather/`), `data/recipes/`, `data/loot_tables/`; rebuild `data/items/item_library.tres` with
+  `tools/dev/build_item_library.gd` after adding items or recipes. World: `src/world/items/` (GatherNode, ItemPickup,
+  RecipeScroll), `src/world/props/crafting_station.gd`, `src/components/loot_dropper_component.gd`. Menus share
+  `src/ui/menus/menu_screen.gd`; `GameMenu` (Tab) holds the Inventory and Grimoire pages; `CraftingMenu` opens at stations.
+  Tests reset with `Inventory.reset()`, `PlayerData.reset([...])` and `GameState.reset()` in `before_each`.
   Main scene = `src/world/test/test_level_3d.tscn` (Elderroot test meadow: Player + CameraRig + PerfOverlay). Start options after `--`:
-  `--spawn=viewpoint`, `--benchmark=<dir>`, `--graphics=low|medium|high`.
+  `--spawn=viewpoint|combat|wisp`, `--open=inventory|grimoire|crafting`, `--give=materials`, `--visual=animated`,
+  `--benchmark=<dir>`, `--graphics=low|medium|high`.
   Key code: `src/actors/player/` (Player, states, placeholder model, MovementStats), `src/game/camera/` (CameraRig, CameraSettings),
   `src/world/camera/scenic_viewpoint.gd`, `src/components/interactable_component.gd`, `src/core/` (StateMachine, Cooldown, ToonMaterials).
   Git repo exists (branch `main`, no remote). **The owner makes commits manually: never commit or push.**

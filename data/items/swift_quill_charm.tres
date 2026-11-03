@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://src/items/equipment_data.gd" id="1"]
+
+; Equipment: Swift Quill Charm.
+[resource]
+script = ExtResource("1")
+id = &"swift_quill_charm"
+display_name = "Swift Quill Charm"
+description = "An elderwood quill bound with thorn cord. Spells come back to hand sooner."
+color = Color(0.494, 0.878, 0.784, 1)
+max_stack = 9
+slot = 2
+magic_power = 5
+spell_cooldown = 0.1

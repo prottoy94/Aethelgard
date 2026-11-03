@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1"]
+
+; Material: Sunpetal.
+[resource]
+script = ExtResource("1")
+id = &"sunpetal"
+display_name = "Sunpetal"
+description = "A golden flower that drinks the morning light. Brewed into healing potions."
+color = Color(0.949, 0.788, 0.298, 1)

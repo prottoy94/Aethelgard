@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ConsumableData" format=3]
+
+[ext_resource type="Script" path="res://src/items/consumable_data.gd" id="1"]
+
+; Healing Potion: made from Sunpetal at a crafting kit.
+[resource]
+script = ExtResource("1")
+id = &"healing_potion"
+display_name = "Healing Potion"
+description = "A warm golden draught. Tastes like summer."
+color = Color(1.000, 0.561, 0.639, 1)
+max_stack = 20
+heal = 40.0

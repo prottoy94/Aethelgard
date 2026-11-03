@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="RecipeData" format=3]
+
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="2"]
+[ext_resource type="Resource" path="res://data/items/lantern_heart_amulet.tres" id="3"]
+[ext_resource type="Resource" path="res://data/items/lumen_crystal.tres" id="4"]
+[ext_resource type="Resource" path="res://data/items/iron_ore.tres" id="5"]
+[ext_resource type="Resource" path="res://data/items/sunpetal.tres" id="6"]
+
+; Recipe: lantern_heart_amulet.
+[resource]
+script = ExtResource("1")
+id = &"lantern_heart_amulet"
+output = ExtResource("3")
+output_count = 1
+inputs = Array[ExtResource("2")]([ExtResource("4"), ExtResource("5"), ExtResource("6")])
+input_counts = PackedInt32Array(2, 1, 1)
+station = 1

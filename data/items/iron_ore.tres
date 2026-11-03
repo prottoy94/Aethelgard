@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1"]
+
+; Material: Iron Ore.
+[resource]
+script = ExtResource("1")
+id = &"iron_ore"
+display_name = "Iron Ore"
+description = "A lump of rusty ore from the meadow rocks. Every ring and clasp starts here."
+color = Color(0.553, 0.561, 0.600, 1)

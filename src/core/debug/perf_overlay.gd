@@ -20,6 +20,7 @@ var _done := false
 
 func _ready() -> void:
 	layer = 100
+	process_mode = Node.PROCESS_MODE_ALWAYS  # keep measuring while menus pause the game
 	_label = Label.new()
 	_label.position = Vector2(16, 12)
 	_label.add_theme_font_size_override("font_size", 18)

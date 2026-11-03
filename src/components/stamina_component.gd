@@ -51,6 +51,24 @@ func tick(delta: float) -> void:
 	changed.emit(current, max_stamina)
 
 
+## Adds stamina (tonics). Ends Exhausted once past the recovery threshold.
+func restore(amount: float) -> void:
+	current = minf(current + amount, max_stamina)
+	if exhausted and current >= max_stamina * recover_ratio:
+		_set_exhausted(false)
+	changed.emit(current, max_stamina)
+
+
+## Changes the maximum. With `keep_gain` a higher maximum also adds the difference now.
+func set_max_stamina(value: float, keep_gain: bool) -> void:
+	var gain := value - max_stamina
+	max_stamina = value
+	if keep_gain and gain > 0.0:
+		current += gain
+	current = minf(current, max_stamina)
+	changed.emit(current, max_stamina)
+
+
 func reset() -> void:
 	current = max_stamina
 	_since_spent = INF

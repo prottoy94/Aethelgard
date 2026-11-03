@@ -90,7 +90,7 @@ res://
 | `EventBus` | Global signals only (e.g. `enemy_defeated(enemy_id)`, `spell_learned(spell_id)`, `item_collected(item_id, qty)`). Decouples systems. |
 | `GameState` | Story flags, world state (opened chests, solved puzzles, defeated bosses, keyed by unique IDs), current region, play time. |
 | `PlayerData` | Persistent player progress: HP/stamina max, learned spells + mastery, loadout, equipment, Magic Power/rank (derived). |
-| `Inventory` | Items and quantities, add/remove/has, equipment slots. |
+| `Inventory` | Items and quantities, add/remove/has, equipment slots, known recipes and crafting (built in Phase 5). |
 | `QuestManager` | Active/completed quests; listens to `EventBus` to advance objectives. |
 | `DragonManager` | Pet dragon data: stage, element, bond, skills, name. |
 | `TimeOfDay` | Game clock, emits `hour_changed`, drives day/night and weather. |
@@ -111,7 +111,7 @@ Actors are built from small reusable nodes:
 - `HurtboxComponent` (Area3D): receives hits → forwards to Health + StatusEffects; handles i-frames.
 - `StatusEffectComponent`: burn, chill/freeze, stagger, root, daze, ember mark (timers + stacks).
 - `InteractableComponent`: prompt text + `interacted` signal (NPCs, chests, rest points, gather nodes).
-- `LootDropper`: rolls a `LootTable` on death.
+- `LootDropperComponent`: rolls a `LootTable` on death and scatters `ItemPickup`s (added by `Enemy` when its data has loot).
 - `SpellCaster` (player and caster enemies): cooldowns, global cooldown, stamina check, spawns spell scenes.
 
 ### 4.3 State machines
@@ -153,6 +153,23 @@ Other Resource types: `ItemData` (→ `MaterialData`, `ConsumableData`, `Equipme
 `RecipeData` (inputs, output, station), `EnemyData` (stats, rank, element, weakness, loot table), `BossData` (phases),
 `DragonSpeciesData` (per element: skills per bond level, stats per stage), `QuestData` (steps → objectives), `LootTable`.
 
+**Items as built in Phase 5** (`src/items/`):
+- Materials use `ItemData` directly (no `MaterialData` subclass was needed). `ConsumableData` (heal, stamina) and
+  `EquipmentData` (slot; magic_power, max_health, max_stamina, defense, stamina_regen, strike_damage, move_speed,
+  spell_cooldown, one element resistance) extend it. Passive effect ids come with the first accessory that needs one.
+- `RecipeData` keeps `inputs: Array[ItemData]` plus a parallel `input_counts`; `LootTable` uses parallel arrays
+  (items, chances, min/max counts). Both are easy to hand-edit in `.tres`.
+- `ItemLibrary` (`data/items/item_library.tres`, built by `tools/dev/build_item_library.gd`) resolves ids for saves.
+  `NewGameItems` holds the starting bag, gear and recipes. `GatherNodeData` (`data/items/gather/`) sets a gather node's
+  item, yield and regrow time.
+- The `Inventory` autoload: `counts` (id → amount, capped by `max_stack`), `equipment` (5 ids: staff, cloak, 3 accessories;
+  worn items leave the bag; one accessory can't fill two slots), known `recipes`, `craft(recipe, station)`, `gear_bonus()`
+  (`GearBonus`). PlayerData listens to `equipment_changed` for gear Magic Power and the cooldown bonus; the Player applies
+  max HP/stamina (topping up the gain), defense, regen, strike damage, move speed and resistances
+  (`HealthComponent.resistances`).
+- Menus extend `MenuScreen` (parchment panel, pauses, Esc/B/Start closes, keeps gamepad focus). `GameMenu` (Tab/Start) holds
+  the Inventory and Grimoire pages; `CraftingMenu` is opened by a `CraftingStation`'s `used` signal.
+
 > Shared `.tres` resources are read-only templates. Per-instance runtime state (current HP, cooldown timers) lives in nodes, or in `duplicate()`d copies.
 
 ### 4.5 Damage pipeline
@@ -164,7 +181,13 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
                                                        └─► signals: damaged / died ──► VFX, hit-stop, knockback, EventBus
 ```
 
-- `DamageInfo` (RefCounted): `amount, element, knockback, stagger, source` (status effects and crits come in Phase 4).
+- `DamageInfo` (RefCounted): `amount, element, knockback, stagger, source`, plus `status, status_duration, status_power`
+  (Phase 4, `with_status()`). Crits are not used yet.
+- **Status effects (Phase 4):** the Hurtbox multiplies damage by `StatusEffectComponent.damage_taken_multiplier()` (Ember
+  Mark), deals the hit, then applies the hit's status. Burn ticks damage, 3 Chill stacks become Freeze (→ Stagger on
+  enemies), Daze slows. Movement multiplies speed by `speed_multiplier()`. Numbers: `data/combat/status_rules.tres`.
+- **Projectiles (Phase 4):** `Projectile.launch(...)` in `src/magic/projectile.gd` flies straight, hits the other team's
+  hurtboxes or a wall, and bursts. Used by the Ember Wisp (`perform_attack()` / `end_attack()` virtuals on `Enemy`).
 - **Teams (built in Phase 3):** `HurtboxComponent.team` puts it on `player_hurtbox` (5) or `enemy_hurtbox` (6);
   `HitboxComponent.team` masks the *other* team's hurtboxes, so friendly fire is impossible. Each activation hits each
   hurtbox once. Projectiles set `collide_with_world` to stop at walls. Instant area spells (Gust) query the `enemy` group
@@ -179,9 +202,17 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 ### 4.6 Magic system implementation
 1. Input `cast_n` → `SpellCaster.try_cast(slot, aim_dir)`.
 2. Checks, in order: not exhausted → slot cooldown ready → global cooldown ready → `Stamina.try_spend(cost)`.
-3. Instantiate `spell_data.scene` (extends `Spell` base with `cast(caster, aim_dir, data, mastery)`), start cooldowns, play Cast state animation.
-4. On successful use, add mastery XP → `PlayerData` recalculates **Magic Power** and **rank** → emit `EventBus.magic_power_changed`.
-5. Puzzle objects implement `on_element_hit(element: Elements.Type)`, so the *same* spell scenes interact with braziers, water, fans and more (`FR-PUZ-01`).
+3. Instantiate `spell_data.scene` (extends `Spell` base with `cast(caster, aim, data, power)`), start cooldowns, play Cast state animation.
+   Cost, cooldown and power come from `SpellCaster.modifiers_provider` → `PlayerData.modifiers_for(spell)` (`SpellModifiers`).
+4. On a cast and on each hit (`Spell.landed`), add mastery XP → `PlayerData` recalculates **Magic Power** and **rank** →
+   emits `magic_power_changed` / `rank_changed(rank, previous)` (the player adds the rank's stamina/HP bonus; the HUD shows a banner).
+5. **Built in Phase 4:** `MagicProgression` holds rank thresholds (F 0 · E 50 · D 150 · C 300 · B 500 · A 800 · S 1200),
+   mastery xp (20/50/100/200) and the formulas: Magic Power = Σ power_value × (1 + 0.25 × (mastery − 1)) + equipment;
+   damage × (1 + MP × 0.002) × (1 + 0.1 × mastery steps); cost and cooldown −5% per step. `SpellTome` objects are taken
+   into `PlayerData.tomes`; `RestPoint.rest()` calls `PlayerData.read_tomes()`, which learns every tome the Magic Power
+   allows, repeating so one new spell can unlock the next. The Grimoire edits `PlayerData.loadout`; the player's
+   `SpellCaster` follows `loadout_changed`. `PlayerData.to_dict()/from_dict()` are ready for the save system.
+6. Puzzle objects implement `on_element_hit(element: Elements.Type)`, so the *same* spell scenes interact with braziers, water, fans and more (`FR-PUZ-01`).
 
 ### 4.7 World building (3D)
 - **One scene per region**, made of a few connected areas. Transitions use a `RegionExit` Area3D → `SceneLoader.change_region(region_id, spawn_id)`.
@@ -192,7 +223,8 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
   so the character walks up them without jumping; ledges block. No free jump (§2).
 - **Occlusion fade:** solid objects are a `StaticBody3D` root with their meshes as children; non-solid blockers (tree canopies)
   get an `Area3D` child on layer 11. The `CameraRig` raycasts to the player and sets the `fade` instance uniform on all meshes
-  under the hit root (toon, toon_outline and stone_moss shaders dither them out).
+  under the hit root (toon, toon_outline and stone_moss shaders dither them out). Canopies within `near_fade_radius`
+  (4.5 m) of the lens fade too, even when they don't hide the player (Phase 4); the ground is never faded.
 - **Navigation:** `NavigationRegion3D` baked per area for enemies and the dragon (`NavigationAgent3D`).
 - **Performance:** automatic mesh LODs on import, `visibility_range` on small props, `OccluderInstance3D` for big ruins/cliffs, shadows only near the camera, fog hides the far distance.
 - **Persistent objects** (chests, puzzle states, bosses) have a unique `persist_id` and read/write `GameState` when spawned or changed.

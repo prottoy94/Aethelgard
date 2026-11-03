@@ -180,7 +180,7 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 > recovers, can be staggered; respawns after 6 s in the test meadow). Feedback: hit flash, hit-stop, screen shake,
 > damage numbers (gold = weakness), enemy health bars. HUD: HP, stamina, 4 spell slots. Elements with strengths/weaknesses.
 > **62/62 tests pass** (8 are real fights in a physics world). 1080p RTX 3050: ~238 FPS, ~0.8 GB RAM.
-> Gust is in the starting loadout for testing; in the story it comes from the Elderroot Trial (Phase 4+).
+> Since Phase 4, Gust is no longer a starting spell: its tome lies on the World Tree platform (the Elderroot Trial comes later).
 > **First Windows export works:** `build/windows/Aethelgard.exe` (104 MB engine + 1.7 MB game data) runs at 240 FPS.
 > Export templates (Windows 64-bit only, ~210 MB, checksum verified) are in `D:\Tools\Godot\editor_data\export_templates\`.
 - Health, damage, staff strike, **stamina bar + Exhausted**, first 2 spells with **cooldowns**, dodge.
@@ -188,13 +188,38 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 - **First export:** build a real `.exe` once to make sure exporting works on your PC (export templates, about 1 GB, go to D:).
 - **You'll play:** fight and defeat Thornlings. We tune the "feel" (hit freeze, knockback, timing) together.
 
-### Phase 4: Magic & growth (M3) · **M**
+### Phase 4: Magic & growth (M3) · **M** · ✅ Done 2026-11-03
+> **Result:** Aurelia now starts at **F · Spark** with only **Light Mote** and **Lantern Glow** (a light aura that dazes
+> nearby enemies and **reveals hidden things**). She finds **spell tomes** in the meadow: Gust on the World Tree platform,
+> and Mending Bloom (heal over time, needs Magic Power 20) **hidden at the arch** until Lantern Glow lights it up.
+> Tomes are read by **resting at the Lantern Shrine** (heals, refills, clears effects, sets the respawn point); reading
+> Gust raises her Magic Power enough to learn Mending Bloom in the same rest. Spells gain **mastery I–V** by use (more
+> damage, lower cost and cooldown, more Magic Power). **Magic Power → Arcane Rank** (F Spark … S Sovereign) with a HUD
+> badge, a progress bar and a **RANK UP** banner; each rank adds max stamina and HP. **Status effects:** Burn, Chill →
+> Freeze, Daze, Ember Mark, with HUD chips and timers. The **Grimoire** (Tab or Start) pauses the game and lets you put
+> any learned spell in any of the 4 slots. New enemy: the **Ember Wisp**, a floating flame that keeps its distance, aims
+> (glow + ground line) and shoots **Burning** bolts; Light hits it for ×1.5. Enemy bars show their **rank letter**.
+> The camera now also fades tree canopies right in front of the lens. **86/86 tests pass.**
+> Measured 1080p RTX 3050 High: 220 FPS near the wisps, 237 FPS with the Grimoire open, ~0.8–0.9 GB RAM.
+> Try it: `-- --spawn=wisp` starts next to an Ember Wisp, `-- --open=grimoire` opens the Grimoire.
+> Not yet: the Elderroot Trial (Gust's real source), Arcane Seals (with puzzles, Phase 6), saving at the shrine (Phase 6).
 - Elements (Light, Wind, Frost, Earth, Fire, Ember) with strengths/weaknesses; status effects.
 - Spell book (Grimoire) with 4 slots; spell tomes; learning at a rest point; mastery I–V; **Magic Power and Arcane Rank** (Spark → Sovereign).
 - Rank letters above enemies.
 - **You'll play:** learning a spell visibly raises Aurelia's rank.
 
-### Phase 5: Items & crafting (M4) · **M**
+### Phase 5: Items & crafting (M4) · **M** · ✅ Done 2026-11-03
+> **Result:** Aurelia now has a **bag** (items stack and sort by category) and **gear**: a staff, a cloak and 3 accessory
+> slots. Equipping changes her stats at once. She starts with an Apprentice Staff, her Plum Capelet, one Healing Potion
+> and two recipes. In the meadow she can **gather** Sunpetal, Moonbloom, Elderwood, Iron Ore and Lumen Crystals (they grow
+> back), and enemies **drop materials** you walk over to collect (Thornlings: Thorn Fibre; Ember Wisps: Ember Cinders).
+> **Recipe scrolls** are hidden around the meadow. Craft potions at the **crafting kit** beside the Lantern Shrine and
+> accessories at the new **workbench** near the start: Lantern Heart Amulet (+20 max stamina), Ember-Ward Ring (−30% Ember
+> damage), Swift Quill Charm (−10% cooldowns), each +5 Magic Power. **Tab** opens a book with **Inventory** and **Grimoire**
+> pages (Q/R turns the page); potions are used from the Inventory. Picked-up items show in the lower right.
+> **112/112 tests pass.** Measured 1080p RTX 3050 High: 218 FPS at the start, 226 FPS with a menu open, ~0.83 GB RAM.
+> Try it: `-- --give=materials --open=crafting` (5 of every material, workbench open), `-- --open=inventory`.
+> Not yet: upgrades +1 to +3 (V1), special accessory passives (V1), regrowth in in-game hours and saving (Phase 6).
 - Inventory, equipment (staff, cloak, 3 accessories), gathering herbs/ore, loot drops, workbench + recipes, potions.
 - **You'll play:** gather materials, craft an accessory, equip it and feel the difference.
 

@@ -21,7 +21,10 @@ func _on_cast(aim: Vector3) -> void:
 	global_position += Vector3(0, HEIGHT, 0) + _direction * SPAWN_AHEAD
 	_hitbox = HitboxComponent.new()
 	_hitbox.team = HurtboxComponent.Team.PLAYER
-	_hitbox.damage = data.base_damage
+	_hitbox.damage = damage()
+	_hitbox.status_effect = data.status_effect
+	_hitbox.status_duration = data.status_duration
+	_hitbox.status_power = data.status_power
 	_hitbox.element = data.element
 	_hitbox.knockback = data.knockback
 	_hitbox.stagger = data.stagger
@@ -34,7 +37,9 @@ func _on_cast(aim: Vector3) -> void:
 	shape.shape = sphere
 	_hitbox.add_child(shape)
 	add_child(_hitbox)
-	_hitbox.hit.connect(func(_hurtbox: HurtboxComponent, _info: DamageInfo) -> void: _burst())
+	_hitbox.hit.connect(func(hurtbox: HurtboxComponent, _info: DamageInfo) -> void:
+		landed.emit(hurtbox.get_parent())
+		_burst())
 	_hitbox.blocked.connect(func(_body: Node3D) -> void: _burst())
 	_build_visual()
 

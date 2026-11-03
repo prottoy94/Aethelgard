@@ -12,6 +12,7 @@ const ENEMY_HURTBOX_LAYER := 1 << 5   # layer 6
 
 @export var team := Team.ENEMY
 @export var health: HealthComponent
+@export var status_effects: StatusEffectComponent  ## optional: receives the hit's status effect
 
 ## Optional: returns true while hits should be ignored (dash i-frames, after being hurt).
 var invulnerable_check: Callable
@@ -29,6 +30,10 @@ func receive_hit(info: DamageInfo) -> bool:
 		return false
 	if invulnerable_check.is_valid() and invulnerable_check.call():
 		return false
+	if status_effects:
+		info.amount *= status_effects.damage_taken_multiplier()
 	var amount := health.apply_damage(info)
+	if status_effects and info.status != &"" and not health.is_dead():
+		status_effects.apply(info.status, info.status_duration, info.status_power, info.element)
 	hurt.emit(info, amount)
 	return true

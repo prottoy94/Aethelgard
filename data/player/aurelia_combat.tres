@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://src/actors/player/player_combat_stats.gd" id="1"]
 [ext_resource type="Script" path="res://src/magic/spell_data.gd" id="2_sniva"]
 [ext_resource type="Resource" path="res://data/spells/light_mote.tres" id="3_lc03m"]
-[ext_resource type="Resource" path="res://data/spells/gust.tres" id="4_t04wt"]
+[ext_resource type="Resource" path="res://data/spells/lantern_glow.tres" id="4_sniva"]
 
 [resource]
 script = ExtResource("1")
-starting_spells = Array[ExtResource("2_sniva")]([ExtResource("3_lc03m"), ExtResource("4_t04wt")])
+starting_spells = Array[ExtResource("2_sniva")]([ExtResource("3_lc03m"), ExtResource("4_sniva")])

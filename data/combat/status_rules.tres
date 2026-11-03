@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="StatusRules" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/components/status_rules.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+burn_tick = 0.5
+chill_slow_per_stack = 0.2
+freeze_stacks = 3
+freeze_time = 1.2
+daze_slow = 0.4
+ember_mark_damage = 1.25

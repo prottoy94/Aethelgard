@@ -13,6 +13,9 @@ const WORLD_LAYER := 1 << 0
 @export var element := Elements.Type.NONE
 @export var knockback := 4.0          ## m/s push, away from `source`
 @export var stagger := false
+@export var status_effect := &""        ## e.g. &"burn"; applied on hit
+@export var status_duration := 0.0
+@export var status_power := 0.0
 @export var collide_with_world := false
 @export var active_on_start := false
 
@@ -58,6 +61,8 @@ func _on_area_entered(area: Area3D) -> void:
 	away.y = 0.0
 	var push := away.normalized() * knockback if away.length_squared() > 0.0001 else Vector3.ZERO
 	var info := DamageInfo.create(damage, element, push, source, stagger)
+	if status_effect != &"":
+		info.with_status(status_effect, status_duration, status_power)
 	if hurtbox.receive_hit(info):
 		hit.emit(hurtbox, info)
 

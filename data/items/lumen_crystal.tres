@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1"]
+
+; Material: Lumen Crystal.
+[resource]
+script = ExtResource("1")
+id = &"lumen_crystal"
+display_name = "Lumen Crystal"
+description = "A crystal that keeps a little light inside, even in the dark."
+color = Color(0.659, 0.941, 0.910, 1)

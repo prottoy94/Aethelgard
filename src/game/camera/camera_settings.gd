@@ -22,3 +22,4 @@ extends Resource
 @export var scenic_blend_speed := 1.2   ## blend amount per second into/out of scenic shots
 @export var occlusion_fade := 0.8       ## how see-through blocking objects become (0–1)
 @export var occlusion_fade_speed := 6.0 ## fade amount per second
+@export var near_fade_radius := 4.5     ## m: tree canopies this close to the lens fade too, even off the sight line

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RecipeData" format=3]
+
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="2"]
+[ext_resource type="Resource" path="res://data/items/healing_potion.tres" id="3"]
+[ext_resource type="Resource" path="res://data/items/sunpetal.tres" id="4"]
+
+; Recipe: healing_potion.
+[resource]
+script = ExtResource("1")
+id = &"healing_potion"
+output = ExtResource("3")
+output_count = 1
+inputs = Array[ExtResource("2")]([ExtResource("4")])
+input_counts = PackedInt32Array(2)
+station = 0

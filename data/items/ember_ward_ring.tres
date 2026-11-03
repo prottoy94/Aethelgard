@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://src/items/equipment_data.gd" id="1"]
+
+; Equipment: Ember-Ward Ring.
+[resource]
+script = ExtResource("1")
+id = &"ember_ward_ring"
+display_name = "Ember-Ward Ring"
+description = "An iron band wrapped around a cooled cinder. Fire slides off it."
+color = Color(1.000, 0.478, 0.239, 1)
+max_stack = 9
+slot = 2
+magic_power = 5
+resist_element = 6
+resist = 0.3

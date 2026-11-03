@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://src/items/equipment_data.gd" id="1"]
+
+; Equipment: Apprentice Staff.
+[resource]
+script = ExtResource("1")
+id = &"apprentice_staff"
+display_name = "Apprentice Staff"
+description = "Aurelia's first staff: plain wood, a small teal gem and a lantern hook."
+color = Color(0.788, 0.635, 0.420, 1)
+max_stack = 9
+slot = 0

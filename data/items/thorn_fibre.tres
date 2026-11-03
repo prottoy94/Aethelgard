@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1"]
+
+; Material: Thorn Fibre.
+[resource]
+script = ExtResource("1")
+id = &"thorn_fibre"
+display_name = "Thorn Fibre"
+description = "Tough green fibre from a Thornling. Makes fine cord and wrapping."
+color = Color(0.435, 0.604, 0.235, 1)

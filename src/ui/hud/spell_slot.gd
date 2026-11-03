@@ -15,6 +15,8 @@ var spell: SpellData
 var cooldown: Cooldown
 var key_text := ""
 var usable := true
+## Optional: returns the current stamina cost (after mastery).
+var cost_provider: Callable
 var _icon: Texture2D
 
 
@@ -49,7 +51,7 @@ func _draw() -> void:
 			_draw_cooldown_pie(1.0 - cooldown.progress())
 			draw_string(font, Vector2(0, SIZE.y / 2.0 + 8), "%.1f" % cooldown.remaining, HORIZONTAL_ALIGNMENT_CENTER, SIZE.x, 22)
 		draw_rect(rect, element_color if usable else Color(0.4, 0.4, 0.45), false, 2.0)
-		draw_string(font, Vector2(4, SIZE.y - 6), str(roundi(spell.stamina_cost)), HORIZONTAL_ALIGNMENT_RIGHT, SIZE.x - 8, 15, Color("9fe8ff"))
+		draw_string(font, Vector2(4, SIZE.y - 6), str(roundi(cost_provider.call() if cost_provider.is_valid() else spell.stamina_cost)), HORIZONTAL_ALIGNMENT_RIGHT, SIZE.x - 8, 15, Color("9fe8ff"))
 	else:
 		draw_rect(rect, Color(0.35, 0.35, 0.4, 0.6), false, 1.0)
 	draw_string(font, Vector2(5, 18), key_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 1, 1, 0.9))

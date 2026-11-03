@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="LootTable" format=3]
+
+[ext_resource type="Script" path="res://src/items/loot_table.gd" id="1"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="2"]
+[ext_resource type="Resource" path="res://data/items/ember_cinder.tres" id="3"]
+[ext_resource type="Resource" path="res://data/items/lumen_crystal.tres" id="4"]
+
+; Drops of the ember_wisp.
+[resource]
+script = ExtResource("1")
+items = Array[ExtResource("2")]([ExtResource("3"), ExtResource("4")])
+chances = PackedFloat32Array(1.0, 0.2)
+min_counts = PackedInt32Array(1, 1)
+max_counts = PackedInt32Array(2, 1)

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://src/items/equipment_data.gd" id="1"]
+
+; Equipment: Plum Capelet.
+[resource]
+script = ExtResource("1")
+id = &"plum_capelet"
+display_name = "Plum Capelet"
+description = "Her travelling capelet with gold trim. Lovely, but no armour to speak of."
+color = Color(0.478, 0.353, 0.541, 1)
+max_stack = 9
+slot = 1

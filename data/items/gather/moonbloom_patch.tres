@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="GatherNodeData" format=3]
+
+[ext_resource type="Script" path="res://src/world/items/gather_node_data.gd" id="1"]
+[ext_resource type="Resource" path="res://data/items/moonbloom.tres" id="2"]
+
+; Gather node: Moonbloom.
+[resource]
+script = ExtResource("1")
+display_name = "Moonbloom"
+item = ExtResource("2")
+look = 0
+min_amount = 1
+max_amount = 2
+regrow_time = 45.0

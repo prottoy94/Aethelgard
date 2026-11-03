@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://src/items/equipment_data.gd" id="1"]
+
+; Equipment: Lantern Heart Amulet.
+[resource]
+script = ExtResource("1")
+id = &"lantern_heart_amulet"
+display_name = "Lantern Heart Amulet"
+description = "A tiny lantern with a Lumen Crystal for a heart. It beats when you cast."
+color = Color(1.000, 0.851, 0.541, 1)
+max_stack = 9
+slot = 2
+magic_power = 5
+max_stamina = 20.0

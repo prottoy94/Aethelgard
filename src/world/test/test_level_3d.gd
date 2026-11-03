@@ -3,8 +3,9 @@ extends Node3D
 ## (World Tree with sunbeams, mossy stone stairs between broken walls, yellow flowers, misty cliffs with a waterfall).
 ## Aurelia walks here with the hybrid camera. Solid objects are StaticBody3D roots with their meshes as children,
 ## so the camera can fade the whole object when it blocks the view.
-## Start options (after `--`): --spawn=viewpoint puts Aurelia on the scenic platform, --spawn=combat next to a Thornling;
-## --visual=animated uses the animated
+## Start options (after `--`): --spawn=viewpoint puts Aurelia on the scenic platform, --spawn=combat next to a Thornling,
+## --spawn=wisp near an Ember Wisp; --open=inventory|grimoire|crafting opens a menu; --give=materials fills the bag
+## with 5 of every material (to try crafting); --visual=animated uses the animated
 ## stand-in model; --benchmark=<dir> (PerfOverlay). Press V in game to switch between the placeholder and the animated model.
 
 const GROUND := preload("res://assets/shaders/ground.gdshader")
@@ -20,6 +21,15 @@ const THORNLING_SCENE := preload("res://src/actors/enemies/thornling/thornling.t
 ## Where Thornlings live (away from the spawn, so Aurelia isn't attacked straight away).
 const THORNLING_SPOTS: Array[Vector3] = [Vector3(11, 0, -9), Vector3(-7, 0, -19), Vector3(15, 0, -18), Vector3(3, 0, -27)]
 const ENEMY_RESPAWN_TIME := 6.0
+const EMBER_WISP_SCENE := preload("res://src/actors/enemies/ember_wisp/ember_wisp.tscn")
+const WISP_SPOTS: Array[Vector3] = [Vector3(-15, 0, -7), Vector3(20, 0, -14)]
+const GUST := preload("res://data/spells/gust.tres")
+const MENDING_BLOOM := preload("res://data/spells/mending_bloom.tres")
+const SHRINE_POSITION := Vector3(-3.2, 0, 3.5)
+const WORKBENCH_POSITION := Vector3(2.0, 0, 8.0)
+const GATHER_DIR := "res://data/items/gather/%s.tres"
+const RECIPE_DIR := "res://data/recipes/%s.tres"
+const RESERVED_RADIUS := 1.6  ## m trees and columns keep away from item spots
 
 const WORLD_LAYER := 1 << 0
 const OCCLUDER_LAYER := 1 << 10  # camera_occluder
@@ -31,7 +41,9 @@ const PLATFORM_CENTER := Vector3(-11, 0, -13)
 const PLATFORM_SIZE := Vector3(6, 1.2, 6)
 const WORLD_TREE := Vector3(-6, 0, -75)
 const SIGN_TEXT := "Elderroot Meadow, test area.\nWASD move · Space dash · Q/R rotate camera · Wheel zoom · Z reset\n" + \
-		"Left click staff strike · 1 Light Mote · 2 Gust · Thornlings wander to the north\n" + \
+		"Left click staff strike · 1 Light Mote · 2 Lantern Glow · Tab menu (Q/R: Inventory, Grimoire) · E interact\n" + \
+		"Find spell tomes and read them at the shrine. Gather flowers, ore, wood and crystals; enemies drop materials.\n" + \
+		"Craft potions at the kit by the shrine and accessories at the workbench. Recipes are hidden around the meadow.\n" + \
 		"Climb the stairs to the west for a view of the World Tree."
 
 var _rng := RandomNumberGenerator.new()
@@ -47,6 +59,13 @@ var _time := 0.0
 var _toast: Label
 var _toast_timer := 0.0
 var player: Player
+var _shrine: RestPoint
+var _crafting: CraftingMenu
+var _game_menu: GameMenu
+## [gather node or recipe file id, position], planned before the trees, which keep clear of them.
+var _gather_plan: Array[Array] = []
+var _scroll_plan: Array[Array] = []
+var _reserved: Array[Vector3] = []
 var _animated := false
 var camera_rig: CameraRig
 
@@ -57,6 +76,7 @@ func _ready() -> void:
 	_noise.seamless = true
 	_noise.noise = FastNoiseLite.new()
 	_noise.noise.frequency = 0.02
+	_plan_item_spots()
 	_build_environment()
 	_build_ground()
 	_build_grass_and_flowers()
@@ -75,8 +95,19 @@ func _ready() -> void:
 	var hud := Hud.new()
 	add_child(hud)
 	hud.bind(player)
+	_build_menus()
+	_build_tomes()
+	_build_items()
+	PlayerData.tome_found.connect(func(spell: SpellData) -> void:
+		show_toast("Found the %s tome! Rest at a Lantern Shrine to read it." % spell.display_name, 5.0))
+	Inventory.recipe_learned.connect(func(recipe: RecipeData) -> void:
+		show_toast("Learned a recipe: %s. Make it at the %s." % [recipe.display_name(),
+				RecipeData.STATION_NAMES[recipe.station].to_lower()], 5.0))
+	_apply_start_options()
 	for spot in THORNLING_SPOTS:
-		_spawn_thornling(spot)
+		_spawn_enemy(THORNLING_SCENE, spot)
+	for spot in WISP_SPOTS:
+		_spawn_enemy(EMBER_WISP_SCENE, spot)
 	add_child(PerfOverlay.new())
 	Settings.graphics_changed.connect(_apply_graphics)
 	_apply_graphics(Settings.graphics)
@@ -136,8 +167,10 @@ func _spawn_player() -> void:
 			player.position = PLATFORM_CENTER + Vector3(0, PLATFORM_SIZE.y, 0)
 		elif arg == "--spawn=combat":
 			player.position = THORNLING_SPOTS[0] + Vector3(0, 0, 3.5)  # next to a Thornling
+		elif arg == "--spawn=wisp":
+			player.position = WISP_SPOTS[0] + Vector3(2, 0, 6.5)  # in an Ember Wisp's range
 	add_child(player)
-	player.respawn_point = SPAWN  # by the lantern shrine
+	player.respawn_point = _shrine.respawn_position()
 	if "--visual=animated" in OS.get_cmdline_user_args():
 		_set_animated(true)
 	camera_rig = CameraRig.new()
@@ -147,12 +180,12 @@ func _spawn_player() -> void:
 	player.camera_rig = camera_rig
 
 
-func _spawn_thornling(spot: Vector3) -> void:
-	var thornling: Enemy = THORNLING_SCENE.instantiate()
-	thornling.position = spot
-	add_child(thornling)
-	thornling.defeated.connect(func(_enemy: Enemy) -> void:
-		get_tree().create_timer(ENEMY_RESPAWN_TIME).timeout.connect(_spawn_thornling.bind(spot)))
+func _spawn_enemy(scene: PackedScene, spot: Vector3) -> void:
+	var enemy: Enemy = scene.instantiate()
+	enemy.position = spot
+	add_child(enemy)
+	enemy.defeated.connect(func(_enemy: Enemy) -> void:
+		get_tree().create_timer(ENEMY_RESPAWN_TIME).timeout.connect(_spawn_enemy.bind(scene, spot)))
 
 
 # --- Environment ---------------------------------------------------------------------------
@@ -265,7 +298,8 @@ func _build_trees() -> void:
 	var placed := 0
 	while placed < 70:
 		var p := Vector3(_rng.randf_range(-60, 60), 0, _rng.randf_range(-65, 35))
-		if p.distance_to(SPAWN) < 8.0 or _on_path(p, 3.5) or p.distance_to(POND_CENTER) < 6.5 or _on_platform(p, 3.0):
+		if p.distance_to(SPAWN) < 8.0 or _on_path(p, 3.5) or p.distance_to(POND_CENTER) < 6.5 or _on_platform(p, 3.0) \
+				or _is_reserved(p):
 			continue
 		var tree := _solid_root(p)
 		_add_shape(tree, _cylinder_shape(0.35, 3.2), Vector3(0, 1.6, 0))
@@ -362,7 +396,7 @@ func _build_ruins() -> void:
 	for i in 8:
 		var height := _rng.randf_range(0.8, 3.6)
 		var p := Vector3(_rng.randf_range(-18, 18), 0, _rng.randf_range(-24, -2))
-		if _on_path(p, 3.2) or _on_platform(p, 1.5) or p.distance_to(SPAWN) < 5.0:
+		if _on_path(p, 3.2) or _on_platform(p, 1.5) or p.distance_to(SPAWN) < 5.0 or _is_reserved(p):
 			continue
 		var column := CylinderMesh.new()
 		column.top_radius = 0.45
@@ -505,28 +539,118 @@ func _build_sign() -> void:
 	interactable.interacted.connect(func(_by: Node) -> void: show_toast(SIGN_TEXT))
 
 
-## Lantern shrine (future rest point, visual only for now).
+## The Lantern Shrine near the start: rest here to heal, set the respawn point and read spell tomes.
 func _build_shrine() -> void:
-	var stone := ToonMaterials.shader_material(STONE, {"noise_tex": _noise})
-	var shrine := _solid_root(SPAWN + Vector3(-3.2, 0, -0.5))
-	_add_shape(shrine, _cylinder_shape(0.5, 1.2), Vector3(0, 0.6, 0))
-	var base := CylinderMesh.new()
-	base.top_radius = 0.45
-	base.bottom_radius = 0.6
-	base.height = 0.6
-	_mesh(shrine, base, stone, Vector3(0, 0.3, 0))
-	var post := BoxMesh.new()
-	post.size = Vector3(0.18, 1.0, 0.18)
-	_mesh(shrine, post, stone, Vector3(0, 1.1, 0))
-	var lamp := BoxMesh.new()
-	lamp.size = Vector3(0.26, 0.3, 0.26)
-	_mesh(shrine, lamp, ToonMaterials.glow(Color(1.0, 0.75, 0.4), 3.0), Vector3(0, 1.75, 0))
-	var light := OmniLight3D.new()
-	light.light_color = Color(1.0, 0.78, 0.45)
-	light.light_energy = 1.2
-	light.omni_range = 5.0
-	light.position = Vector3(0, 1.75, 0)
-	shrine.add_child(light)
+	_shrine = RestPoint.new()
+	_shrine.position = SHRINE_POSITION
+	add_child(_shrine)
+	_shrine.rested.connect(_on_rested)
+
+
+## Spell tomes: Gust waits on the scenic platform (a reward for climbing); Mending Bloom is hidden under
+## the arch gate until Lantern Glow reveals it (and needs Magic Power 20 to read).
+func _build_tomes() -> void:
+	var gust := SpellTome.new()
+	gust.spell = GUST
+	gust.persist_id = &"elderroot_tome_gust"
+	gust.position = PLATFORM_CENTER + Vector3(1.6, PLATFORM_SIZE.y, -1.2)
+	add_child(gust)
+	var bloom := SpellTome.new()
+	bloom.spell = MENDING_BLOOM
+	bloom.persist_id = &"elderroot_tome_mending_bloom"
+	bloom.hidden = true
+	bloom.position = Vector3(_path_x(-6.0), 0, -6.0)
+	add_child(bloom)
+
+
+func _on_rested(_player: Player, result: Dictionary) -> void:
+	var lines: Array[String] = ["You rest at the Lantern Shrine. Health and stamina restored."]
+	for spell: SpellData in result["learned"]:
+		lines.append("You read the tome and learned %s!" % spell.display_name)
+	for spell: SpellData in result["blocked"]:
+		lines.append("The %s tome is too advanced: it needs Magic Power %d (you have %d)." % [
+			spell.display_name, spell.required_magic_power, PlayerData.magic_power])
+	show_toast("\n".join(lines), 6.0)
+
+
+# --- Items & crafting (Phase 5) ----------------------------------------------------------------
+
+## Where gather nodes and recipe scrolls go: beside the path (trees and columns keep 3.2+ m from it), on the pond
+## rim (trees keep 6.5 m from its centre), near the start, and on the platform. Planned first so trees avoid them.
+func _plan_item_spots() -> void:
+	var beside_path := func(z: float, side: float) -> Vector3: return Vector3(_path_x(z) + side * 3.3, 0, z)
+	var pond_rim := func(degrees: float) -> Vector3:
+		return POND_CENTER + Vector3.FORWARD.rotated(Vector3.UP, deg_to_rad(degrees)) * 5.8
+	_gather_plan = [
+		["sunpetal_patch", Vector3(-3.5, 0, 9.0)], ["sunpetal_patch", Vector3(-6.0, 0, 6.5)],
+		["sunpetal_patch", beside_path.call(-11.0, 1.0)],
+		["moonbloom_patch", pond_rim.call(-30.0)], ["moonbloom_patch", pond_rim.call(-140.0)],
+		["elderwood_branch", beside_path.call(-18.0, -1.0)], ["elderwood_branch", beside_path.call(-22.0, 1.0)],
+		["iron_ore_vein", beside_path.call(-25.0, -1.0)], ["iron_ore_vein", Vector3(6.0, 0, 10.0)],
+		["lumen_crystal_cluster", PLATFORM_CENTER + Vector3(-1.6, PLATFORM_SIZE.y, 1.4)],
+		["lumen_crystal_cluster", beside_path.call(-8.0, 1.0)],
+	]
+	_scroll_plan = [
+		["stamina_tonic", pond_rim.call(-80.0)],
+		["ember_ward_ring", Vector3(17.5, 0, -10.5)],
+		["swift_quill_charm", Vector3(13.5, 0, -22.5)],
+	]
+	_reserved = [WORKBENCH_POSITION]
+	for plan: Array in _gather_plan + _scroll_plan:
+		_reserved.append(plan[1])
+
+
+func _is_reserved(p: Vector3) -> bool:
+	return _reserved.any(func(spot: Vector3) -> bool:
+		return Vector2(p.x - spot.x, p.z - spot.z).length() < RESERVED_RADIUS)
+
+
+## The Tab menu (Inventory and Grimoire pages) and the crafting menu used by the workbench and the shrine's kit.
+func _build_menus() -> void:
+	_game_menu = GameMenu.new()
+	add_child(_game_menu)
+	var inventory_menu := InventoryMenu.new()
+	_game_menu.add_page(inventory_menu)
+	inventory_menu.bind(player)
+	_game_menu.add_page(Grimoire.new())
+	_crafting = CraftingMenu.new()
+	add_child(_crafting)
+
+
+func _build_items() -> void:
+	for plan: Array in _gather_plan:
+		var node := GatherNode.new()
+		node.data = load(GATHER_DIR % plan[0])
+		node.position = plan[1]
+		node.rotation.y = _rng.randf() * TAU
+		add_child(node)
+	for plan: Array in _scroll_plan:
+		var scroll := RecipeScroll.new()
+		scroll.recipe = load(RECIPE_DIR % plan[0])
+		scroll.persist_id = StringName("elderroot_recipe_%s" % plan[0])
+		scroll.position = plan[1]
+		add_child(scroll)
+	var workbench := CraftingStation.new()
+	workbench.station = RecipeData.Station.WORKBENCH
+	workbench.position = WORKBENCH_POSITION
+	workbench.rotation.y = PI  # its tools face the start
+	add_child(workbench)
+	for station: CraftingStation in get_tree().get_nodes_in_group(&"crafting_station"):
+		station.used.connect(func(_by: Player, at: RecipeData.Station) -> void: _crafting.open_station(at))
+
+
+func _apply_start_options() -> void:
+	var args := OS.get_cmdline_user_args()
+	if "--give=materials" in args:
+		for item in Inventory.LIBRARY.items:
+			if item.category == ItemData.Category.MATERIAL:
+				Inventory.add(item, 5)
+	if "--open=inventory" in args:
+		_game_menu.open.call_deferred(0)
+	elif "--open=grimoire" in args:
+		_game_menu.open.call_deferred(1)
+	elif "--open=crafting" in args:
+		_crafting.open_station.call_deferred(RecipeData.Station.WORKBENCH)
 
 
 ## Lumen, the blue spirit butterfly (pose_3 art), flutters around the spawn.

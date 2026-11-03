@@ -8,6 +8,8 @@ extends Node3D
 const OCCLUSION_MASK := (1 << 0) | (1 << 10)  # world + camera_occluder
 const OCCLUSION_SAMPLE_HEIGHTS: Array[float] = [0.3, 1.0, 1.6]
 const MAX_HITS_PER_RAY := 4
+const NEAR_FADE_MASK := 1 << 10  # camera_occluder only: never fade the ground under the camera
+const MAX_NEAR_HITS := 8
 const SHAKE_DECAY := 2.5          ## trauma lost per second
 const SHAKE_MAX_OFFSET := 0.25    ## m at full trauma
 const SHAKE_FREQUENCY := 30.0
@@ -155,6 +157,18 @@ func _update_occlusion(delta: float) -> void:
 			var root := collider if collider is StaticBody3D else collider.get_parent()
 			for geometry in _geometry_under(root):
 				blocking[geometry] = true
+	# Canopies right in front of the lens fill the screen even when they don't hide Aurelia.
+	var near := PhysicsShapeQueryParameters3D.new()
+	var sphere := SphereShape3D.new()
+	sphere.radius = settings.near_fade_radius
+	near.shape = sphere
+	near.transform = Transform3D(Basis.IDENTITY, from)
+	near.collision_mask = NEAR_FADE_MASK
+	near.collide_with_areas = true
+	near.collide_with_bodies = false
+	for hit in space.intersect_shape(near, MAX_NEAR_HITS):
+		for geometry in _geometry_under((hit.collider as Node).get_parent()):
+			blocking[geometry] = true
 	for geometry in blocking:
 		if not _faded.has(geometry):
 			_faded[geometry] = 0.0

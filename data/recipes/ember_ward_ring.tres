@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RecipeData" format=3]
+
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="2"]
+[ext_resource type="Resource" path="res://data/items/ember_ward_ring.tres" id="3"]
+[ext_resource type="Resource" path="res://data/items/ember_cinder.tres" id="4"]
+[ext_resource type="Resource" path="res://data/items/iron_ore.tres" id="5"]
+
+; Recipe: ember_ward_ring.
+[resource]
+script = ExtResource("1")
+id = &"ember_ward_ring"
+output = ExtResource("3")
+output_count = 1
+inputs = Array[ExtResource("2")]([ExtResource("4"), ExtResource("5")])
+input_counts = PackedInt32Array(3, 1)
+station = 1

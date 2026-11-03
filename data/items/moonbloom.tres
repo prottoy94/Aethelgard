@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1"]
+
+; Material: Moonbloom.
+[resource]
+script = ExtResource("1")
+id = &"moonbloom"
+display_name = "Moonbloom"
+description = "A pale blue flower with a cool, minty scent. Steeped into stamina tonics."
+color = Color(0.624, 0.722, 0.941, 1)
