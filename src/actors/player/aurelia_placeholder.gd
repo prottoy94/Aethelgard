@@ -26,12 +26,21 @@ const LEAN_DEG := 9.0
 const DASH_LEAN_DEG := 20.0
 const CAPE_SWING_DEG := 22.0
 const DASH_CAPE_DEG := 50.0
+## Reaction lengths (s) and strengths for play_role()
+const ACTION_TIME := {&"strike": 0.35, &"cast": 0.35, &"hurt": 0.3, &"interact": 0.5}
+const STRIKE_TWIST_DEG := 35.0
+const STRIKE_STAFF_DEG := 75.0
+const CAST_STAFF_DEG := 40.0
+const HURT_FLINCH_DEG := 18.0
+const DEATH_FALL_DEG := 80.0
 
 var _body: Node3D        # everything above the feet: leans and bobs
 var _cape: Node3D        # long cape, pivots at the shoulders
 var _hair_back: Node3D   # long hair, pivots at the head
 var _staff: AureliaStaff
 var _time := 0.0
+var _action := &""
+var _action_time := 0.0
 var _lean := 0.0
 var _cape_angle := 0.0
 
@@ -53,12 +62,51 @@ func update_motion(speed_ratio: float, dashing: bool, delta: float, _speed := 0.
 	_lean = lerpf(_lean, target_lean, 1.0 - exp(-12.0 * delta))
 	_body.rotation_degrees.x = -_lean
 	_body.position.y = absf(sin(_time * BOB_RATE)) * BOB_HEIGHT * moving
+	_apply_action(delta)
 	var breathe := sin(_time * 2.2) * 2.0
 	var target_cape := (DASH_CAPE_DEG if dashing else CAPE_SWING_DEG * moving) + breathe
 	_cape_angle = lerpf(_cape_angle, target_cape, 1.0 - exp(-6.0 * delta))
 	_cape.rotation_degrees.x = _cape_angle
 	_hair_back.rotation_degrees.x = _cape_angle * 0.6
 	_staff.set_swing(moving)
+
+
+## Simple procedural reactions so combat reads even before real animations: strike, cast, hurt, death.
+func play_role(role: StringName) -> void:
+	_action = role
+	_action_time = 0.0
+
+
+func reset_pose() -> void:
+	_action = &""
+	_body.rotation_degrees = Vector3.ZERO
+	_staff.rotation_degrees = Vector3.ZERO
+
+
+func _apply_action(delta: float) -> void:
+	_body.rotation_degrees.y = 0.0
+	_body.rotation_degrees.z = 0.0
+	_staff.rotation_degrees.x = 0.0
+	if _action == &"":
+		return
+	_action_time += delta
+	if _action == &"death":
+		var fall := clampf(_action_time / 0.5, 0.0, 1.0)
+		_body.rotation_degrees.z = DEATH_FALL_DEG * fall
+		return
+	var length: float = ACTION_TIME.get(_action, 0.3)
+	var t := clampf(_action_time / length, 0.0, 1.0)
+	var arc := sin(t * PI)
+	match _action:
+		&"strike":
+			_body.rotation_degrees.y = -STRIKE_TWIST_DEG * arc
+			_staff.rotation_degrees.x = -STRIKE_STAFF_DEG * arc
+		&"cast":
+			_staff.rotation_degrees.x = -CAST_STAFF_DEG * arc
+		&"hurt":
+			_body.rotation_degrees.x += HURT_FLINCH_DEG * arc
+	if t >= 1.0:
+		_action = &""
 
 
 # --- Building ------------------------------------------------------------------------------

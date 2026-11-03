@@ -9,7 +9,13 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
 - **Phases 1, 1b and 2 done** 2026-11-03. **Phase 2b in progress:** animation pipeline + animated stand-in done; **waiting for the
   owner's VRoid export** at `assets/models/characters/aurelia.vrm` (guide: AURELIA_VROID_GUIDE.md). When it arrives: inspect it with
   `tools/dev/inspect_scene.gd`, view it with `character_viewer.tscn -- --model=res://assets/models/characters/aurelia.vrm`,
-  then make it the Player's default visual (HumanoidVisual) and build the style diorama. Then Phase 3 combat. 43/43 tests pass.
+  then make it the Player's default visual (HumanoidVisual) and build the style diorama.
+- **Phase 3 (combat core) done** 2026-11-03: health/stamina/spells/strike/hurt/death, Thornling enemy, HUD. **62/62 tests pass.**
+  **Next: Phase 4, magic & growth** (elements in play, Grimoire, learning spells, mastery, Magic Power & rank).
+  Combat code: `src/components/` (Health, Stamina, Hitbox, Hurtbox), `src/magic/` (Elements, SpellData, SpellCaster, spells/),
+  `src/actors/enemies/` (Enemy, EnemyData, states, thornling/), `src/core/fx/combat_fx.gd`, `src/ui/hud/`. Data: `data/spells/`,
+  `data/enemies/`, `data/player/aurelia_combat.tres` (starting spells set via ResourceSaver so the typed array is valid).
+  Tests that need hit-stop off set `CombatFx.hit_stop_enabled = false`. `--spawn=combat` starts next to a Thornling.
   Main scene = `src/world/test/test_level_3d.tscn` (Elderroot test meadow: Player + CameraRig + PerfOverlay). Start options after `--`:
   `--spawn=viewpoint`, `--benchmark=<dir>`, `--graphics=low|medium|high`.
   Key code: `src/actors/player/` (Player, states, placeholder model, MovementStats), `src/game/camera/` (CameraRig, CameraSettings),
@@ -81,6 +87,8 @@ godot --headless --import          # import resources (before headless tests)
 godot --headless -s addons/gut/gut_cmdln.gd -gdir=res://tests -ginclude_subdirs -gexit   # run unit tests
 godot --path . --fullscreen -- --benchmark=<dir>   # measure 300 frames, save benchmark.txt + benchmark.png, quit
 godot --path . --fullscreen --gpu-index 1 -- --benchmark=<dir> --graphics=low   # same on the Intel UHD, Low preset
+godot --headless --path . --export-release "Windows Desktop" build/windows/Aethelgard.exe   # Windows build (run from PowerShell:
+#   cmd.exe splits the quoted preset name). Templates: Windows x86_64 only, in D:\Tools\Godot\editor_data\export_templates.7.2.stable
 ```
 From Git Bash, call Godot as `cmd.exe //c "D:\Tools\Godot\godot.cmd ..."`.
 Run the game and look at it yourself instead of asking the owner what happened. The `game-development` skill's helper needs

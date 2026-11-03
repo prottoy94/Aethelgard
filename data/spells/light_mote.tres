@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="SpellData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/magic/spell_data.gd" id="1"]
+[ext_resource type="PackedScene" path="res://src/magic/spells/light_mote.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"light_mote"
+display_name = "Light Mote"
+description = "A small bolt of light that drifts towards the nearest enemy. Weak, but it never runs out of hope."
+element = 1
+scene = ExtResource("2")
+stamina_cost = 8.0
+cooldown = 0.6
+base_damage = 12.0
+knockback = 2.0
+stagger = false
+speed = 14.0
+spell_range = 14.0
+radius = 0.22
+angle_deg = 0.0
+power_value = 8
+required_magic_power = 0

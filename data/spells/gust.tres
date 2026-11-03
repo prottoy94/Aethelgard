@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="SpellData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/magic/spell_data.gd" id="1"]
+[ext_resource type="PackedScene" path="res://src/magic/spells/gust.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"gust"
+display_name = "Gust"
+description = "A rush of wind that throws enemies back and breaks their attacks."
+element = 2
+scene = ExtResource("2")
+stamina_cost = 15.0
+cooldown = 2.5
+base_damage = 4.0
+knockback = 9.0
+stagger = true
+speed = 0.0
+spell_range = 4.0
+radius = 4.0
+angle_deg = 80.0
+power_value = 12
+required_magic_power = 0

@@ -21,22 +21,22 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 |---|---|---|---|---|
 | FR-PLY-01 | Aurelia is the playable character from the start of the game. | MVP | New game starts with Aurelia in Elderroot Meadow. | 🟨 Aurelia (placeholder model) spawns in the test meadow (Phase 2); story start in Phase 6 |
 | FR-PLY-02 | Free 360° movement in 3D with blended locomotion animations (idle / walk / run). | MVP | Aurelia turns smoothly toward any direction; speed is the same in all directions. | 🟨 360° movement tested (Phase 2); real animations (idle/walk/jog/dash) on the animated stand-in with foot-speed matching (Phase 2b); waiting for Aurelia's VRoid model |
-| FR-PLY-03 | Mouse / right-stick aiming for attacks and spells. | MVP | Spells fire toward the cursor/stick direction. | ⬜ |
-| FR-PLY-04 | Dash with a short cooldown and brief invincibility; does not use stamina. | MVP | Dashing through an enemy attack causes no damage. | 🟨 Dash with cooldown, 0.15 s input buffer and i-frame timer, tested (Phase 2); dodging hits checked in Phase 3 |
-| FR-PLY-05 | Free staff strike (melee, no stamina cost). | MVP | Usable even when stamina is 0. | ⬜ |
+| FR-PLY-03 | Mouse / right-stick aiming for attacks and spells. | MVP | Spells fire toward the cursor/stick direction. | ✅ Phase 3 (mouse on the ground plane or right stick; aim reticle) |
+| FR-PLY-04 | Dash with a short cooldown and brief invincibility; does not use stamina. | MVP | Dashing through an enemy attack causes no damage. | ✅ Phase 3 (dashing through a Thornling attack avoids the hit; tested) |
+| FR-PLY-05 | Free staff strike (melee, no stamina cost). | MVP | Usable even when stamina is 0. | ✅ Phase 3 (wind-up, active window, recovery; tested) |
 | FR-PLY-06 | Interact with NPCs, chests, rest points and gather nodes, with a visible prompt. | MVP | A prompt appears in range; the interact key triggers it. | ✅ Phase 2 (prompt + E, tested) |
-| FR-PLY-07 | Stats: HP, Stamina, Magic Power, Defense, Move speed. | MVP | Visible in the status menu; changed by equipment. | ⬜ |
-| FR-PLY-08 | On defeat, respawn at the last rest point without losing items. | MVP | Inventory is identical before and after respawn. | ⬜ |
+| FR-PLY-07 | Stats: HP, Stamina, Magic Power, Defense, Move speed. | MVP | Visible in the status menu; changed by equipment. | 🟨 HP, stamina, defense and speed exist (Phase 3); Magic Power in Phase 4; status menu later |
+| FR-PLY-08 | On defeat, respawn at the last rest point without losing items. | MVP | Inventory is identical before and after respawn. | ✅ Phase 3 (respawn at the shrine, tested; nothing to lose yet, inventory comes in Phase 5) |
 
 ### 1.2 Magic (MAG)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-MAG-01 | Every spell costs stamina; casting with too little stamina fails with feedback. | MVP | The cast is refused with a sound and the bar flashes. | ⬜ |
-| FR-MAG-02 | Stamina regenerates after a short delay since the last cast. | MVP | Regen starts ~0.8 s after the last cast (data-driven value). | ⬜ |
-| FR-MAG-03 | Each spell has its own cooldown, plus a short global cooldown. | MVP | A spell can't be recast until its radial cooldown is complete. | ⬜ |
-| FR-MAG-04 | **Exhausted** state at 0 stamina: no casting until ~30% refill. | MVP | Casting is blocked until the threshold; strike and dash still work. | ⬜ |
-| FR-MAG-05 | 4 equipped spell slots; loadout editable in the Grimoire. | MVP | Swapping a spell updates the HUD slot. | ⬜ |
-| FR-MAG-06 | Elements Light, Wind, Frost, Earth, Fire (+ enemy Ember) with strong/weak pairs (×1.5 / ×0.5). | MVP | Frost on an Ember enemy deals 1.5× damage (unit tested). | ⬜ |
+| FR-MAG-01 | Every spell costs stamina; casting with too little stamina fails with feedback. | MVP | The cast is refused with a sound and the bar flashes. | ✅ Phase 3 (refused cast flashes the stamina bar; tested) |
+| FR-MAG-02 | Stamina regenerates after a short delay since the last cast. | MVP | Regen starts ~0.8 s after the last cast (data-driven value). | ✅ Phase 3 (0.8 s delay, exact refill timing; tested) |
+| FR-MAG-03 | Each spell has its own cooldown, plus a short global cooldown. | MVP | A spell can't be recast until its radial cooldown is complete. | ✅ Phase 3 (per-slot cooldowns + 0.25 s global cooldown, radial HUD sweep; tested) |
+| FR-MAG-04 | **Exhausted** state at 0 stamina: no casting until ~30% refill. | MVP | Casting is blocked until the threshold; strike and dash still work. | ✅ Phase 3 (Exhausted until 30%, strike and dash still work; tested) |
+| FR-MAG-05 | 4 equipped spell slots; loadout editable in the Grimoire. | MVP | Swapping a spell updates the HUD slot. | 🟨 4 slots work and show in the HUD (Phase 3); editing the loadout in the Grimoire comes in Phase 4 |
+| FR-MAG-06 | Elements Light, Wind, Frost, Earth, Fire (+ enemy Ember) with strong/weak pairs (×1.5 / ×0.5). | MVP | Frost on an Ember enemy deals 1.5× damage (unit tested). | ✅ Phase 3 (element pairs + Frost/Ember special cases; tested) |
 | FR-MAG-07 | Spells are obtained from tomes, trials, quests, bosses, teachers and dragons. | MVP (tomes, trials) / V1 (rest) | Picking up a tome adds it to "unlearned". | ⬜ |
 | FR-MAG-08 | Spells are learned by reading the tome at a rest point; some need a minimum Magic Power. | MVP | A gated tome shows the required MP and can't be learned below it. | ⬜ |
 | FR-MAG-09 | Spell mastery I–V gained by use; improves the spell and adds Magic Power. | MVP | Using a spell enough raises its level and the MP total. | ⬜ |
@@ -44,16 +44,16 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-MAG-11 | Each new rank gives +max stamina and opens Arcane Seals of that rank. | V1 | Reaching rank D opens D-seals. | ⬜ |
 | FR-MAG-12 | The staff gem colour matches the element of the last cast. | V1 | Casting Frost turns the gem blue. | ⬜ |
 | FR-MAG-13 | Status effects: Burn, Chill→Freeze, Stagger, Root, Daze, Ember Mark. | MVP (Burn, Chill, Stagger) / V1 (rest) | Each effect has a visible icon and timer. | ⬜ |
-| FR-MAG-14 | ~16 player spells in total. | V1 | All listed in GDD §6.4 are implemented. | ⬜ |
+| FR-MAG-14 | ~16 player spells in total. | V1 | All listed in GDD §6.4 are implemented. | 🟨 2 of ~16 spells: Light Mote, Gust (Phase 3) |
 
 ### 1.3 Combat & enemies (CMB)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-CMB-01 | Real-time combat with hit-stop, knockback and hit flash. | MVP | Every hit visibly reacts. | ⬜ |
-| FR-CMB-02 | Enemies have HP, element, weakness and rank, shown above them. | MVP | Rank letter + HP bar appear when engaged. | ⬜ |
+| FR-CMB-01 | Real-time combat with hit-stop, knockback and hit flash. | MVP | Every hit visibly reacts. | ✅ Phase 3 (hit-stop, knockback, hit flash, plus screen shake and damage numbers) |
+| FR-CMB-02 | Enemies have HP, element, weakness and rank, shown above them. | MVP | Rank letter + HP bar appear when engaged. | 🟨 HP bar, element and weakness work (Phase 3); rank letter shown in Phase 4 |
 | FR-CMB-03 | Enemies can use magic (projectiles, shields, buffs, summons). | MVP (projectiles) / V1 | At least one caster enemy in the slice. | ⬜ |
 | FR-CMB-04 | Some enemies have elemental shields broken only by a specific element. | V1 | Wrong elements deal no damage while the shield is up. | ⬜ |
-| FR-CMB-05 | Every enemy attack follows Telegraph → Attack → Recover, with a visual and audio cue. | MVP | No attack deals damage without a preceding telegraph. | ⬜ |
+| FR-CMB-05 | Every enemy attack follows Telegraph → Attack → Recover, with a visual and audio cue. | MVP | No attack deals damage without a preceding telegraph. | 🟨 Visual telegraph ring before every attack (Phase 3, tested); telegraph sounds come with audio (Phase 6) |
 | FR-CMB-06 | Enemies drop loot from loot tables. | MVP | Defeated enemies drop materials per their table. | ⬜ |
 | FR-CMB-07 | Difficulty settings: Story / Normal / Hard. | V1 | Changing difficulty changes damage taken and telegraph length. | ⬜ |
 | FR-CMB-08 | ~12 enemy types across the regions. | V1 | All types listed in GDD §7.1 exist. | ⬜ |
@@ -137,7 +137,7 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ### 1.10 UI (UI)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-UI-01 | HUD: HP, stamina (Exhausted flash), 4 spell slots with radial cooldowns, rank badge, quest tracker. | MVP | All elements update live. | ⬜ |
+| FR-UI-01 | HUD: HP, stamina (Exhausted flash), 4 spell slots with radial cooldowns, rank badge, quest tracker. | MVP | All elements update live. | 🟨 HP, stamina with Exhausted warning, 4 spell slots with radial cooldowns (Phase 3); rank badge and quest tracker later |
 | FR-UI-02 | HUD dragon panel: portrait, HP, current command. | V1 | Shows after hatching. | ⬜ |
 | FR-UI-03 | Menus: Inventory, Equipment, Grimoire, Crafting, Journal, Map, Settings. | MVP (Inventory, Grimoire, Crafting, Settings) / V1 | Each opens and closes with keyboard and gamepad. | ⬜ |
 | FR-UI-04 | Dragon menu (stats, bond, skills, name). | V1 | — | ⬜ |
@@ -225,7 +225,7 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | NFR-ACC-02 | Elements are distinguishable by icon/shape, not colour alone. | MVP | Readable in a greyscale screenshot. | 🟨 Element icons differ by shape (Phase 1 placeholders) |
 | NFR-QA-01 | Core logic has GUT unit tests (damage, elements, stamina, cooldowns, MP/rank, inventory, crafting, save round-trip). | MVP | Headless test run passes. | 🟨 GUT 9.7.1 runs headless; 12 tests pass (Phase 1) |
 | NFR-QA-02 | No errors in the Godot output log during a normal vertical-slice playthrough. | MVP | Log is clean at the end of a run. | ⬜ |
-| NFR-PLT-01 | Windows desktop export. | V1 | Exported `.exe` runs on a clean Windows PC. | ⬜ |
+| NFR-PLT-01 | Windows desktop export. | V1 | Exported `.exe` runs on a clean Windows PC. | 🟨 First Windows export works on the owner's PC (Phase 3: 104 MB exe + 1.7 MB data, 240 FPS); clean-PC test later |
 | NFR-SCP-01 | Total playtime ~6–10 hours for v1; vertical slice 30–45 minutes. | V1 | Measured in playtests. | ⬜ |
 
 ---

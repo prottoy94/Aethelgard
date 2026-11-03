@@ -8,6 +8,9 @@ extends Node3D
 const OCCLUSION_MASK := (1 << 0) | (1 << 10)  # world + camera_occluder
 const OCCLUSION_SAMPLE_HEIGHTS: Array[float] = [0.3, 1.0, 1.6]
 const MAX_HITS_PER_RAY := 4
+const SHAKE_DECAY := 2.5          ## trauma lost per second
+const SHAKE_MAX_OFFSET := 0.25    ## m at full trauma
+const SHAKE_FREQUENCY := 30.0
 
 @export var settings: CameraSettings
 @export var target: Node3D
@@ -22,6 +25,10 @@ var _scenic: ScenicViewpoint
 var _last_scenic: ScenicViewpoint
 var _blend := 0.0
 var _faded: Dictionary[GeometryInstance3D, float] = {}
+var _trauma := 0.0
+var _shake_time := 0.0
+## Players can turn screen shake off (accessibility, GAME_DESIGN.md §13).
+var shake_enabled := true
 
 
 func _ready() -> void:
@@ -61,6 +68,11 @@ func is_scenic() -> bool:
 	return _scenic != null
 
 
+## Adds screen shake (0–1). Shake strength grows with the square of the trauma, so small hits stay subtle.
+func add_shake(amount: float) -> void:
+	_trauma = clampf(_trauma + amount, 0.0, 1.0)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("camera_zoom_in"):
 		_target_distance = clamp_zoom(_target_distance - settings.zoom_step, settings)
@@ -84,6 +96,7 @@ func _process(delta: float) -> void:
 		global_position = global_position.lerp(_focus_point(), smoothing(settings.follow_smoothing, delta))
 	_blend = move_toward(_blend, 1.0 if _scenic else 0.0, settings.scenic_blend_speed * delta)
 	_update_camera()
+	_apply_shake(delta)
 
 
 func _physics_process(delta: float) -> void:
@@ -104,6 +117,18 @@ func _update_camera() -> void:
 	else:
 		camera.global_transform = follow
 		camera.fov = settings.fov
+
+
+func _apply_shake(delta: float) -> void:
+	if _trauma <= 0.0:
+		return
+	_trauma = maxf(_trauma - SHAKE_DECAY * delta, 0.0)
+	if not shake_enabled:
+		return
+	_shake_time += delta
+	var strength := _trauma * _trauma * SHAKE_MAX_OFFSET
+	var offset := Vector3(sin(_shake_time * SHAKE_FREQUENCY), sin(_shake_time * SHAKE_FREQUENCY * 1.3 + 1.7), 0.0)
+	camera.global_position += camera.global_basis * (offset * strength)
 
 
 # --- Occlusion fade ------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://src/actors/player/player.gd" id="1_player"]
 [ext_resource type="Resource" path="res://data/player/aurelia_movement.tres" id="2_stats"]
@@ -7,6 +7,15 @@
 [ext_resource type="Script" path="res://src/actors/player/states/idle_state.gd" id="5_idle"]
 [ext_resource type="Script" path="res://src/actors/player/states/move_state.gd" id="6_move"]
 [ext_resource type="Script" path="res://src/actors/player/states/dash_state.gd" id="7_dash"]
+[ext_resource type="Resource" path="res://data/player/aurelia_combat.tres" id="8_combat"]
+[ext_resource type="Script" path="res://src/actors/player/states/strike_state.gd" id="9_strike"]
+[ext_resource type="Script" path="res://src/actors/player/states/hurt_state.gd" id="10_hurt"]
+[ext_resource type="Script" path="res://src/actors/player/states/dead_state.gd" id="11_dead"]
+[ext_resource type="Script" path="res://src/components/health_component.gd" id="12_health"]
+[ext_resource type="Script" path="res://src/components/stamina_component.gd" id="13_stamina"]
+[ext_resource type="Script" path="res://src/magic/spell_caster.gd" id="14_caster"]
+[ext_resource type="Script" path="res://src/components/hurtbox_component.gd" id="15_hurtbox"]
+[ext_resource type="Script" path="res://src/components/hitbox_component.gd" id="16_hitbox"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.3
@@ -15,11 +24,19 @@ height = 1.6
 [sub_resource type="SphereShape3D" id="SphereShape3D_interact"]
 radius = 1.4
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hurt"]
+radius = 0.35
+height = 1.6
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_strike"]
+size = Vector3(1.8, 1.4, 1.4)
+
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
 collision_mask = 13
 script = ExtResource("1_player")
 stats = ExtResource("2_stats")
+combat = ExtResource("8_combat")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
@@ -27,6 +44,33 @@ shape = SubResource("CapsuleShape3D_body")
 
 [node name="Visual" type="Node3D" parent="."]
 script = ExtResource("3_visual")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("12_health")
+
+[node name="Stamina" type="Node" parent="."]
+script = ExtResource("13_stamina")
+
+[node name="SpellCaster" type="Node" parent="." node_paths=PackedStringArray("stamina")]
+script = ExtResource("14_caster")
+stamina = NodePath("../Stamina")
+
+[node name="Hurtbox" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+script = ExtResource("15_hurtbox")
+team = 0
+health = NodePath("../Health")
+
+[node name="Shape" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("CapsuleShape3D_hurt")
+
+[node name="StrikeHitbox" type="Area3D" parent="."]
+script = ExtResource("16_hitbox")
+team = 0
+
+[node name="Shape" type="CollisionShape3D" parent="StrikeHitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -0.85)
+shape = SubResource("BoxShape3D_strike")
 
 [node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("4_machine")
@@ -40,6 +84,15 @@ script = ExtResource("6_move")
 
 [node name="Dash" type="Node" parent="StateMachine"]
 script = ExtResource("7_dash")
+
+[node name="Strike" type="Node" parent="StateMachine"]
+script = ExtResource("9_strike")
+
+[node name="Hurt" type="Node" parent="StateMachine"]
+script = ExtResource("10_hurt")
+
+[node name="Dead" type="Node" parent="StateMachine"]
+script = ExtResource("11_dead")
 
 [node name="InteractionDetector" type="Area3D" parent="."]
 collision_layer = 0

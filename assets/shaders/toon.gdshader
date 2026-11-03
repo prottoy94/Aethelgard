@@ -15,6 +15,8 @@ uniform float emission_energy : hint_range(0.0, 16.0) = 0.0;
 // Occlusion fade (0 = solid, 1 = gone), set per object by the camera rig with
 // set_instance_shader_parameter("fade", x). Dithered, so the object stays in the cheap opaque pass.
 instance uniform float fade : hint_range(0.0, 1.0) = 0.0;
+// Hit flash (0 = none, 1 = white), set per object with set_instance_shader_parameter("hit_flash", x).
+instance uniform float hit_flash : hint_range(0.0, 1.0) = 0.0;
 const float BAYER[16] = float[16](0.0, 8.0, 2.0, 10.0, 12.0, 4.0, 14.0, 6.0, 3.0, 11.0, 1.0, 9.0, 15.0, 7.0, 13.0, 5.0);
 
 
@@ -38,5 +40,5 @@ void fragment() {
 	ROUGHNESS = 0.85;
 	SPECULAR = 0.2;
 	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
-	EMISSION = rim_color.rgb * rim * rim_strength + emission.rgb * emission_energy;
+	EMISSION = rim_color.rgb * rim * rim_strength + emission.rgb * emission_energy + vec3(hit_flash * 2.5);
 }

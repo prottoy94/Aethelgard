@@ -24,6 +24,7 @@ var current_animation := &""
 var _model: Node3D
 var _scale := 1.0
 var _action_time := 0.0
+var _dead := false
 var _staff: AureliaStaff
 
 
@@ -53,6 +54,8 @@ func _ready() -> void:
 func update_motion(speed_ratio: float, dashing: bool, delta: float, speed := 0.0) -> void:
 	if _staff:
 		_staff.set_swing(speed_ratio)
+	if _dead:
+		return  # hold the death pose until reset_pose()
 	if _action_time > 0.0:
 		_action_time -= delta
 		if not dashing:
@@ -67,7 +70,23 @@ func update_motion(speed_ratio: float, dashing: bool, delta: float, speed := 0.0
 		_play(anim_set.run, playback_scale(speed, anim_set.run_native_speed))
 
 
-## Plays a one-shot animation (cast, strike, hurt, interact...) over the locomotion. Returns its length in s.
+## Plays the animation for a gameplay role: &"strike", &"cast", &"hurt", &"death", &"interact", &"rest".
+func play_role(role: StringName) -> void:
+	var clip: StringName = anim_set.get(role) if role in [&"strike", &"cast", &"hurt", &"death", &"interact", &"rest"] else &""
+	if clip == &"":
+		return
+	play_action(clip)
+	_dead = role == &"death"
+
+
+func reset_pose() -> void:
+	_dead = false
+	_action_time = 0.0
+	current_animation = &""
+	_play(anim_set.idle, 1.0)
+
+
+## Plays a one-shot animation clip over the locomotion. Returns its length in s.
 func play_action(anim_name: StringName) -> float:
 	if not animation_player.has_animation(anim_name):
 		push_warning("HumanoidVisual: no animation %s" % anim_name)

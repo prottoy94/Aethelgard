@@ -172,7 +172,17 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 - One small, beautiful corner of Elderroot: World Tree, ruins, grass, water, golden hour.
 - **You'll see:** a screenshot-worthy scene that **locks the art style** before we make lots of art.
 
-### Phase 3: Combat core (M2) · **M** · *+ first Windows export test*
+### Phase 3: Combat core (M2) · **M** · *+ first Windows export test* · ✅ Done 2026-11-03
+> **Result:** health, magic stamina (Exhausted at 0, refills after 0.8 s), a free **staff strike** (left click), **Light Mote**
+> (1, a homing light bolt) and **Gust** (2, wind cone that knocks back and staggers), per-spell cooldowns plus a short
+> global cooldown, mouse/stick aiming with a ground reticle, getting hurt (knockback, brief protection), defeat and
+> respawn at the shrine. Enemy: the **Thornling** (wanders, chases, shows a growing red ring before its spin attack,
+> recovers, can be staggered; respawns after 6 s in the test meadow). Feedback: hit flash, hit-stop, screen shake,
+> damage numbers (gold = weakness), enemy health bars. HUD: HP, stamina, 4 spell slots. Elements with strengths/weaknesses.
+> **62/62 tests pass** (8 are real fights in a physics world). 1080p RTX 3050: ~238 FPS, ~0.8 GB RAM.
+> Gust is in the starting loadout for testing; in the story it comes from the Elderroot Trial (Phase 4+).
+> **First Windows export works:** `build/windows/Aethelgard.exe` (104 MB engine + 1.7 MB game data) runs at 240 FPS.
+> Export templates (Windows 64-bit only, ~210 MB, checksum verified) are in `D:\Tools\Godot\editor_data\export_templates\`.
 - Health, damage, staff strike, **stamina bar + Exhausted**, first 2 spells with **cooldowns**, dodge.
 - One enemy (Thornling) with a visible **wind-up before each attack**, death and respawn, basic HUD.
 - **First export:** build a real `.exe` once to make sure exporting works on your PC (export templates, about 1 GB, go to D:).

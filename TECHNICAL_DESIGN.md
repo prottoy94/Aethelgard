@@ -164,7 +164,15 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
                                                        └─► signals: damaged / died ──► VFX, hit-stop, knockback, EventBus
 ```
 
-- `DamageInfo` (RefCounted): `amount, element, knockback, status_effects[], source, is_crit`.
+- `DamageInfo` (RefCounted): `amount, element, knockback, stagger, source` (status effects and crits come in Phase 4).
+- **Teams (built in Phase 3):** `HurtboxComponent.team` puts it on `player_hurtbox` (5) or `enemy_hurtbox` (6);
+  `HitboxComponent.team` masks the *other* team's hurtboxes, so friendly fire is impossible. Each activation hits each
+  hurtbox once. Projectiles set `collide_with_world` to stop at walls. Instant area spells (Gust) query the `enemy` group
+  and call `hurtbox.receive_hit()` directly.
+- **Feedback:** `CombatFx` (hit flash via the toon shader's `hit_flash` instance uniform, global hit-stop through
+  `Engine.time_scale` (off in tests), floating damage numbers), `CameraRig.add_shake()`, `WorldHealthBar`.
+- **Enemies (Phase 3):** `Enemy` base + `EnemyData`; states Idle/Chase/Telegraph/Attack/Recover/Stagger/Dead in
+  `src/actors/enemies/states/`. Chasing uses direct steering for now; `NavigationAgent3D` arrives with bigger maps.
 - `Elements.multiplier(attack, defender_element, defender_weakness)` returns ×1.5 / ×1.0 / ×0.5 (`FR-MAG-06`).
 - `power_scale = 1 + MagicPower / 500` (to tune) for player spells.
 

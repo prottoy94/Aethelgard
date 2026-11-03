@@ -3,7 +3,8 @@ extends Node3D
 ## (World Tree with sunbeams, mossy stone stairs between broken walls, yellow flowers, misty cliffs with a waterfall).
 ## Aurelia walks here with the hybrid camera. Solid objects are StaticBody3D roots with their meshes as children,
 ## so the camera can fade the whole object when it blocks the view.
-## Start options (after `--`): --spawn=viewpoint puts Aurelia on the scenic platform; --visual=animated uses the animated
+## Start options (after `--`): --spawn=viewpoint puts Aurelia on the scenic platform, --spawn=combat next to a Thornling;
+## --visual=animated uses the animated
 ## stand-in model; --benchmark=<dir> (PerfOverlay). Press V in game to switch between the placeholder and the animated model.
 
 const GROUND := preload("res://assets/shaders/ground.gdshader")
@@ -15,6 +16,10 @@ const CAMERA_SETTINGS := preload("res://data/camera/follow_camera.tres")
 const ANIM_SET := preload("res://data/animations/humanoid_default.tres")
 const PLACEHOLDER := preload("res://src/actors/player/aurelia_placeholder.gd")
 const STAND_IN_TINT := Color("7a5a8a")  # plum, like Aurelia's cape
+const THORNLING_SCENE := preload("res://src/actors/enemies/thornling/thornling.tscn")
+## Where Thornlings live (away from the spawn, so Aurelia isn't attacked straight away).
+const THORNLING_SPOTS: Array[Vector3] = [Vector3(11, 0, -9), Vector3(-7, 0, -19), Vector3(15, 0, -18), Vector3(3, 0, -27)]
+const ENEMY_RESPAWN_TIME := 6.0
 
 const WORLD_LAYER := 1 << 0
 const OCCLUDER_LAYER := 1 << 10  # camera_occluder
@@ -25,7 +30,9 @@ const SPAWN := Vector3(0, 0, 4)
 const PLATFORM_CENTER := Vector3(-11, 0, -13)
 const PLATFORM_SIZE := Vector3(6, 1.2, 6)
 const WORLD_TREE := Vector3(-6, 0, -75)
-const SIGN_TEXT := "Elderroot Meadow, test area.\nWASD move · Space dash · Q/R rotate camera · Wheel zoom · Z reset\nClimb the stairs to the west for a view of the World Tree."
+const SIGN_TEXT := "Elderroot Meadow, test area.\nWASD move · Space dash · Q/R rotate camera · Wheel zoom · Z reset\n" + \
+		"Left click staff strike · 1 Light Mote · 2 Gust · Thornlings wander to the north\n" + \
+		"Climb the stairs to the west for a view of the World Tree."
 
 var _rng := RandomNumberGenerator.new()
 var _noise: NoiseTexture2D
@@ -65,6 +72,11 @@ func _ready() -> void:
 	_build_lumen()
 	_build_toast()
 	_spawn_player()
+	var hud := Hud.new()
+	add_child(hud)
+	hud.bind(player)
+	for spot in THORNLING_SPOTS:
+		_spawn_thornling(spot)
 	add_child(PerfOverlay.new())
 	Settings.graphics_changed.connect(_apply_graphics)
 	_apply_graphics(Settings.graphics)
@@ -122,7 +134,10 @@ func _spawn_player() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg == "--spawn=viewpoint":
 			player.position = PLATFORM_CENTER + Vector3(0, PLATFORM_SIZE.y, 0)
+		elif arg == "--spawn=combat":
+			player.position = THORNLING_SPOTS[0] + Vector3(0, 0, 3.5)  # next to a Thornling
 	add_child(player)
+	player.respawn_point = SPAWN  # by the lantern shrine
 	if "--visual=animated" in OS.get_cmdline_user_args():
 		_set_animated(true)
 	camera_rig = CameraRig.new()
@@ -130,6 +145,14 @@ func _spawn_player() -> void:
 	camera_rig.target = player
 	add_child(camera_rig)
 	player.camera_rig = camera_rig
+
+
+func _spawn_thornling(spot: Vector3) -> void:
+	var thornling: Enemy = THORNLING_SCENE.instantiate()
+	thornling.position = spot
+	add_child(thornling)
+	thornling.defeated.connect(func(_enemy: Enemy) -> void:
+		get_tree().create_timer(ENEMY_RESPAWN_TIME).timeout.connect(_spawn_thornling.bind(spot)))
 
 
 # --- Environment ---------------------------------------------------------------------------
