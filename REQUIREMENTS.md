@@ -53,21 +53,21 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-CMB-02 | Enemies have HP, element, weakness and rank, shown above them. | MVP | Rank letter + HP bar appear when engaged. | ✅ Phase 4 (rank letter, HP bar and status text above enemies while engaged) |
 | FR-CMB-03 | Enemies can use magic (projectiles, shields, buffs, summons). | MVP (projectiles) / V1 | At least one caster enemy in the slice. | 🟨 Ember Wisp shoots aimed Burning bolts after a telegraph (Phase 4, tested); shields, buffs, summons in V1 |
 | FR-CMB-04 | Some enemies have elemental shields broken only by a specific element. | V1 | Wrong elements deal no damage while the shield is up. | ⬜ |
-| FR-CMB-05 | Every enemy attack follows Telegraph → Attack → Recover, with a visual and audio cue. | MVP | No attack deals damage without a preceding telegraph. | 🟨 Visual telegraph ring before every attack (Phase 3, tested); telegraph sounds come with audio (Phase 6) |
+| FR-CMB-05 | Every enemy attack follows Telegraph → Attack → Recover, with a visual and audio cue. | MVP | No attack deals damage without a preceding telegraph. | ✅ Phases 3 + 8a (every attack, also each move of multi-move enemies, has a ground warning (ring, sweep, lane, fan) and a wind-up sound as long as the warning; tested) |
 | FR-CMB-06 | Enemies drop loot from loot tables. | MVP | Defeated enemies drop materials per their table. | ✅ Phase 5 (LootTable per enemy: Thornling → Thorn Fibre, Ember Wisp → Ember Cinder; walk over drops to collect; tested) |
 | FR-CMB-07 | Difficulty settings: Story / Normal / Hard. | V1 | Changing difficulty changes damage taken and telegraph length. | ⬜ |
-| FR-CMB-08 | ~12 enemy types across the regions. | V1 | All types listed in GDD §7.1 exist. | 🟨 2 of ~12 types: Thornling (Phase 3), Ember Wisp (Phase 4) |
+| FR-CMB-08 | ~12 enemy types across the regions. | V1 | All types listed in GDD §7.1 exist. | 🟨 3 of ~12 types: Thornling (Phase 3), Ember Wisp (Phase 4), Emberbound Scout (Phase 8a: sword slash + fire dash), plus the Cinder Warden boss |
 
 ### 1.4 Bosses (BOS)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-BOS-01 | Each boss has 2–3 phases triggered by HP thresholds. | MVP | Boss behaviour changes at the set thresholds. | ⬜ |
-| FR-BOS-02 | Boss arena: doors lock, boss HP bar and name appear, music changes. | MVP | Leaving the arena is impossible until the fight ends. | ⬜ |
+| FR-BOS-01 | Each boss has 2–3 phases triggered by HP thresholds. | MVP | Boss behaviour changes at the set thresholds. | 🟨 Phase 8a: boss phases at HP thresholds with their own moves, an opening move and speed (BossPhaseData); the Cinder Warden has 3 (60%, 30%; tested). More bosses later |
+| FR-BOS-02 | Boss arena: doors lock, boss HP bar and name appear, music changes. | MVP | Leaving the arena is impossible until the fight ends. | ✅ Phase 8a (BossArena: walking in raises a ring of fire, boss music, HUD boss bar with name, title and phase marks; win lowers it and gives rewards; falling resets the boss; tested) |
 | FR-BOS-03 | Boss difficulty rises through the game (speed, combos, damage). | V1 | Boss data shows increasing values; playtests confirm. | ⬜ |
 | FR-BOS-04 | Prologue Ignis encounter cannot be won (scripted), showing the enemy's strength. | MVP | Encounter ends in a cutscene regardless of outcome. | ⬜ |
 | FR-BOS-05 | Final boss Ignis Varos with 3 phases. | V1 | Defeating him triggers the ending. | ⬜ |
 | FR-BOS-06 | Corrupted good dragons are freed, not killed, when defeated. | V1 | Brinecoil becomes an ally after the fight. | ⬜ |
-| FR-BOS-07 | Ember Cores: each region boss drops one; Ignis's rank drops per core destroyed. (Pending approval.) | V1 | Ignis's displayed rank/HP changes with cores destroyed. | ⬜ |
+| FR-BOS-07 | Ember Cores: each region boss drops one; Ignis's rank drops per core destroyed. (Approved 2026-11-04.) | V1 | Ignis's displayed rank/HP changes with cores destroyed. | 🟨 Phase 8a: the Cinder Warden drops Ember Core #1 (a key item; tested). Ignis's weakening comes with the final fight |
 | FR-BOS-08 | On Story difficulty, bosses have phase checkpoints. | V1 | Dying in phase 2 restarts at phase 2. | ⬜ |
 
 ### 1.5 Dragons (DRG)
@@ -139,9 +139,11 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 |---|---|---|---|---|
 | FR-UI-01 | HUD: HP, stamina (Exhausted flash), 4 spell slots with radial cooldowns, rank badge, quest tracker. | MVP | All elements update live. | ✅ HP, stamina with Exhausted warning, radial cooldowns (Phase 3), rank badge, status chips (Phase 4), quest tracker (Phase 6a) |
 | FR-UI-02 | HUD dragon panel: portrait, HP, current command. | V1 | Shows after hatching. | ✅ Phase 7 (bottom left: placeholder portrait, name, stage, HP, command, bond and the breath's cooldown; the egg's warmth before hatching; hidden in cutscenes; tested) |
-| FR-UI-03 | Menus: Inventory, Equipment, Grimoire, Crafting, Journal, Map, Settings. | MVP (Inventory, Grimoire, Crafting, Settings) / V1 | Each opens and closes with keyboard and gamepad. | 🟨 Tab/Start menu: Inventory, Grimoire, Journal, Save (Esc), Options (Q/R turns the page, J opens the Journal); Crafting at stations; all pause and close with Esc/B/Start (tested). Map later |
+| FR-UI-03 | Menus: Inventory, Equipment, Grimoire, Crafting, Journal, Map, Settings. | MVP (Inventory, Grimoire, Crafting, Settings) / V1 | Each opens and closes with keyboard and gamepad. | 🟨 Tab/Start menu: Inventory, Grimoire, Journal, Save (Esc), Options (Q/R turns the page, J opens the Journal); Crafting at stations; all pause and close with Esc/B/Start (tested). Map page added 2026-11-04 (M / Select; tested); Dragon page in Phase 7 |
 | FR-UI-04 | Dragon menu (stats, bond, skills, name). | V1 | — | ✅ Phase 7 (Tab menu Dragon page: stats, bond progress, skills with what unlocks the locked ones, pick a command, feed a treat, rename; tested) |
 | FR-UI-05 | Title screen with New / Continue / Settings / Quit. | MVP | Continue loads the latest save. | ✅ Phase 6b (title screen: Continue = latest save, New Game, Load Game, Options, Quit; the owner's song comes with the audio work, 6c) |
+| FR-UI-07 | Map of the current area (owner request 2026-11-04): a top-down view with Aurelia, her dragon, people, Lantern Shrines, the workbench, exits to other areas and the current objective. | MVP | M opens it; the objective star is where "show the way" points. | ✅ 2026-11-04 (Map page, picture taken from above when it opens; area frames in `data/world/regions.tres`; tested) |
+| FR-UI-08 | Navigation help (owner request 2026-11-04): a key shows where to go next for the tracked quest, also when the target is in another area. | MVP | Pressing N shows a trail towards the objective and says what to do and how far. | ✅ 2026-11-04 (N / left stick: trail of lights + a line on screen; quest steps name a waypoint and its area; through the exit when it is elsewhere; a main quest "A Morning in Elderroot" gives a next step from the start; tested) |
 | FR-UI-06 | Dialogue box with portraits and text speed option. | MVP | Text speed setting is applied. | ✅ Phase 6a (dialogue box with placeholder portraits; text speed applies at once) |
 
 ### 1.11 Save (SAV)
@@ -248,4 +250,4 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ---
 
 ## 4. Open items blocking requirements
-See GAME_DESIGN.md §16. FR-BOS-07 (Ember Cores) waits for the owner's approval. (FR-DRG-06, the element choice, was approved 2026-11-04.)
+See GAME_DESIGN.md §16. FR-DRG-06 (element choice), FR-BOS-07 (Ember Cores) and Sylvaris were approved 2026-11-04.

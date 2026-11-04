@@ -283,6 +283,16 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 - **You'll play:** hatch and name your dragon.
 
 ### Phase 8: First boss & vertical slice (M8) · **L**
+> Built in 3 parts with a check-in after each (owner decision 2026-11-04): **8a** boss fight + Emberbound Scout,
+> **8b** prologue with Ignis (Sylvaris, approved, drives him off) + the Gust Trial, **8c** the slice put together.
+> **Before 8a (owner request 2026-11-04): ✅ map (M) and "show the way" (N)** with a main quest, *A Morning in
+> Elderroot*, so there is always a next step.
+> **8a: ✅ done 2026-11-05.** Follow the north path past the arch to a **scorched clearing**: a ring of fire seals it
+> and the **Cinder Warden** (Emberbound Captain) fights you to your music *The Last Ascent*, with a boss bar at the top.
+> Every attack shows its warning on the ground (sweep, charge lane, fire ring, ember fan); at 60% he calls Ember Wisps,
+> at 30% he charges twice. Win: **Ember Core #1**, the Ember-Ward Ring and its recipe. Fall: he resets to full. New
+> enemy: the **Emberbound Scout** (sword slash, fire dash). **221/221 tests pass.** Try it: `-- --boss`
+> (straight into the fight; add `--dragon=light` for help), `-- --spawn=warden` (walk in yourself), `-- --spawn=scout`.
 - Boss system (phases, arena, boss health bar), **Cinder Warden**, the prologue scene where **Ignis** appears and can't be beaten.
 - Put it all together: prologue → Elderroot Meadow → first boss → egg hatches.
 - **🎯 Milestone: the vertical slice.** 30–45 minutes of complete, polished play (placeholder art is fine).

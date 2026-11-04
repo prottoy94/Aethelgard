@@ -113,6 +113,7 @@ func _apply_input_map() -> void:
 		"dragon_skill": [_key(KEY_H), _joy(JOY_BUTTON_DPAD_DOWN)],
 		"menu": [_key(KEY_TAB), _joy(JOY_BUTTON_START)],
 		"map": [_key(KEY_M), _joy(JOY_BUTTON_BACK)],
+		"navigate": [_key(KEY_N), _joy(JOY_BUTTON_LEFT_STICK)],  # show the way to the objective
 		"journal": [_key(KEY_J)],
 		"pause": [_key(KEY_ESCAPE)],
 		# 3D camera (hybrid high-angle camera, 3D_PROPOSAL.md §3)

@@ -19,6 +19,7 @@ const STAND_IN_TINT := Color("7a5a8a")  # plum, like Aurelia's cape
 const COMBAT_CHECK := 0.3  ## s between checks for engaged enemies
 const RAIN_AMBIENCE: StringName = &"amb_weather_rain"
 const TREAT: ConsumableData = preload("res://data/items/dragon_treat.tres")
+const MAIN_QUEST: StringName = &"morning_in_elderroot"
 
 @export var region_id: StringName
 
@@ -30,6 +31,7 @@ var crafting: CraftingMenu
 var dialogue: DialogueBox
 var lumen: Lumen
 var dragon: Dragon
+var navigator: Navigator
 var cycle: DayNightCycle
 var environment: Environment
 var sun: DirectionalLight3D
@@ -102,6 +104,7 @@ func start() -> void:
 	inventory_menu.bind(player)
 	game_menu.add_page(Grimoire.new())
 	game_menu.add_page(DragonMenu.new())
+	game_menu.add_page(MapMenu.new())
 	game_menu.add_page(JournalMenu.new())
 	game_menu.add_page(SaveMenu.new())
 	game_menu.add_page(OptionsMenu.new())
@@ -110,14 +113,24 @@ func start() -> void:
 	dialogue = DialogueBox.new()
 	add_child(dialogue)
 	_build_toast()
+	navigator = Navigator.new()
+	navigator.hud = hud
+	add_child(navigator)
 	add_child(PerfOverlay.new())
 	_link_world()
 	TimeOfDay.hour_changed.connect(_on_hour_changed)
 	TimeOfDay.weather_changed.connect(_on_weather_changed)
 	update_audio()
+	_start_main_quest()
 	TimeOfDay.running = true
 	player_spawned.emit(player)
 	_apply_start_options()
+
+
+## A new game starts the opening's main thread (owner request 2026-11-04: always a next step to follow).
+func _start_main_quest() -> void:
+	if not GameState.has_flag(DragonManager.EGG_FLAG):
+		QuestManager.start(MAIN_QUEST)
 
 
 func show_toast(text: String, seconds := 6.0) -> void:
@@ -194,6 +207,11 @@ func _link_world() -> void:
 		(node as CraftingStation).used.connect(func(_by: Player, at: RecipeData.Station) -> void: crafting.open_station(at))
 	for node in get_tree().get_nodes_in_group(&"rest_point"):
 		(node as RestPoint).rested.connect(_on_rested)
+	for node in get_tree().get_nodes_in_group(&"boss_arena"):
+		var arena := node as BossArena
+		arena.fight_started.connect(func(boss: Boss) -> void: hud.boss_bar.show_boss(boss))
+		arena.fight_ended.connect(_on_boss_fight_ended)
+		arena.rewarded.connect(_on_boss_rewarded)
 	PlayerData.tome_found.connect(_on_tome_found)
 	Inventory.recipe_learned.connect(_on_recipe_learned)
 	QuestManager.quest_started.connect(_on_quest_started)
@@ -250,6 +268,25 @@ func _hatch_egg() -> void:
 		SaveManager.autosave()
 		show_toast("%s hatched!   G: give a command   H: breath skill   Tab: the Dragon page" % DragonManager.display_name(),
 				7.0)
+
+
+## A boss fight ended (FR-BOS-02): the bar goes, the region's music comes back; a win gets a banner.
+func _on_boss_fight_ended(won: bool) -> void:
+	var boss := hud.boss_bar.boss
+	hud.boss_bar.hide_boss()
+	update_audio()
+	if won and boss:
+		hud.show_banner("%s defeated!" % boss.data.display_name)
+
+
+func _on_boss_rewarded(items: Array[ItemData], recipes: Array[RecipeData]) -> void:
+	var names: Array[String] = []
+	for item in items:
+		if not item.display_name in names:
+			names.append(item.display_name)
+	for recipe in recipes:
+		names.append("the %s recipe" % recipe.display_name())
+	show_toast("You found: %s." % ", ".join(names), 6.0)
 
 
 func _on_egg_received() -> void:
@@ -337,8 +374,8 @@ func _apply_start_options() -> void:
 			var autoplay := DialogueAutoplay.new()
 			autoplay.choice = maxi(int(arg.trim_prefix("--autoplay=")) - 1, 0) if "=" in arg else 0
 			add_child(autoplay)
-	var pages := {"inventory": InventoryMenu, "grimoire": Grimoire, "dragon": DragonMenu, "journal": JournalMenu,
-			"save": SaveMenu, "options": OptionsMenu}
+	var pages := {"inventory": InventoryMenu, "grimoire": Grimoire, "dragon": DragonMenu, "map": MapMenu,
+			"journal": JournalMenu, "save": SaveMenu, "options": OptionsMenu}
 	for arg in args:
 		if arg.begins_with("--hour="):
 			TimeOfDay.set_hour(float(arg.trim_prefix("--hour=")))
@@ -351,6 +388,16 @@ func _apply_start_options() -> void:
 			game_menu.open_page.call_deferred(pages[option])
 		elif arg == "--open=crafting":
 			crafting.open_station.call_deferred(RecipeData.Station.WORKBENCH)
+		elif arg == "--boss":  # straight into the region's boss fight (dev tool)
+			var arena := get_tree().get_first_node_in_group(&"boss_arena") as BossArena
+			if arena and arena.boss:
+				player.global_position = arena.global_position + Vector3(0, 0.1, arena.radius * 0.55)
+				player.face_instantly(Vector3.FORWARD)
+				camera_rig.set_yaw(0.0)
+				camera_rig.snap_to_target()
+				arena.start_fight.call_deferred()
+		elif arg == "--guide":  # press N by itself after a moment (dev tool, for captures)
+			get_tree().create_timer(1.0).timeout.connect(navigator.show_way)
 		elif arg.begins_with("--talk="):
 			for node in get_tree().get_nodes_in_group(&"npc"):
 				var npc := node as Npc

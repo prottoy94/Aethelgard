@@ -28,6 +28,11 @@ func _ready() -> void:
 	Inventory.item_added.connect(func(_item: ItemData, _amount: int) -> void: _changed_counts())
 
 
+## The GameState flag set when quest `id` is finished, e.g. "quest_done_herbs_for_maren".
+static func done_flag(id: StringName) -> StringName:
+	return StringName("quest_done_%s" % id)
+
+
 func reset() -> void:
 	active.clear()
 	done.clear()
@@ -180,6 +185,7 @@ func _complete(quest: QuestData) -> void:
 		Inventory.learn_recipe(recipe)
 	quest_completed.emit(quest)
 	EventBus.quest_completed.emit(quest.id)
+	GameState.set_flag(done_flag(quest.id))  # other quests can wait for this one (FLAG steps)
 
 
 # --- Saving ------------------------------------------------------------------------------------

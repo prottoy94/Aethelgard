@@ -11,16 +11,14 @@ var _time := 0.0
 func enter(_previous: StringName, _data: Dictionary) -> void:
 	_time = 0.0
 	var enemy := actor as Enemy
-	enemy.play_sound("telegraph")  # starts with the visual wind-up and lasts as long (FR-AUD-03)
-	if enemy.has_live_target():
-		enemy.face(enemy.direction_to(enemy.target.global_position))
-	if enemy.data.min_range <= 0.0:
+	enemy.begin_telegraph()  # its sound starts with the visual wind-up and lasts as long (FR-AUD-03)
+	if enemy.threatens_area():
 		enemy.add_to_group(DANGER_GROUP)
 
 
 func exit() -> void:
 	var enemy := actor as Enemy
-	enemy.visual.set_telegraph(-1.0)
+	enemy.end_telegraph()
 	if enemy.is_in_group(DANGER_GROUP):
 		enemy.remove_from_group(DANGER_GROUP)
 
@@ -29,6 +27,6 @@ func physics_update(delta: float) -> void:
 	var enemy := actor as Enemy
 	_time += delta
 	enemy.move(Vector3.ZERO, delta)
-	enemy.visual.set_telegraph(_time / enemy.data.telegraph_time)
-	if _time >= enemy.data.telegraph_time:
+	enemy.update_telegraph(_time / enemy.telegraph_time())
+	if _time >= enemy.telegraph_time():
 		machine.transition_to(&"Attack")

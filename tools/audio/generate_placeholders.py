@@ -309,8 +309,36 @@ SOUNDS = {
     "dragon_breath_wind": ("dragon", [lambda: whoosh(0.6, 300, 3000)], dict(poly=1)),
     "dragon_breath_earth": ("dragon", [lambda: breath(0.6, 120, 1500, seq([impact(0.06, 400, 5000) * 0.5 for _ in range(5)], 0.07))], dict(poly=1)),
     "dragon_breath_light": ("dragon", [lambda: breath(0.7, 3000, 10000, seq([chime(note(i, F_SHARP * 2), 0.4, 8) * 0.4 for i in (0, 4, 7)], 0.08))], dict(poly=1)),
+    "ui_guide": ("ui", [lambda: seq([chime(note(i, F_SHARP * 2), 0.5, 7) for i in (4, 7, 9)], 0.07)], dict(volume=-9, poly=1, interval=0.3)),
+    "world_fire_wall": ("world", [lambda: mix(whoosh(0.9, 120, 1800), crackle(1.2, 120) * 0.7)], dict(poly=1)),
     "ui_save": ("ui", [lambda: seq([chime(note(i, F_SHARP * 2), 0.6, 6) for i in (4, 0)], 0.15)], dict(volume=-8, poly=1)),
 }
+
+# Emberbound and the Cinder Warden (Phase 8a): every move has a wind-up sound exactly as long as its telegraph
+# (FR-AUD-03) and a hit sound; plus alert, hurt and death.
+def emberbound_set(enemy_id, moves, deep=1.0):
+    sounds = {
+        "enemy_%s_alert" % enemy_id: ("enemies", [lambda: mix(sweep(220 * deep, 160 * deep, 0.4) * decay(0.4, 4) * 0.6, impact(0.12, 300, 4000) * 0.4)], dict(poly=2, interval=0.5)),
+        "enemy_%s_hurt" % enemy_id: ("enemies", [lambda: mix(impact(0.15, 200 * deep, 3500), band(noise(0.15), 2000, 6000) * decay(0.15, 20) * 0.3)], dict(poly=3)),
+        "enemy_%s_death" % enemy_id: ("enemies", [lambda: mix(sweep(260 * deep, 70, 0.9) * decay(0.9, 3) * 0.6, crackle(0.9, 60) * 0.4, impact(0.3, 90, 1500) * 0.5)], dict(poly=1)),
+    }
+    for move_id, (dur, kind) in moves.items():
+        texture = crackle(dur, 90) if kind in ("charge", "ring", "volley", "summon") else rustle(dur)
+        sounds["enemy_%s_%s_telegraph" % (enemy_id, move_id)] = (
+            "enemies", [lambda dur=dur, texture=texture: telegraph(dur, 110 * deep, 480 * deep, texture)], dict(volume=1, poly=2))
+        hit = {"melee": lambda: whoosh(0.35, 250, 2600),
+               "charge": lambda: mix(whoosh(0.5, 150, 2200), crackle(0.5, 120) * 0.6),
+               "ring": lambda: mix(impact(0.4, 70, 1500), crackle(0.8, 150) * 0.7, whoosh(0.6, 100, 1500) * 0.5),
+               "volley": lambda: mix(band(noise(0.4), 100, 1500) * decay(0.4, 8), crackle(0.4, 90) * 0.6),
+               "summon": lambda: mix(sweep(200, 600, 0.6) * decay(0.6, 3) * 0.5, crackle(0.6, 80) * 0.5)}[kind]
+        sounds["enemy_%s_%s" % (enemy_id, move_id)] = ("enemies", [hit], dict(poly=2))
+    return sounds
+
+
+SOUNDS.update(emberbound_set("emberbound_scout", {"slash": (0.7, "melee"), "fire_dash": (0.9, "charge")}))
+SOUNDS.update(emberbound_set("cinder_warden", {"cleave": (1.0, "melee"), "ember_charge": (1.2, "charge"),
+                                               "ember_charge_2": (0.9, "charge"), "cinder_ring": (1.4, "ring"),
+                                               "call_wisps": (1.0, "summon"), "ember_volley": (1.1, "volley")}, deep=0.7))
 
 # Stingers: short musical moments in F# major (AUDIO_DESIGN.md §5.3), stereo, on the Music bus.
 STINGERS = {
@@ -322,6 +350,8 @@ STINGERS = {
     "stg_item_crafted": lambda: mix(*[chime(note(i), 1.4, 3) * 0.5 for i in (0, 2, 4)]),
     "stg_dragon_hatched": lambda: mix(seq([chime(note(i, F_SHARP * 2), 1.4, 2.4, (1, 2, 3)) for i in (0, 2, 4, 7, 9, 7)], 0.12),
                                        np.concatenate([np.zeros(int(0.9 * SR)), chirp(1400, 2400, 0.25) * 0.4])),
+    "stg_boss_defeated": lambda: mix(seq([chime(note(i), 1.8, 2.0, (1, 2, 3)) for i in (0, 4, 7, 11, 12)], 0.14),
+                                      np.concatenate([np.zeros(int(0.7 * SR)), np.sin(2 * np.pi * note(0, F_SHARP / 2) * t(2.2)) * env(int(2.2 * SR), 0.05, 1.8) * 0.3])),
     "stg_defeat": lambda: seq([chime(note(i, F_SHARP / 2), 1.6, 2, (1, 2)) for i in (4, 3, 1, 0)], 0.3),
 }
 

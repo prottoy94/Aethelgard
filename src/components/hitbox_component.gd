@@ -21,6 +21,9 @@ const WORLD_LAYER := 1 << 0
 
 ## Who is attacking (used for the knockback direction and to never hit yourself).
 var source: Node3D
+## A sweep in front only: hurtboxes outside `arc_deg` around `arc_forward` (from `source`) are not hit. 360 = all.
+var arc_deg := 360.0
+var arc_forward := Vector3.FORWARD
 var _already_hit: Array[HurtboxComponent] = []
 
 
@@ -55,6 +58,11 @@ func _on_area_entered(area: Area3D) -> void:
 		return
 	if source and hurtbox.get_parent() == source:
 		return
+	if arc_deg < 360.0 and source:
+		var offset := hurtbox.global_position - source.global_position
+		offset.y = 0.0
+		if offset.length() > 0.3 and rad_to_deg(arc_forward.angle_to(offset)) > arc_deg * 0.5:
+			return
 	_already_hit.append(hurtbox)
 	var from := source.global_position if source else global_position
 	var away := hurtbox.global_position - from

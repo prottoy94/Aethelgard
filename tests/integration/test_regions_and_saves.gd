@@ -201,3 +201,15 @@ func test_resting_with_a_warm_egg_hatches_it() -> void:
 	assert_not_null(get_tree().get_first_node_in_group(&"dragon"), "the hatchling is here")
 	var saved := SaveManager.read_slot(SaveManager.AUTO)
 	assert_eq(int(saved["dragon"]["stage"]), DragonTypes.Stage.HATCHLING, "saved right after hatching")
+
+
+func test_a_new_game_starts_the_main_quest_and_shows_the_way() -> void:
+	assert_true(await SceneLoader.change_region(&"elderroot_meadow", &"start"))
+	assert_true(QuestManager.is_active(&"morning_in_elderroot"), "always a next step from the start")
+	var runtime: RegionRuntime
+	for node in get_tree().get_first_node_in_group(&"player").get_parent().get_children():
+		if node is RegionRuntime:
+			runtime = node
+	var goal := runtime.navigator.show_way()
+	assert_eq(goal.get("via"), "Elderroot Village", "the Elder is in the village: follow the trail to the gate")
+	assert_true(goal.get("position") is Vector3)

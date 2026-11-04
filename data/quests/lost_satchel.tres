@@ -12,6 +12,8 @@ description = "Find Tamsin's satchel in the old shrine ruins"
 objective = 1
 target = &"tamsin_satchel"
 amount = 1
+waypoint = &"tamsin_satchel"
+waypoint_region = &"elderroot_meadow"
 
 [sub_resource type="Resource" id="step_1"]
 script = ExtResource("2")
@@ -19,6 +21,8 @@ description = "Bring the satchel back to Tamsin"
 objective = 0
 target = &""
 amount = 1
+waypoint = &"tamsin"
+waypoint_region = &"elderroot_meadow"
 
 ; Side task (DIALOGUE_DESIGN.md §10). Status: draft, waiting for the owner's approval.
 [resource]

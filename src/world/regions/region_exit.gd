@@ -15,6 +15,7 @@ var _armed := false
 
 
 func _ready() -> void:
+	add_to_group(&"region_exit")
 	collision_layer = 0
 	collision_mask = PLAYER_LAYER
 	monitorable = false

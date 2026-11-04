@@ -33,6 +33,16 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   `data/items/dragon_treat.tres`, `data/recipes/dragon_treat.tres`, `data/quests/dragon_egg.tres`. Dialogue (drafts):
   `dialogue/story/dragon_hatch.dialogue`, Elder cue `elder_egg`. Enemies: `target` is a Node3D, `distract()`, melee rings
   join group `danger_zone` from Telegraph through Attack. Tests reset `DragonManager.from_dict({})`.
+- **Map + "show the way" done** 2026-11-04 (owner request): `src/world/navigation/` (Waypoint, Navigator, GuideTrail),
+  `src/ui/menus/map_menu.gd` (M), N = `navigate` action, quest steps have `waypoint`/`waypoint_region`, main quest
+  `data/quests/morning_in_elderroot.tres` (started by RegionRuntime on a new game), `quest_done_<id>` flags.
+  Dev option `--guide` presses N by itself after 1 s.
+- **Phase 8 is built in 3 parts with check-ins** (8a boss + Scout → 8b prologue/Ignis/Sylvaris + Gust Trial → 8c slice).
+  Owner decisions 2026-11-04: arena = scorched clearing on the meadow's north path, Ember Cores approved, Sylvaris approved.
+  **8a done** 2026-11-05: **221/221 tests pass.** Code: `EnemyMoveData` + `TelegraphMarker` (multi-move enemies),
+  `src/actors/bosses/` (Boss, BossData, BossPhaseData, cinder_warden/), `src/world/bosses/boss_arena.gd`,
+  `src/ui/hud/boss_bar.gd`, `src/actors/enemies/emberbound/` (EmberboundVisual, Scout scene). Data: `data/bosses/`,
+  `data/enemies/emberbound_scout.tres`, `data/items/ember_core.tres`. Dev options `--boss`, `--spawn=warden|scout`.
   6c code: `AudioManager` (play by id, pools, MusicChannel loops/crossfades, combat layer, ambience, stingers, ducking,
   pause muffle), `src/audio/` (SoundEvent, SoundLibrary, MusicTrack, MusicLibrary, MusicChannel, AudioTuning), region
   sound ids in `data/world/regions.tres`, volumes in Settings + Options. **Audio files are git-ignored: after a clone
@@ -63,9 +73,9 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   Tests reset with `Inventory.reset()`, `PlayerData.reset([...])` and `GameState.reset()` in `before_each`.
   Main scene = `src/ui/title/title_screen.tscn`. **Any start option after `--` skips the title** into a new game with saving
   off (`--saves` keeps it on; `--title` keeps the title): `--region=elderroot_meadow|elderroot_village`,
-  `--spawn=start|viewpoint|combat|wisp|ruins|from_village|from_meadow`, `--open=inventory|grimoire|dragon|journal|save|options|crafting`,
+  `--spawn=start|viewpoint|combat|wisp|ruins|from_village|from_meadow`, `--open=inventory|grimoire|dragon|map|journal|save|options|crafting`,
   `--talk=elder|maren|tamsin`, `--hour=<0-24>`, `--weather=clear|rain|fog`, `--give=materials|treats`, `--visual=animated`,
-  `--dragon=egg|ready|hatch|frost|wind|earth|light`, `--autoplay[=<choice>]` (conversations advance by themselves),
+  `--dragon=egg|ready|hatch|frost|wind|earth|light`, `--guide`, `--autoplay[=<choice>]` (conversations advance by themselves),
   `--benchmark=<dir>`, `--capture=<dir> --capture-at=1.5,4,8` (screenshots at those seconds, then quit; good with
   `--autoplay` for cutscenes), `--graphics=low|medium|high`. The meadow is `src/world/test/test_level_3d.tscn` (region elderroot_meadow).
   Key code: `src/actors/player/` (Player, states, placeholder model, MovementStats), `src/game/camera/` (CameraRig, CameraSettings),

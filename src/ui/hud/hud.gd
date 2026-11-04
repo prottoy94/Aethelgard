@@ -19,6 +19,7 @@ const RANK_COLOR := Color("ffd98a")
 const BANNER_TIME := 3.5
 const FEED_TIME := 3.0   ## s a "+2 Sunpetal" line stays
 const FEED_LINES := 5
+const GUIDE_TIME := 5.0  ## s the "show the way" line stays
 
 var player: Player
 var _hp_bar: Control
@@ -36,6 +37,9 @@ var _tracker: Label
 var _clock: Label
 var _time := 0.0
 var dragon_panel: DragonPanel
+var boss_bar: BossBar
+var _guide: Label
+var _guide_time := 0.0
 
 
 func _ready() -> void:
@@ -77,6 +81,13 @@ func _ready() -> void:
 	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_banner.modulate.a = 0.0
 	add_child(_banner)
+	_guide = _text("", 26, Color("cfeaff"))
+	_guide.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	_guide.offset_top = 210.0
+	_guide.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_guide.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_guide.modulate.a = 0.0
+	add_child(_guide)
 
 	_feed = VBoxContainer.new()
 	_feed.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
@@ -119,6 +130,13 @@ func _ready() -> void:
 		var slot := SpellSlot.new()
 		bottom.add_child(slot)
 		_slots.append(slot)
+	boss_bar = BossBar.new()
+	boss_bar.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	boss_bar.offset_left = -BossBar.SIZE.x * 0.5
+	boss_bar.offset_right = BossBar.SIZE.x * 0.5
+	boss_bar.offset_top = 22.0
+	boss_bar.offset_bottom = 22.0 + BossBar.SIZE.y
+	add_child(boss_bar)
 	dragon_panel = DragonPanel.new()
 	dragon_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	dragon_panel.offset_left = 24.0
@@ -137,6 +155,12 @@ func bind(player_: Player) -> void:
 	PlayerData.magic_power_changed.connect(func(_magic_power: int) -> void: _refresh_rank())
 	PlayerData.rank_changed.connect(func(rank: int, _previous: int) -> void:
 		show_banner("RANK UP!   %s" % PlayerData.PROGRESSION.rank_label(rank)))
+
+
+## The "show the way" line (Navigator), under the banner for a few seconds.
+func show_guide(text: String) -> void:
+	_guide.text = text
+	_guide_time = GUIDE_TIME
 
 
 ## A big message at the top of the screen (rank-ups, new spells).
@@ -171,6 +195,9 @@ func _process(delta: float) -> void:
 	_update_status_row()
 	_update_feed(delta)
 	_clock.text = "%s  ·  %s" % [TimeOfDay.clock_text(), String(TimeOfDay.weather).capitalize()]
+	if _guide_time > 0.0:
+		_guide_time -= delta
+		_guide.modulate.a = clampf(_guide_time, 0.0, 1.0)
 	if _banner_time > 0.0:
 		_banner_time -= delta
 		_banner.modulate.a = clampf(_banner_time, 0.0, 1.0)
@@ -180,7 +207,8 @@ func _process(delta: float) -> void:
 func _refresh_tracker() -> void:
 	var quest := QuestManager.LIBRARY.find(QuestManager.tracked)
 	_tracker.text = "%s
-%s" % [quest.title, QuestManager.step_text(quest.id)] if quest else ""
+%s
+N: show the way   M: map" % [quest.title, QuestManager.step_text(quest.id)] if quest else "M: map"
 
 
 ## The HUD steps aside during scripted scenes.

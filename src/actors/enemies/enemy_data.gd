@@ -34,6 +34,11 @@ extends Resource
 @export var attack_status_duration := 0.0
 @export var attack_status_power := 0.0
 
+@export_group("Moves (several attacks)")
+## Its attacks when it has more than one (EnemyMoveData). Empty = the single attack described above.
+@export var moves: Array[EnemyMoveData] = []
+@export var stagger_resistant := false      ## ordinary hits don't interrupt it (bosses); Freeze still does
+
 @export_group("Projectile (ranged enemies)")
 @export var projectile_speed := 7.0        ## m/s
 @export var projectile_range := 14.0       ## m

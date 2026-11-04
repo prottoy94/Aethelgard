@@ -1,0 +1,65 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://src/actors/enemies/enemy_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/actors/enemies/enemy_move_data.gd" id="2"]
+[ext_resource type="Resource" path="res://data/loot_tables/emberbound_scout.tres" id="loot"]
+
+[sub_resource type="Resource" id="slash"]
+script = ExtResource("2")
+id = &"slash"
+kind = 0
+weight = 2.0
+min_range = 0.0
+max_range = 2.0
+telegraph_time = 0.7
+active_time = 0.15
+recover_time = 0.9
+damage = 10.0
+element = 0
+knockback = 6.0
+radius = 2.2
+arc_deg = 120.0
+
+[sub_resource type="Resource" id="fire_dash"]
+script = ExtResource("2")
+id = &"fire_dash"
+kind = 1
+weight = 1.0
+min_range = 3.5
+max_range = 8.0
+telegraph_time = 0.9
+active_time = 0.35
+recover_time = 1.3
+damage = 12.0
+element = 6
+knockback = 8.0
+radius = 1.0
+length = 6.5
+width = 1.4
+status = &"burn"
+status_duration = 2.0
+status_power = 2.0
+
+; Emberbound Scout (GAME_DESIGN.md §7.1): one of Ignis's soldiers. Sword slash up close, a fire dash from afar.
+; Ember element: weak to Light and Frost. Phase 8a.
+[resource]
+script = ExtResource("1")
+id = &"emberbound_scout"
+display_name = "Emberbound Scout"
+element = 6
+loot = ExtResource("loot")
+rank = "E"
+max_health = 45.0
+defense = 0.0
+move_speed = 3.4
+wander_speed = 1.2
+knockback_resistance = 0.3
+aggro_range = 10.0
+leash_range = 18.0
+attack_range = 2.0
+telegraph_time = 0.7
+attack_damage = 10.0
+attack_radius = 2.2
+recover_time = 0.9
+stagger_time = 0.4
+moves = Array[ExtResource("2")]([SubResource("slash"), SubResource("fire_dash")])

@@ -5,14 +5,19 @@ extends CharacterBody3D
 ## Children: Visual (with telegraph/attack/flash methods), Health, Hurtbox, AttackHitbox, StateMachine.
 ## A LootDropper is added in code when the data has a loot table.
 ## Its target is Aurelia, or for a few seconds the pet dragon after it bites or breathes on it (distract()).
+## Enemies with several attacks (EnemyData.moves; Phase 8) pick a move in range when they wind up, show its warning
+## with a TelegraphMarker and play "enemy_<id>_<move>_telegraph"; bosses (Boss) choose from their phase's moves.
 
 signal defeated(enemy: Enemy)
+signal summoned(helper: Node3D)
 
 const GRAVITY := 25.0
 const HEALTH_BAR_HEIGHT := 1.6
 const KNOCKBACK_DECAY := 12.0
 const HIT_STOP := 0.05
 const ENGAGED_RANGE_FACTOR := 1.3
+const AIM_LOCK := 0.7          ## of the wind-up: after this it stops turning (the last moment can be dodged)
+const VOLLEY_HEIGHT := 1.2
 
 @export var data: EnemyData
 
@@ -23,6 +28,11 @@ var _health_bar: WorldHealthBar
 var _loot: LootDropperComponent
 var _distracted_by: Node3D
 var _distract_left := 0.0
+var current_move: EnemyMoveData           ## the attack it is winding up or doing (null: the single data attack)
+var _marker: TelegraphMarker
+var _charge_dir := Vector3.FORWARD
+var _aim_locked := false
+var _move_hitbox_radius := -1.0
 
 @onready var visual: Node3D = $Visual
 @onready var health: HealthComponent = $Health
@@ -63,6 +73,9 @@ func _ready() -> void:
 		_loot = LootDropperComponent.new()
 		_loot.table = data.loot
 		add_child(_loot)
+	if has_moves():
+		_marker = TelegraphMarker.new()
+		add_child(_marker)
 
 
 func _physics_process(delta: float) -> void:
@@ -79,7 +92,8 @@ func _physics_process(delta: float) -> void:
 	if target == null or not is_instance_valid(target):
 		target = get_tree().get_first_node_in_group(&"player") as Node3D
 	if not health.is_dead() and distance_to_target() <= data.aggro_range * ENGAGED_RANGE_FACTOR:
-		_health_bar.keep_visible()  # show rank and health while engaged (FR-CMB-02)
+		if _health_bar:
+			_health_bar.keep_visible()  # show rank and health while engaged (FR-CMB-02)
 
 
 # --- Used by states ------------------------------------------------------------------------
@@ -117,8 +131,10 @@ func is_distracted() -> bool:
 	return _distract_left > 0.0
 
 
-## Radius of the ground ring its attack covers (the pet dragon keeps out of it while it winds up).
+## Radius of the ground its attack covers (the pet dragon keeps out of it while it winds up).
 func danger_radius() -> float:
+	if current_move:
+		return current_move.length * 0.5 if current_move.kind == EnemyMoveData.Kind.CHARGE else current_move.radius
 	return data.attack_radius
 
 
@@ -157,22 +173,195 @@ func play_sound(part: String) -> void:
 	AudioManager.play(StringName("enemy_%s_%s" % [data.id, part]), global_position)
 
 
+# --- Attacks (one data attack, or several moves) -----------------------------------------------
+
+func has_moves() -> bool:
+	return not available_moves().is_empty()
+
+
+## The moves it can use now (bosses: the current phase's). Override.
+func available_moves() -> Array[EnemyMoveData]:
+	return data.moves
+
+
+## Chooses a move for a target `distance` away (weighted among those in range), or null if none reaches.
+func pick_move(distance: float) -> EnemyMoveData:
+	var choices: Array[EnemyMoveData] = []
+	choices.assign(available_moves().filter(func(m: EnemyMoveData) -> bool: return m.in_range(distance)))
+	if choices.is_empty():
+		return null
+	var total := 0.0
+	for m in choices:
+		total += m.weight
+	var roll := randf() * total
+	for m in choices:
+		roll -= m.weight
+		if roll <= 0.0:
+			return m
+	return choices[-1]
+
+
+func find_move(id: StringName) -> EnemyMoveData:
+	for m in available_moves():
+		if m.id == id:
+			return m
+	return null
+
+
+## Chase asks this every frame: true (with `move` chosen) when an attack can start from here.
+func ready_to_attack(distance: float) -> bool:
+	if not has_moves():
+		return distance <= data.attack_range
+	current_move = pick_move(distance)
+	return current_move != null
+
+
+func telegraph_time() -> float:
+	return current_move.telegraph_time if current_move else data.telegraph_time
+
+
+func attack_active_time() -> float:
+	return current_move.active_time if current_move else data.attack_active
+
+
+func recover_time() -> float:
+	return current_move.recover_time if current_move else data.recover_time
+
+
+## True while its attack covers ground around or in front of it (the pet dragon keeps out); not for bolts.
+func threatens_area() -> bool:
+	if current_move:
+		return current_move.kind != EnemyMoveData.Kind.VOLLEY and current_move.kind != EnemyMoveData.Kind.SUMMON
+	return data.min_range <= 0.0
+
+
+## The wind-up begins: its sound (as long as the warning) and, for moves, the marker on the ground.
+func begin_telegraph() -> void:
+	_aim_locked = false
+	if current_move:
+		play_sound("%s_telegraph" % current_move.id)
+	else:
+		play_sound("telegraph")
+	if has_live_target():
+		face(direction_to(target.global_position))
+
+
+## Called every frame of the wind-up with its progress 0–1. Moves keep turning to the target for the first part,
+## then lock their direction so the last moment can be dodged.
+func update_telegraph(progress: float) -> void:
+	if current_move == null:
+		visual.set_telegraph(progress)
+		return
+	if progress < AIM_LOCK and has_live_target():
+		face(direction_to(target.global_position))
+	elif not _aim_locked:
+		_aim_locked = true
+	if visual.has_method(&"set_telegraph"):
+		visual.set_telegraph(progress)
+	_marker.show_move(current_move, global_position, facing(), progress)
+
+
+func end_telegraph() -> void:
+	if visual.has_method(&"set_telegraph"):
+		visual.set_telegraph(-1.0)
+	if _marker:
+		_marker.hide_marker()
+
+
+## The direction it faces (its visual's forward).
+func facing() -> Vector3:
+	return Vector3(-sin(visual.rotation.y), 0.0, -cos(visual.rotation.y))
+
+
 ## The hit itself. Melee enemies switch on their attack hitbox; ranged enemies override this to shoot.
 func perform_attack() -> void:
+	if current_move:
+		_perform_move(current_move)
+		return
 	attack_hitbox.activate()
 	visual.play_attack()
 	play_sound("attack")
+
+
+## Every frame of the attack (a charge dashes forward; others stand still).
+func update_attack(delta: float) -> void:
+	if current_move and current_move.kind == EnemyMoveData.Kind.CHARGE:
+		move(_charge_dir * current_move.charge_speed(), delta)
+	else:
+		move(Vector3.ZERO, delta)
 
 
 func end_attack() -> void:
 	attack_hitbox.deactivate()
 
 
+## The move to do straight after this one (a combo), or null.
+func next_follow_up() -> EnemyMoveData:
+	if current_move == null or current_move.follow_up == &"":
+		return null
+	return find_move(current_move.follow_up)
+
+
+func _perform_move(m: EnemyMoveData) -> void:
+	visual.play_attack()
+	play_sound("%s" % m.id)
+	attack_hitbox.damage = m.damage
+	attack_hitbox.element = m.element
+	attack_hitbox.knockback = m.knockback
+	attack_hitbox.status_effect = m.status
+	attack_hitbox.status_duration = m.status_duration
+	attack_hitbox.status_power = m.status_power
+	var shape := (attack_hitbox.get_child(0) as CollisionShape3D).shape as SphereShape3D
+	match m.kind:
+		EnemyMoveData.Kind.MELEE, EnemyMoveData.Kind.RING:
+			shape.radius = m.radius
+			attack_hitbox.arc_deg = m.arc_deg
+			attack_hitbox.arc_forward = facing()
+			attack_hitbox.activate()
+		EnemyMoveData.Kind.CHARGE:
+			shape.radius = m.radius
+			attack_hitbox.arc_deg = 360.0
+			_charge_dir = facing()
+			attack_hitbox.activate()
+		EnemyMoveData.Kind.VOLLEY:
+			_fire_volley(m)
+		EnemyMoveData.Kind.SUMMON:
+			_summon(m)
+
+
+func _fire_volley(m: EnemyMoveData) -> void:
+	var forward := facing()
+	for i in m.count:
+		var t := 0.5 if m.count == 1 else float(i) / (m.count - 1)
+		var dir := forward.rotated(Vector3.UP, deg_to_rad(lerpf(m.spread_deg * 0.5, -m.spread_deg * 0.5, t)))
+		var bolt := Projectile.new()
+		get_parent().add_child(bolt)
+		bolt.launch(self, global_position + Vector3(0, VOLLEY_HEIGHT, 0), dir, HurtboxComponent.Team.ENEMY, m.damage,
+				m.element, Elements.color(m.element) if m.element != Elements.Type.NONE else Color.WHITE,
+				m.projectile_speed, m.projectile_range, m.projectile_radius)
+		if m.status != &"":
+			bolt.hitbox.status_effect = m.status
+			bolt.hitbox.status_duration = m.status_duration
+			bolt.hitbox.status_power = m.status_power
+
+
+func _summon(m: EnemyMoveData) -> void:
+	if m.summon_scene == null:
+		return
+	for i in m.summon_count:
+		var helper := m.summon_scene.instantiate() as Node3D
+		var angle := TAU * i / m.summon_count
+		helper.position = global_position + Vector3(cos(angle), 0, sin(angle)) * m.summon_distance
+		get_parent().add_child(helper)
+		summoned.emit(helper)
+
+
 func _on_status_changed() -> void:
 	var names: Array[String] = []
 	for id in status_effects.effects:
 		names.append(String(id).replace("_", " ").to_upper())
-	_health_bar.set_status(" ".join(names))
+	if _health_bar:
+		_health_bar.set_status(" ".join(names))
 
 
 # --- Events --------------------------------------------------------------------------------
@@ -183,11 +372,12 @@ func _on_hurt(info: DamageInfo, amount: float) -> void:
 	CombatFx.damage_number(get_parent(), global_position + Vector3(0, HEALTH_BAR_HEIGHT + 0.2, 0),
 			amount, Elements.multiplier(info.element, data.element))
 	CombatFx.hit_stop(get_tree(), HIT_STOP)
-	_health_bar.set_ratio(health.ratio())
+	if _health_bar:
+		_health_bar.set_ratio(health.ratio())
 	if health.is_dead():
 		return
 	play_sound("hurt")
-	if info.stagger and not state_machine.is_in(&"Dead"):
+	if info.stagger and not data.stagger_resistant and not state_machine.is_in(&"Dead"):
 		state_machine.transition_to(&"Stagger")
 	elif state_machine.is_in(&"Idle"):
 		state_machine.transition_to(&"Chase")  # hit from afar: notice the attacker

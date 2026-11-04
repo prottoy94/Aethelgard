@@ -70,7 +70,8 @@ func advance() -> void:
 
 ## Picks choice `index` of the current line.
 func choose(index: int) -> void:
-	if not is_open() or line == null or index < 0 or index >= line.responses.size():
+	# Only while the choices are shown: a second pick while the first one's effects still run would play them twice.
+	if not is_open() or line == null or not _choices.visible or index < 0 or index >= line.responses.size():
 		return
 	var response: DialogueResponse = line.responses[index]
 	_clear_choices()

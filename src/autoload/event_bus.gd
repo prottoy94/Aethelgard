@@ -24,5 +24,6 @@ signal region_changed(region_id: StringName)
 signal secret_found(secret_id: StringName)
 signal puzzle_solved(puzzle_id: StringName)
 signal dragon_hatched()
+signal boss_defeated(boss_id: StringName)
 
 @warning_ignore_restore("unused_signal")

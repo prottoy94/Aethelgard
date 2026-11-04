@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1"]
+
+; Ember Core (GAME_DESIGN.md §4, approved by the owner 2026-11-04): each region boss carries one. Ignis is weaker for
+; every core destroyed (the effect comes with the final fight). Key item.
+[resource]
+script = ExtResource("1")
+id = &"ember_core"
+display_name = "Ember Core"
+description = "A fist-sized heart of trapped fire, still beating. Ignis's power runs through it. One of five."
+color = Color(0.85, 0.22, 0.12, 1)
+category = 3
+max_stack = 5

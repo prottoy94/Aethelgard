@@ -13,7 +13,7 @@ func physics_update(delta: float) -> void:
 	if distance < enemy.data.min_range:
 		enemy.move(-towards * enemy.data.move_speed, delta)  # too close: back away
 		return
-	if distance <= enemy.data.attack_range:
+	if enemy.ready_to_attack(distance):
 		machine.transition_to(&"Telegraph")
 		return
 	enemy.move(towards * enemy.data.move_speed, delta)

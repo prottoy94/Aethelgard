@@ -8,7 +8,7 @@ var _time := 0.0
 func enter(_previous: StringName, _data: Dictionary) -> void:
 	_time = 0.0
 	var enemy := actor as Enemy
-	if enemy.data.min_range <= 0.0:
+	if enemy.threatens_area():
 		enemy.add_to_group(&"danger_zone")
 	enemy.perform_attack()
 
@@ -23,6 +23,11 @@ func exit() -> void:
 func physics_update(delta: float) -> void:
 	var enemy := actor as Enemy
 	_time += delta
-	enemy.move(Vector3.ZERO, delta)
-	if _time >= enemy.data.attack_active:
-		machine.transition_to(&"Recover")
+	enemy.update_attack(delta)
+	if _time >= enemy.attack_active_time():
+		var combo := enemy.next_follow_up()
+		if combo:
+			enemy.current_move = combo  # straight into the next move of the combo, with its own warning
+			machine.transition_to(&"Telegraph")
+		else:
+			machine.transition_to(&"Recover")

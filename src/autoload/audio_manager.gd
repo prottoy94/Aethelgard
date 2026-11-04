@@ -233,7 +233,7 @@ func _set_combat(on: bool) -> void:
 		return
 	in_combat = on
 	combat_layer.set_level(0.0 if on else -80.0, TUNING.combat_fade_in if on else TUNING.combat_fade_out)
-	if on:
+	if on and combat_layer.track != null:  # dip the music only to make room for a combat layer
 		_ducks[&"combat"] = TUNING.combat_explore_dip_db
 	else:
 		_ducks.erase(&"combat")

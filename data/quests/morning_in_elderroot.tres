@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="QuestData" format=3]
+
+[ext_resource type="Script" path="res://src/quests/quest_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/quests/quest_step.gd" id="2"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="3"]
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="4"]
+
+[sub_resource type="Resource" id="step_0"]
+script = ExtResource("2")
+description = "Talk to the Elder in Elderroot Village"
+objective = 6
+target = &"met_elder"
+amount = 1
+waypoint = &"elder"
+waypoint_region = &"elderroot_village"
+
+[sub_resource type="Resource" id="step_1"]
+script = ExtResource("2")
+description = "Help Maren in her herb garden"
+objective = 6
+target = &"quest_done_herbs_for_maren"
+amount = 1
+waypoint = &"maren"
+waypoint_region = &"elderroot_village"
+
+[sub_resource type="Resource" id="step_2"]
+script = ExtResource("2")
+description = "Help Tamsin, up in the meadow by the pond"
+objective = 6
+target = &"quest_done_lost_satchel"
+amount = 1
+waypoint = &"tamsin"
+waypoint_region = &"elderroot_meadow"
+
+[sub_resource type="Resource" id="step_3"]
+script = ExtResource("2")
+description = "Talk to the Elder again"
+objective = 6
+target = &"egg_received"
+amount = 1
+waypoint = &"elder"
+waypoint_region = &"elderroot_village"
+
+; The opening's main thread, so there is always a next step to follow (owner request 2026-11-04: navigation help).
+; Started on a new game by RegionRuntime. Status: draft.
+[resource]
+script = ExtResource("1")
+id = &"morning_in_elderroot"
+title = "A Morning in Elderroot"
+kind = 0
+giver = "Elder"
+summary = "A quiet morning in Elderroot. The Elder always knows who needs a hand, and helping is practice too."
+steps = Array[ExtResource("2")]([SubResource("step_0"), SubResource("step_1"), SubResource("step_2"), SubResource("step_3")])
+reward_items = Array[ExtResource("3")]([])
+reward_recipes = Array[ExtResource("4")]([])

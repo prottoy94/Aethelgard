@@ -24,6 +24,7 @@ var _rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
+	Waypoint.mark(self, data.item.id)  # "show the way" skips it while it is picked (can_gather)
 	_rng.randomize()
 	_visual = Node3D.new()
 	add_child(_visual)

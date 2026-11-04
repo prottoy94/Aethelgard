@@ -23,6 +23,8 @@ func _init() -> void:
 	custom_minimum_size = SIZE
 	size = SIZE
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	visible = false                              # until the first update says there is an egg or a dragon
+	process_mode = Node.PROCESS_MODE_ALWAYS      # stays right while menus pause the game
 
 
 func _process(delta: float) -> void:

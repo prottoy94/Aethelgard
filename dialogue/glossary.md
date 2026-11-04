@@ -9,7 +9,7 @@ waiting for the owner's approval.
 | Aurelia | The player: a silver-haired elf mage, rank Spark at the start | approved |
 | Lumen | A blue spirit butterfly, a fragment of the World Tree's spirit; speaks in short, gentle hints | approved 2026-11-03 |
 | Ignis Varos, Herald of the Final Ember | The antagonist | approved |
-| Sylvaris | The elder dragon guarding the World Tree | 💡 pending |
+| Sylvaris | The elder dragon guarding the World Tree | approved 2026-11-04 |
 | Elder | The kind, worried Village Elder of Elderroot (no personal name yet) | draft |
 | Maren | Elderroot's herbalist; calls everyone "dear" | draft (Phase 6a) |
 | Tamsin | A village child, an explorer at heart; chases dragonflies | draft (Phase 6a) |
@@ -26,7 +26,7 @@ Ruined Valley · Stormspire Highlands · Floating Isle / Sky Rift
 
 ## Things
 Sunpetal · Moonbloom · Elderwood · Iron Ore · Lumen Crystal · Thorn Fibre · Ember Cinder · Healing Potion ·
-Stamina Tonic · lantern braziers · the Emberbound · Ember Cores · the dragon egg · Dragon Treat (Phase 7)
+Stamina Tonic · lantern braziers · the Emberbound · Ember Cores (approved 2026-11-04) · the Cinder Warden (Emberbound Captain) · Emberbound Scout · the scorched clearing · the dragon egg · Dragon Treat (Phase 7)
 
 ## The pet dragon (Phase 7, draft names)
 - Species by element: **Frost dragon** (frost-blue), **Wind dragon** (silver-green), **Earth dragon** (moss-brown),

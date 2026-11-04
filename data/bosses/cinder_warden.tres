@@ -1,0 +1,196 @@
+[gd_resource type="Resource" script_class="BossData" format=3]
+
+[ext_resource type="Script" path="res://src/actors/bosses/boss_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/actors/enemies/enemy_move_data.gd" id="2"]
+[ext_resource type="Script" path="res://src/actors/bosses/boss_phase_data.gd" id="3"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="4"]
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="5"]
+[ext_resource type="PackedScene" path="res://src/actors/enemies/ember_wisp/ember_wisp.tscn" id="wisp"]
+[ext_resource type="Resource" path="res://data/items/ember_core.tres" id="core"]
+[ext_resource type="Resource" path="res://data/items/ember_ward_ring.tres" id="ring_item"]
+[ext_resource type="Resource" path="res://data/items/healing_potion.tres" id="potion"]
+[ext_resource type="Resource" path="res://data/recipes/ember_ward_ring.tres" id="ring_recipe"]
+
+[sub_resource type="Resource" id="cleave"]
+script = ExtResource("2")
+id = &"cleave"
+kind = 0
+weight = 2.0
+min_range = 0.0
+max_range = 2.8
+telegraph_time = 1.0
+active_time = 0.2
+recover_time = 1.2
+damage = 14.0
+element = 0
+knockback = 9.0
+radius = 3.0
+arc_deg = 140.0
+
+[sub_resource type="Resource" id="charge"]
+script = ExtResource("2")
+id = &"ember_charge"
+kind = 1
+weight = 1.5
+min_range = 4.0
+max_range = 11.0
+telegraph_time = 1.2
+active_time = 0.45
+recover_time = 1.5
+damage = 16.0
+element = 6
+knockback = 10.0
+radius = 1.3
+length = 9.0
+width = 1.8
+status = &"burn"
+status_duration = 3.0
+status_power = 3.0
+
+[sub_resource type="Resource" id="charge_combo"]
+script = ExtResource("2")
+id = &"ember_charge"
+kind = 1
+weight = 1.5
+min_range = 4.0
+max_range = 11.0
+telegraph_time = 1.2
+active_time = 0.45
+recover_time = 1.5
+damage = 16.0
+element = 6
+knockback = 10.0
+radius = 1.3
+length = 9.0
+width = 1.8
+status = &"burn"
+status_duration = 3.0
+status_power = 3.0
+follow_up = &"ember_charge_2"
+
+[sub_resource type="Resource" id="charge_2"]
+script = ExtResource("2")
+id = &"ember_charge_2"
+kind = 1
+weight = 0.0
+min_range = 0.0
+max_range = 0.0
+telegraph_time = 0.9
+active_time = 0.45
+recover_time = 1.6
+damage = 16.0
+element = 6
+knockback = 10.0
+radius = 1.3
+length = 9.0
+width = 1.8
+status = &"burn"
+status_duration = 3.0
+status_power = 3.0
+
+[sub_resource type="Resource" id="ring"]
+script = ExtResource("2")
+id = &"cinder_ring"
+kind = 2
+weight = 1.2
+min_range = 0.0
+max_range = 4.5
+telegraph_time = 1.4
+active_time = 0.25
+recover_time = 1.6
+damage = 18.0
+element = 6
+knockback = 11.0
+radius = 5.5
+arc_deg = 360.0
+status = &"burn"
+status_duration = 3.0
+status_power = 3.0
+
+[sub_resource type="Resource" id="wisps"]
+script = ExtResource("2")
+id = &"call_wisps"
+kind = 4
+weight = 0.0
+min_range = 0.0
+max_range = 0.0
+telegraph_time = 1.0
+active_time = 0.2
+recover_time = 0.8
+summon_scene = ExtResource("wisp")
+summon_count = 2
+summon_distance = 4.0
+
+[sub_resource type="Resource" id="volley"]
+script = ExtResource("2")
+id = &"ember_volley"
+kind = 3
+weight = 1.0
+min_range = 3.0
+max_range = 12.0
+telegraph_time = 1.1
+active_time = 0.2
+recover_time = 1.3
+damage = 8.0
+element = 6
+knockback = 3.0
+count = 5
+spread_deg = 60.0
+projectile_speed = 8.0
+projectile_range = 13.0
+projectile_radius = 0.35
+status = &"burn"
+status_duration = 2.0
+status_power = 2.0
+
+[sub_resource type="Resource" id="phase_1"]
+script = ExtResource("3")
+health_ratio = 1.0
+moves = Array[ExtResource("2")]([SubResource("cleave"), SubResource("charge")])
+speed_multiplier = 1.0
+
+[sub_resource type="Resource" id="phase_2"]
+script = ExtResource("3")
+health_ratio = 0.6
+moves = Array[ExtResource("2")]([SubResource("cleave"), SubResource("charge"), SubResource("ring"), SubResource("wisps")])
+speed_multiplier = 1.1
+opening_move = &"call_wisps"
+announce = "The Warden roars, and Ember Wisps answer!"
+
+[sub_resource type="Resource" id="phase_3"]
+script = ExtResource("3")
+health_ratio = 0.3
+moves = Array[ExtResource("2")]([SubResource("cleave"), SubResource("charge_combo"), SubResource("charge_2"), SubResource("ring"), SubResource("volley")])
+speed_multiplier = 1.25
+announce = "Embers pour from the Warden's cracked armour!"
+
+; Cinder Warden (GAME_DESIGN.md §7.2, boss 1): an Emberbound captain in the scorched clearing north of Elderroot
+; Meadow (owner decision 2026-11-04). Tests dodging telegraphs and stamina: slow, long warnings, few attacks.
+; Phase 2 (60%) adds the Cinder Ring and calls two Ember Wisps; phase 3 (30%) charges twice and throws embers.
+; Ember element: weak to Light and Frost. Rewards: Ember Core #1 (approved 2026-11-04), the Ember-Ward Ring and its recipe.
+[resource]
+script = ExtResource("1")
+id = &"cinder_warden"
+display_name = "Cinder Warden"
+element = 6
+rank = "D"
+max_health = 240.0
+defense = 1.0
+move_speed = 3.0
+wander_speed = 0.0
+knockback_resistance = 0.85
+aggro_range = 0.0
+leash_range = 60.0
+attack_range = 2.8
+telegraph_time = 1.0
+attack_damage = 14.0
+attack_radius = 3.0
+recover_time = 1.2
+stagger_time = 0.4
+stagger_resistant = true
+title = "Emberbound Captain"
+phases = Array[ExtResource("3")]([SubResource("phase_1"), SubResource("phase_2"), SubResource("phase_3")])
+music = &"mus_boss_ascent"
+defeat_flag = &"warden_defeated"
+reward_items = Array[ExtResource("4")]([ExtResource("core"), ExtResource("ring_item"), ExtResource("potion"), ExtResource("potion")])
+reward_recipes = Array[ExtResource("5")]([ExtResource("ring_recipe")])

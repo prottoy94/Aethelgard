@@ -13,6 +13,8 @@ description = "Keep the dragon egg warm: fight and explore together"
 objective = 6
 target = &"egg_warm"
 amount = 1
+waypoint = &"enemy"
+waypoint_region = &"elderroot_meadow"
 
 [sub_resource type="Resource" id="step_1"]
 script = ExtResource("2")
@@ -20,6 +22,8 @@ description = "Rest at a Lantern Shrine while the egg glows"
 objective = 6
 target = &"dragon_hatched"
 amount = 1
+waypoint = &"lantern_shrine"
+waypoint_region = &""
 
 ; The pet dragon thread (GAME_DESIGN.md §8.2, FR-DRG-01). The Elder gives the egg for now (owner decision 2026-11-04);
 ; the story version comes with Phase 8. Status: draft.

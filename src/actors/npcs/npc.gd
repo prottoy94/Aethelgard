@@ -25,6 +25,7 @@ var _player: Player
 
 func _ready() -> void:
 	add_to_group(&"npc")
+	Waypoint.mark(self, npc_id)
 	collision_layer = 1  # world
 	var shape := CollisionShape3D.new()
 	var capsule := CapsuleShape3D.new()

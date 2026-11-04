@@ -12,6 +12,13 @@ enum Objective { TALK, COLLECT, DEFEAT, REACH, SOLVE, LEARN_SPELL, FLAG }
 @export var target: StringName
 @export var amount := 1             ## items to hold (COLLECT) or enemies to defeat (DEFEAT)
 
+@export_group("Navigation (N: show the way, the map)")
+## What "show the way" points at: a waypoint id (an NPC id, an item id for gather spots and placed items,
+## "lantern_shrine", or "enemy" for the nearest enemy). Empty = no place to point at (text only).
+@export var waypoint: StringName
+## The region where that waypoint is; elsewhere the guide points at the exit towards it. Empty = any region.
+@export var waypoint_region: StringName
+
 
 ## Shows the counter for steps that count something.
 func shows_progress() -> bool:

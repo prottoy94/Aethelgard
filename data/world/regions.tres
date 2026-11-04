@@ -8,9 +8,10 @@ script = ExtResource("2")
 id = &"elderroot_meadow"
 display_name = "Elderroot Meadow"
 scene_path = "res://src/world/test/test_level_3d.tscn"
+map_center = Vector2(3, -8)
+map_size = 82.0
 music_day = &"mus_elderroot_explore"
 music_night = &"mus_elderroot_night"
-combat_layer = &"mus_elderroot_combat"
 ambience_day = &"amb_elderroot_day"
 ambience_night = &"amb_elderroot_night"
 
@@ -19,9 +20,10 @@ script = ExtResource("2")
 id = &"elderroot_village"
 display_name = "Elderroot Village"
 scene_path = "res://src/world/regions/elderroot_village/elderroot_village.tscn"
+map_center = Vector2(0, 2)
+map_size = 46.0
 music_day = &"mus_village_explore"
 music_night = &"mus_elderroot_night"
-combat_layer = &"mus_elderroot_combat"
 ambience_day = &"amb_elderroot_day"
 ambience_night = &"amb_elderroot_night"
 

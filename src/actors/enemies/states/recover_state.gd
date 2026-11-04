@@ -12,5 +12,5 @@ func physics_update(delta: float) -> void:
 	var enemy := actor as Enemy
 	_time += delta
 	enemy.move(Vector3.ZERO, delta)
-	if _time >= enemy.data.recover_time:
+	if _time >= enemy.recover_time():
 		machine.transition_to(&"Chase" if enemy.has_live_target() else &"Idle")

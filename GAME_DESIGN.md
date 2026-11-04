@@ -45,7 +45,7 @@ Every feature should support at least one of these. If it doesn't, cut it.
 | **Aurelia** | Player character | Silver-haired elf, staff with a hanging lantern, plum hooded cape. Cheerful, curious, bookish. Starts with **very little magic**, far below everyone else. |
 | **Lumen** ✅ | Spirit companion (blue butterfly) | From the `pose_3` art. A fragment of the World Tree's spirit. Gives hints, points toward goals, glows near secrets. Doesn't fight. *Approved by the owner 2026-11-03; built in Phase 6a.* |
 | **Pet dragon** | Battle companion | Hatched by the player from an egg. Player names it. Grows hatchling → juvenile → adult. See §8. |
-| **Sylvaris** 💡 | Good elder dragon | Ancient guardian of the World Tree. Mentor figure, gives Aurelia her dragon egg. |
+| **Sylvaris** (approved 2026-11-04) | Good elder dragon | Ancient guardian of the World Tree. Mentor figure, gives Aurelia her dragon egg. |
 | **Ignis Varos, Herald of the Final Ember** | Main antagonist | Powerful fire mage-general, sent by an unknown master. Goal: take over Aethelgard. Commands the **Emberbound**. |
 | **The Unknown One** ❓ | Hidden final threat | Sent Ignis. If Ignis fails, *it* comes itself, and its arrival could wipe out the world. Linked to the **Sky Rift** 💡. Name and nature undecided. |
 
@@ -140,6 +140,7 @@ This sets up the ending and a possible sequel. **Optional.** The simple version 
 | Dragon command (Follow → Attack → Guard) | G | D-pad up |
 | Dragon skill | H | D-pad down |
 | Menu / Map / Journal | Tab / M / J | Start / Select |
+| Show the way (to the current objective) | N | Left stick press |
 | Rotate camera | Q / R (or hold middle mouse and drag) | D-pad left / right |
 | Zoom camera | Mouse wheel | — |
 | Reset camera | Z | Right stick click |
@@ -255,6 +256,12 @@ All keys can be remapped.
 |---|---|---|---|---|---|
 | 0 | Ignis (prologue) | Elderroot | — | **Can't win**: shows how strong the enemy is | Story |
 | 1 | **Cinder Warden** | Elderroot Meadow | ~40 | Dodging telegraphs, stamina basics | Ember Core #1, recipe, accessory |
+
+**Cinder Warden (built in Phase 8a):** fought in a scorched clearing on the meadow's north path (owner decision
+2026-11-04), sealed by a ring of fire. 240 HP, Ember (weak to Light and Frost). Phase 1: *Cleave* (a sweep in front)
+and *Ember Charge* (a lane on the ground, then a burning dash). Phase 2 (60%): calls two Ember Wisps and adds
+*Cinder Ring* (a wide burning ring around him). Phase 3 (30%): faster, charges twice in a row and throws a fan of
+embers (*Ember Volley*). Rewards: Ember Core #1, the Ember-Ward Ring and its recipe, two Healing Potions.
 | 2 | **Brinecoil** (corrupted sea dragon, *freed* not killed) | Azure Coast | ~150 | Frost vs Ember, using pillars as cover | Glacial Path, Ember Core #2, ally dragon |
 | 3 | **The Hollow King** | Ruined Valley | ~300 | Light reveals his weak point; summoned adds | Radiant Burst, Ember Core #3 |
 | 4 | **Vharka the Stormbound** | Stormspire | ~500 | Gale Step dodging, Earth blocks lightning | Ember Core #4, legendary staff recipe |
@@ -419,6 +426,10 @@ Puzzles use **the spells the player has**, so learning a spell feels useful outs
 
 - **HUD:** HP bar, **stamina bar** (flashes when Exhausted), 4 spell slots with **radial cooldown** overlays, dragon portrait + HP + current command,
   rank badge, minimap (optional), quest tracker (1 line).
+- **Finding the way** (owner request 2026-11-04): **N** sends a trail of Lumen-blue lights towards the tracked quest's
+  next place and says what to do and how far (through the right exit when it is in another area); **M** opens the
+  **Map** of the current area with the objective as a gold star. The opening has a main quest, *A Morning in Elderroot*
+  (talk to the Elder, help Maren and Tamsin, talk to the Elder again), so there is always a next step.
 - **Menus:** Inventory, Equipment, **Grimoire** (spells + loadout + mastery), Crafting, Dragon, Journal (quests/bestiary/lore/materials), Map, Settings.
 - **Conversations & cutscenes:** dialogue box with portraits, choices, speech-bubble barks, skippable cutscenes. Full plan and character voice guide: [DIALOGUE_DESIGN.md](DIALOGUE_DESIGN.md).
 - **Style:** fantasy book UI (parchment, gold trim from the cape embroidery). Clean and readable.
@@ -473,7 +484,7 @@ More pet dragons, riding the dragon in real time, New Game+, the Unknown One bos
 
 1. ❓ The **Unknown One**: name, nature, and whether it appears in v1 (recommend: ending cliffhanger only).
 2. ❓ Approve the 💡 **sealed magic** idea for Aurelia?
-3. ❓ Approve the 💡 **Ember Core** mechanic (Ignis weakens as cores are destroyed)?
+3. ✅ **Ember Core** mechanic approved 2026-11-04 (the Cinder Warden drops Ember Core #1; Ignis's weakening comes with the final fight).
 4. ❓ Spell loadout changes: anywhere outside combat, or only at rest points?
 5. ✅ Pet dragon: one dragon with element choice, chosen at hatching (owner decision 2026-11-04).
 6. ❓ Keep the names suggested here (Sylvaris, Brinecoil, Hollow King, Vharka, Aurorath)? *Lumen approved 2026-11-03. Draft villager names from Phase 6a: Maren, Tamsin (dialogue/glossary.md).*

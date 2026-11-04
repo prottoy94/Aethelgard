@@ -268,6 +268,16 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 - Full dialogue and cutscene plan (file layout, allowed calls, `Cutscene` API, portraits, barks): [DIALOGUE_DESIGN.md](DIALOGUE_DESIGN.md).
 - Dialogue Manager `.dialogue` files reference `GameState`/`QuestManager` for conditions (`if GameState.has_flag("met_sylvaris")`) and actions (`do QuestManager.start("dragon_egg")`).
 
+### 4.10b Map and "show the way" (2026-11-04)
+- `Waypoint` (`src/world/navigation/`): objects mark themselves (`Waypoint.mark(node, id)`, group `waypoint`): NPCs by
+  `npc_id`, gather spots and placed items by item id, shrines as `lantern_shrine`; `"enemy"` = nearest live enemy.
+- `QuestStep.waypoint` + `waypoint_region` say where a step happens. `Navigator` (added by RegionRuntime, action
+  `navigate` = N / left stick) finds the tracked quest's step, looks the waypoint up here or, for another region, uses
+  the `RegionExit` (group `region_exit`) leading there; `GuideTrail` draws the lights, `Hud.show_guide()` the line.
+- `MapMenu` (Tab page, M): an orthographic `Camera3D` in a `SubViewport` sharing the world renders the area once when
+  the page opens (`RegionData.map_center/map_size`), then markers are drawn over it.
+- Finished quests set the flag `quest_done_<id>` (`QuestManager.done_flag`), so a quest can wait for another.
+
 ### 4.11 Pet dragon AI
 - **Follow:** stay at an offset behind Aurelia; teleport back if more than ~12 m away (leash).
 - **Attack:** target = Aurelia's last-hit or aimed enemy; otherwise the nearest enemy threatening Aurelia.
@@ -294,6 +304,12 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 ### 4.12 Bosses
 - `BossBase` extends the enemy with a `PhaseController` (HP thresholds → phase signals) and `AttackPattern` resources (sequences of moves with telegraph times).
 - Boss arena: doors lock, music changes, boss HP bar appears. Phase checkpoints on Story difficulty.
+- **Built in Phase 8a:** `EnemyMoveData` (MELEE sweep / CHARGE / RING / VOLLEY / SUMMON, telegraph/active/recover,
+  hit, `follow_up` combos) in `EnemyData.moves`; `Enemy.pick_move()` chooses by distance, `TelegraphMarker` draws the
+  warning, sounds `enemy_<id>_<move>_telegraph` / `enemy_<id>_<move>`. `Boss` (`src/actors/bosses/`) extends Enemy:
+  `BossData` (phases, title, music, defeat flag, rewards) and `BossPhaseData` (HP ratio, moves, speed, opening move);
+  `BossArena` (`src/world/bosses/`) seals with a fire ring, starts the fight, rewards, resets on Aurelia's respawn;
+  `BossBar` on the HUD. `HitboxComponent.arc_deg` limits sweeps to the front. Cinder Warden: `data/bosses/`.
 - Ignis scripted encounters use a `ScriptedEncounter` (invulnerable boss, timer or HP-threshold → cutscene).
 
 ### 4.13 Input map (actions)

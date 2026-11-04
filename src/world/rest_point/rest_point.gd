@@ -18,6 +18,7 @@ var kit: CraftingStation
 
 func _ready() -> void:
 	add_to_group(&"rest_point")
+	Waypoint.mark(self, Waypoint.SHRINE)
 	collision_layer = 1  # world
 	var shape := CollisionShape3D.new()
 	var cylinder := CylinderShape3D.new()

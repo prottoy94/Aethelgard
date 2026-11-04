@@ -14,6 +14,8 @@ description = "Gather 3 Sunpetal"
 objective = 1
 target = &"sunpetal"
 amount = 3
+waypoint = &"sunpetal"
+waypoint_region = &""
 
 [sub_resource type="Resource" id="step_1"]
 script = ExtResource("2")
@@ -21,6 +23,8 @@ description = "Bring the Sunpetal to Maren"
 objective = 0
 target = &""
 amount = 1
+waypoint = &"maren"
+waypoint_region = &"elderroot_village"
 
 ; Side task (DIALOGUE_DESIGN.md §10). Status: draft, waiting for the owner's approval.
 [resource]

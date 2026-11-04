@@ -26,6 +26,8 @@ func _ready() -> void:
 		set_process(false)
 		queue_free()
 		return
+	if persist_id != &"":
+		Waypoint.mark(self, item.id)  # placed items (a lost satchel) can be quest targets
 	collision_layer = 0
 	collision_mask = PLAYER_LAYER
 	monitorable = false

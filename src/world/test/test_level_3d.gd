@@ -14,10 +14,15 @@ const STONE := preload("res://assets/shaders/stone_moss.gdshader")
 const WATER := preload("res://assets/shaders/water.gdshader")
 const THORNLING_SCENE := preload("res://src/actors/enemies/thornling/thornling.tscn")
 ## Where Thornlings live (away from the spawn, so Aurelia isn't attacked straight away).
-const THORNLING_SPOTS: Array[Vector3] = [Vector3(11, 0, -9), Vector3(-7, 0, -19), Vector3(15, 0, -18), Vector3(3, 0, -27)]
+const THORNLING_SPOTS: Array[Vector3] = [Vector3(11, 0, -9), Vector3(-7, 0, -19), Vector3(15, 0, -18), Vector3(5, 0, -21)]
 const ENEMY_RESPAWN_TIME := 6.0
 const EMBER_WISP_SCENE := preload("res://src/actors/enemies/ember_wisp/ember_wisp.tscn")
 const WISP_SPOTS: Array[Vector3] = [Vector3(-15, 0, -7), Vector3(20, 0, -14)]
+const SCOUT_SCENE := preload("res://src/actors/enemies/emberbound/emberbound_scout.tscn")
+const SCOUT_SPOTS: Array[Vector3] = [Vector3(-9, 0, -24), Vector3(12, 0, -26)]  ## far enough from the boss clearing
+const WARDEN_SCENE := preload("res://src/actors/bosses/cinder_warden/cinder_warden.tscn")
+const WARDEN_CLEARING := Vector3(1.8, 0, -44)   ## the scorched clearing on the north path (owner decision 2026-11-04)
+const WARDEN_ARENA_RADIUS := 10.0
 const GUST := preload("res://data/spells/gust.tres")
 const MENDING_BLOOM := preload("res://data/spells/mending_bloom.tres")
 const SHRINE_POSITION := Vector3(-3.2, 0, 3.5)
@@ -100,12 +105,15 @@ func _ready() -> void:
 	_build_ruins_puzzles()
 	_build_villagers()
 	_build_village_gate()
+	_build_warden_clearing()
 	_build_spawns()
 	runtime.start()
 	for spot in THORNLING_SPOTS:
 		_spawn_enemy(THORNLING_SCENE, spot)
 	for spot in WISP_SPOTS:
 		_spawn_enemy(EMBER_WISP_SCENE, spot)
+	for spot in SCOUT_SPOTS:
+		_spawn_enemy(SCOUT_SCENE, spot)
 	Settings.graphics_changed.connect(_apply_graphics)
 	_apply_graphics(Settings.graphics)
 
@@ -184,7 +192,8 @@ func _scatter(mesh: Mesh, count: int, path_clearance: float, scale_range: Vector
 	var transforms: Array[Transform3D] = []
 	while transforms.size() < count:
 		var p := Vector3(_rng.randf_range(-40, 40), height, _rng.randf_range(-50, 30))
-		if _on_path(p, path_clearance) or p.distance_to(POND_CENTER) < 4.6 or _on_platform(p):
+		var in_clearing := Vector2(p.x - WARDEN_CLEARING.x, p.z - WARDEN_CLEARING.z).length() < WARDEN_ARENA_RADIUS + 0.5
+		if _on_path(p, path_clearance) or p.distance_to(POND_CENTER) < 4.6 or _on_platform(p) or in_clearing:
 			continue
 		var basis := Basis(Vector3.UP, _rng.randf() * TAU).scaled(Vector3.ONE * _rng.randf_range(scale_range.x, scale_range.y))
 		transforms.append(Transform3D(basis, p))
@@ -206,7 +215,8 @@ func _build_trees() -> void:
 	while placed < 70:
 		var p := Vector3(_rng.randf_range(-60, 60), 0, _rng.randf_range(-65, 35))
 		if p.distance_to(SPAWN) < 8.0 or _on_path(p, 3.5) or p.distance_to(POND_CENTER) < 6.5 or _on_platform(p, 3.0) \
-				or _is_reserved(p) or _in_ruins(p, 3.0) or p.distance_to(VILLAGE_GATE) < VILLAGE_GATE_CLEARANCE:
+				or _is_reserved(p) or _in_ruins(p, 3.0) or p.distance_to(VILLAGE_GATE) < VILLAGE_GATE_CLEARANCE \
+				or p.distance_to(WARDEN_CLEARING) < WARDEN_ARENA_RADIUS + 3.0:
 			continue
 		var tree := _solid_root(p)
 		_add_shape(tree, _cylinder_shape(0.35, 3.2), Vector3(0, 1.6, 0))
@@ -541,12 +551,30 @@ func _build_spawns() -> void:
 		&"combat": THORNLING_SPOTS[0] + Vector3(0, 0, 3.5),
 		&"wisp": WISP_SPOTS[0] + Vector3(2, 0, 6.5),
 		&"ruins": Vector3(RUINS_MIN.x - 2.5, 0, RUINS_DOOR_Z),
+		&"warden": Vector3(_path_x(WARDEN_CLEARING.z + 15.0), 0, WARDEN_CLEARING.z + 15.0),
+		&"scout": SCOUT_SPOTS[0] + Vector3(2, 0, 7),
 	}
 	for id: StringName in spawns:
 		var spawn := RegionSpawn.new()
 		spawn.spawn_id = id
 		spawn.position = spawns[id]
 		add_child(spawn)
+
+
+## The Cinder Warden's scorched clearing on the north path (Phase 8a): a BossArena with the boss in the middle.
+func _build_warden_clearing() -> void:
+	var arena := BossArena.new()
+	arena.boss_scene = WARDEN_SCENE
+	arena.radius = WARDEN_ARENA_RADIUS
+	arena.position = WARDEN_CLEARING
+	add_child(arena)
+	var stone := ToonMaterials.shader_material(STONE, {"stone": Color(0.36, 0.32, 0.3), "noise_tex": _noise})
+	for i in 7:  # charred standing stones around the edge
+		var a := TAU * (i + 0.5) / 7.0
+		var at := WARDEN_CLEARING + Vector3(cos(a), 0, sin(a)) * (WARDEN_ARENA_RADIUS + 1.6)
+		if _on_path(at, 2.5):
+			continue
+		_solid_box(Vector3(0.8, 2.2 + 0.4 * (i % 3), 0.7), stone, at + Vector3(0, 1.1, 0))
 
 
 ## Two posts with a hanging sign at the meadow's south edge; walking through leads to Elderroot Village.
