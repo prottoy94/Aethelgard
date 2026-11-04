@@ -29,6 +29,7 @@ func physics_update(delta: float) -> void:
 	if not _hit_started and _time >= combat.strike_windup:
 		_hit_started = true
 		player.strike_hitbox.activate()
+		AudioManager.play(&"player_staff_swing", player.global_position)
 	if _hit_started and not _hit_ended and _time >= combat.strike_windup + combat.strike_active:
 		_hit_ended = true
 		player.strike_hitbox.deactivate()

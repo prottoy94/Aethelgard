@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MusicTrack" format=3]
+
+[ext_resource type="Script" path="res://src/audio/music_track.gd" id="1"]
+
+; The owner's music (AUDIO_DESIGN.md §10). Copy the files with tools/audio/import_owner_music.py.
+[resource]
+script = ExtResource("1")
+id = &"mus_elderroot_explore"
+file = "res://assets/audio/music/owner/where_the_forest_remembers.mp3"
+volume_db = -2.0
+loop = true
+loop_start = 35.85
+loop_end = 168.21
+start = 0.0
+bpm = 76.0
+notes = "Where the Forest Remembers (owner): instrumental, F# major like Aurelia's song, warm. Suggested for Elderroot Meadow by day (owner to confirm; FR-AUD-14 wanted an instrumental Sunlight, which doesn't exist yet). Loop 0:35.9 to 2:48.2 skips the intro and the fade."

@@ -86,6 +86,15 @@ AudioManager.play_stinger(&"stg_rank_up")
 - A **voice pool** reuses `AudioStreamPlayer3D` nodes and caps how many copies of one sound can play at once (e.g. max 4 hit sounds), so big fights don't turn into noise.
 - Positional sounds use `AudioStreamPlayer3D` (3D game) with a max distance of about 25–30 m and the listener on the camera rig.
 
+> **Built in Phase 6c** (`src/autoload/audio_manager.gd`, `src/audio/`): `play(id, position?)` with pooled 2D/3D
+> players (12/24), polyphony and interval limits, random pitch/volume; `play_music` / `set_combat_layer` /
+> `set_combat(engaged)` / `play_ambience` / `play_weather` on `MusicChannel`s that loop at a track's loop points with a
+> crossfade (no file trimming needed); `play_stinger` and `duck(reason, db)`; low-pass on Music/Ambience while paused.
+> Ids follow names where possible: `spell_<id>_cast`, `enemy_<id>_<alert|telegraph|attack|hurt|death>`,
+> `combat_hit_<element>`, `combat_status_<id>`, `player_footstep_<surface>` (floor meta `surface`).
+> Each region's music and ambience are set in `data/world/regions.tres`. Tuning: `data/audio/audio_tuning.tres`.
+> `SoundEvent` stores file **paths** (a missing file silences one sound instead of breaking loading).
+
 ### 4.2 `SoundEvent` resource
 ```gdscript
 class_name SoundEvent
@@ -232,6 +241,11 @@ Implementation: each spell's `SoundEvent` holds layered streams, and mastery lev
 | `dragon_breath_{frost,wind,earth,light}` | Per element choice | V1 |
 | `dragon_command_ack` | Short call when given a command | V1 |
 | `dragon_happy` / `dragon_eat` / `dragon_ko` | Bond and feeding | V1 |
+| `dragon_bite` / `dragon_hurt` / `dragon_return` | Its bite, being hit, reappearing beside Aurelia (added in Phase 7) | V1 |
+
+Phase 7 placeholders (generated): every row above except `dragon_wings` and the juvenile/adult chirps, plus
+`combat_hit_frost` (the dragon is the first Frost attacker) and the stinger `stg_dragon_hatched`, on the **Dragon** bus.
+Stingers now play one at a time: one that comes while another plays is skipped (hatching also finishes a quest).
 
 **World & puzzles**
 | ID | Priority |
@@ -272,6 +286,11 @@ Positional ambience sources: waterfalls, streams, braziers, the World Tree (warm
 ## 7. Making the sounds
 
 ### 7.1 Phase 1: placeholders (from M0 to the vertical slice)
+> **Built in Phase 6c:** `tools/audio/generate_placeholders.py` (numpy only, fixed seed) makes 70 sound events
+> (95 WAV files: player, spells, combat hits and statuses, both enemies, world, puzzles, UI, 6 stingers in F# major),
+> ambience loops (Elderroot day, night, rain) and a drum combat layer at 76 BPM, writes their SoundEvent/MusicTrack
+> `.tres` files and both libraries. Audio is git-ignored: run it after a clone, plus `tools/audio/import_owner_music.py`
+> to copy the owner's music into `assets/audio/music/owner/`.
 - **Code-generated SFX:** a Python script in `tools/audio/` (numpy + the standard `wave` module) builds sounds from simple recipes:
   - *whoosh* = noise through a moving filter with a fade in/out
   - *chime* = sine partials with a fast decay (Light)
@@ -325,7 +344,7 @@ Positional ambience sources: waterfalls, streams, braziers, the World Tree (warm
 | M4 Items | UI sounds, gather, craft, equip, loot |
 | M5 World systems | Dialogue blips, puzzle sounds, quest stingers |
 | M6 Atmosphere | Day/night ambience swap, weather, region reverb, adaptive explore/combat music |
-| M7 Dragon | Egg, hatch, hatchling chirps |
+| M7 Dragon | Egg, hatch, hatchling chirps. ✅ Placeholders in Phase 7 (16 dragon sounds + hatching stinger) |
 | M8 Boss | Boss music with phases, Cinder Warden and Ignis-prologue sounds |
 | 🎯 Vertical slice | Complete placeholder audio + first pass of real Aurelia's theme 💡 |
 | M11 Polish | Final sounds and music swapped in, full mix pass, `CREDITS.md` complete |
@@ -405,7 +424,8 @@ For **Elderroot Meadow** exploration (the title "ancient stone" fits it perfectl
 
 ### 10.5 What's still needed to use them in-game
 
-1. **Instrumental version of *Sunlight*** for Elderroot Meadow exploration: ❓ still needed.
+1. **Instrumental version of *Sunlight*** for Elderroot Meadow exploration: ❓ still needed. *Until then the owner's
+   instrumental Where the Forest Remembers (same key) plays in Elderroot (Phase 6c, owner to confirm).*
    A stem-separated version was made and then **removed by the owner** (§10.6). Best option: a newly generated instrumental from the same Google tool,
    with an instrument (e.g. flute) playing the vocal melody, in F# major at ~80 BPM.
 2. **Matching combat tracks:** combat layers for Elderroot (F# major, ~80 BPM) and Azure Coast (B major, ~76 BPM) in the same key and tempo, so the explore ↔ combat switch (§5.3) is smooth.
@@ -427,7 +447,21 @@ The owner **removed those files**, so they are not part of the project. Useful f
 - A good loop for an instrumental of *Sunlight* runs **from ~2:27.5 back to ~0:39.5** (108 s = 36 bars at 80 BPM), skipping intro and outro.
   A newly generated instrumental with the same structure may loop at similar points.
 
-### 10.7 New owner tracks (added 2026-11-03, not analysed yet)
+### 10.7 New owner tracks (added 2026-11-03, analysed 2026-11-04)
+
+Analysed with `tools/audio/analyze_track.py` (librosa for tempo, key, loudness, sections and loops; faster-whisper for
+words). Tempos marked "~76" were measured as 152 (double time); by feel they sit with *Tides* (76 BPM).
+
+| Track | Length | Tempo / key | Vocals | Feel & sections | Best loop | Suggested use |
+|---|---|---|---|---|---|---|
+| *Where the Forest Remembers* | 3:03 | ~76, **F# major** | none | The darkest, warmest of all; builds from 0:28, quiet middle 1:41.6–2:18.5, fade from 2:49 | 0:35.9 → 2:48.2 | **Elderroot Meadow by day**; its quiet middle looped **by night**. Same key as *Sunlight*, so Aurelia's theme fits over it |
+| *Edge of the Blue* | 2:59 | ~76, **F# major** | none | Bright and open; dips at 1:03–1:28, fade from 2:44 | 0:20.7 → 2:49.2 | **Elderroot Village by day** for now; later the Floating Isle or the Azure Coast cliffs |
+| *The Last Ascent* | 3:04 | fast (~86), **C# minor** | none | Builds slowly (full from 0:44), a sudden quiet at 1:36–1:52, then the climax | 1:08.5 → 2:26.8 | **First boss (Cinder Warden)** or the Stormspire climb. C# is the fifth of F#, so it sits well next to Aurelia's music |
+| *The World Holds Its Breath* | 1:53 | 80, **F# major** | **spoken lines** (0:03–0:23) | Quiet intro with speech: "the runes are faint, but look at the way they catch the light… a breeze that could clear the fog… you are there", then music | (not looped) | A **story moment**, e.g. finding the Gust trial (a breeze that clears the fog) |
+
+All four are at the same loudness (RMS −14.3 dBFS, peaks ~0 dBFS) and carry the Google content credentials.
+In game (Phase 6c) the first two play where suggested; the owner confirms or changes this in the MusicTrack files
+(`data/audio/music/*.tres`) and `data/world/regions.tres`.
 
 | File | Likely use (guess from the title only) |
 |---|---|

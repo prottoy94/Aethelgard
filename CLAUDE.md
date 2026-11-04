@@ -22,7 +22,23 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   `StatusEffectComponent` + `data/combat/status_rules.tres`. World: `src/world/items/spell_tome.gd`, `src/world/rest_point/`,
   menu `src/ui/menus/grimoire.gd` (Tab). New enemy `src/actors/enemies/ember_wisp/` (ranged, uses `src/magic/projectile.gd`).
 - **Phase 6 is built in 3 parts with an owner check-in after each** (6a world systems → 6b persistence & atmosphere → 6c audio).
-  **6a done** 2026-11-03. **6b done** 2026-11-04, **158/158 tests pass. Next: 6c** (AudioManager, owner's music, 4 new tracks).
+  **6a done** 2026-11-03, **6b and 6c done** 2026-11-04: **Phase 6 complete.**
+- **Phase 7 (dragon, M7) done** 2026-11-04: **203/203 tests pass. Next: Phase 8 (first boss + vertical slice, M8).**
+  Owner decisions: element chosen at hatching (Frost/Wind/Earth/Light), default name Pip, the Elder gives the egg (stand-in).
+  Code: `DragonManager` autoload (egg warmth, element, name, bond, command, KO, `to_dict/from_dict`; bond adds Magic Power
+  via `PlayerData.set_dragon_power`), `src/actors/dragon/` (Dragon actor built in code + states Follow/Attack/Guard/UseSkill/
+  KnockedOut, DragonPlaceholder, DragonBreath, DragonEgg, data classes DragonSpeciesData/DragonStageStats/DragonSkillData/
+  DragonTuning/DragonTypes), `src/cutscenes/` (CutsceneScene + `dragon_hatch/`), `Cutscene.play/cue/ask_text`,
+  `src/ui/hud/dragon_panel.gd`, `src/ui/menus/dragon_menu.gd`. Data: `data/dragons/` (tuning + 4 species),
+  `data/items/dragon_treat.tres`, `data/recipes/dragon_treat.tres`, `data/quests/dragon_egg.tres`. Dialogue (drafts):
+  `dialogue/story/dragon_hatch.dialogue`, Elder cue `elder_egg`. Enemies: `target` is a Node3D, `distract()`, melee rings
+  join group `danger_zone` from Telegraph through Attack. Tests reset `DragonManager.from_dict({})`.
+  6c code: `AudioManager` (play by id, pools, MusicChannel loops/crossfades, combat layer, ambience, stingers, ducking,
+  pause muffle), `src/audio/` (SoundEvent, SoundLibrary, MusicTrack, MusicLibrary, MusicChannel, AudioTuning), region
+  sound ids in `data/world/regions.tres`, volumes in Settings + Options. **Audio files are git-ignored: after a clone
+  run `python tools/audio/generate_placeholders.py` and `python tools/audio/import_owner_music.py`.** Track analysis:
+  `D:\Tools\audio-venv\Scripts\python.exe tools/audio/analyze_track.py <file>` (librosa + faster-whisper, set
+  `HF_HOME=D:\Tools\hf-cache`). `.gutconfig.json` runs `tests/post_run.gd` (silences audio before GUT quits).
   6b code: `SaveManager` (JSON slots auto + slot_1..3, version/migrate, `capture_player`), `SceneLoader` (regions from
   `data/world/regions.tres`, fades, `scene_parent` for tests), `TimeOfDay` (clock + weather, `data/world/time_settings.tres`),
   `src/world/environment/` (DayNightCycle + `data/world/day_night.tres`), `src/world/regions/` (RegionRuntime = shared
@@ -47,9 +63,11 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   Tests reset with `Inventory.reset()`, `PlayerData.reset([...])` and `GameState.reset()` in `before_each`.
   Main scene = `src/ui/title/title_screen.tscn`. **Any start option after `--` skips the title** into a new game with saving
   off (`--saves` keeps it on; `--title` keeps the title): `--region=elderroot_meadow|elderroot_village`,
-  `--spawn=start|viewpoint|combat|wisp|ruins|from_village|from_meadow`, `--open=inventory|grimoire|journal|save|options|crafting`,
-  `--talk=elder|maren|tamsin`, `--hour=<0-24>`, `--weather=clear|rain|fog`, `--give=materials`, `--visual=animated`,
-  `--benchmark=<dir>`, `--graphics=low|medium|high`. The meadow is `src/world/test/test_level_3d.tscn` (region elderroot_meadow).
+  `--spawn=start|viewpoint|combat|wisp|ruins|from_village|from_meadow`, `--open=inventory|grimoire|dragon|journal|save|options|crafting`,
+  `--talk=elder|maren|tamsin`, `--hour=<0-24>`, `--weather=clear|rain|fog`, `--give=materials|treats`, `--visual=animated`,
+  `--dragon=egg|ready|hatch|frost|wind|earth|light`, `--autoplay[=<choice>]` (conversations advance by themselves),
+  `--benchmark=<dir>`, `--capture=<dir> --capture-at=1.5,4,8` (screenshots at those seconds, then quit; good with
+  `--autoplay` for cutscenes), `--graphics=low|medium|high`. The meadow is `src/world/test/test_level_3d.tscn` (region elderroot_meadow).
   Key code: `src/actors/player/` (Player, states, placeholder model, MovementStats), `src/game/camera/` (CameraRig, CameraSettings),
   `src/world/camera/scenic_viewpoint.gd`, `src/components/interactable_component.gd`, `src/core/` (StateMachine, Cooldown, ToonMaterials).
   Git repo exists (branch `main`, no remote). **The owner makes commits manually: never commit or push.**

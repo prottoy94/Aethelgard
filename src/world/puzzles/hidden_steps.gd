@@ -24,6 +24,7 @@ var _materials: Array[StandardMaterial3D] = []
 func _ready() -> void:
 	var body := StaticBody3D.new()
 	body.collision_layer = 1  # world
+	body.set_meta(&"surface", "stone")
 	add_child(body)
 	var run := steps * step_depth
 	_ramp = CollisionShape3D.new()
@@ -70,6 +71,8 @@ func reveal() -> void:
 	remove_from_group(&"revealable")
 	_ramp.set_deferred(&"disabled", false)
 	GameState.set_object_state(persist_id, {"revealed": true})
+	AudioManager.play(&"puzzle_hidden_reveal", global_position)
+	EventBus.secret_found.emit(persist_id)
 	create_tween().tween_method(_show, 0.0, 1.0, 0.8)
 	state_changed.emit()
 

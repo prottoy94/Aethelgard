@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MusicTrack" format=3]
+
+[ext_resource type="Script" path="res://src/audio/music_track.gd" id="1"]
+
+; The owner's music (AUDIO_DESIGN.md §10). Copy the files with tools/audio/import_owner_music.py.
+[resource]
+script = ExtResource("1")
+id = &"mus_story_world_holds_its_breath"
+file = "res://assets/audio/music/owner/the_world_holds_its_breath.mp3"
+volume_db = 0.0
+loop = false
+loop_start = 0.0
+loop_end = 0.0
+start = 0.0
+bpm = 80.0
+notes = "The World Holds Its Breath (owner): F# major, 80 BPM; opens with spoken lines about faint runes and a breeze that could clear the fog. Suggested for a story moment (e.g. finding the Gust trial). Not looped."

@@ -47,12 +47,14 @@ func open() -> void:
 	_root.visible = true
 	refresh()
 	get_tree().paused = true
+	AudioManager.play(&"ui_menu_open")
 	opened.emit()
 
 
 func close() -> void:
 	_root.visible = false
 	get_tree().paused = false
+	AudioManager.play(&"ui_menu_close")
 	closed.emit()
 
 
@@ -94,7 +96,8 @@ func keep_focus(preferred: Control) -> void:
 
 static func _first_button(node: Node) -> Button:
 	for child in node.get_children():
-		if child is Button and not child.is_queued_for_deletion() and (child as Button).visible 				and not (child as Button).disabled:
+		var button := child as Button
+		if button and not button.is_queued_for_deletion() and button.visible and not button.disabled:
 			return child
 		var found := _first_button(child)
 		if found:
@@ -113,13 +116,14 @@ func _menu_input(_event: InputEvent) -> bool:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not is_open():
-		return
+	if not is_open() or Cutscene.is_asking():
+		return  # (typing a name: keys belong to the text box)
 	if event.is_action_pressed("pause") or event.is_action_pressed("ui_cancel") or event.is_action_pressed("menu"):
 		close()
 		get_viewport().set_input_as_handled()
 	elif _tab_count > 1 and (event.is_action_pressed("camera_rotate_left") or event.is_action_pressed("camera_rotate_right")):
 		var step := -1 if event.is_action_pressed("camera_rotate_left") else 1
+		AudioManager.play(&"ui_tab")
 		_tab_pick.call(wrapi(_tab_index + step, 0, _tab_count))
 		get_viewport().set_input_as_handled()
 	elif _menu_input(event):
@@ -192,6 +196,11 @@ static func style_button(button: Button, font_size := 18) -> void:
 	for state in ["font_pressed_color", "font_hover_pressed_color"]:
 		button.add_theme_color_override(state, PARCHMENT)
 	button.add_theme_color_override("font_disabled_color", INK.lightened(0.5))
+	button.pressed.connect(func() -> void: AudioManager.play(&"ui_confirm"))
+	button.mouse_entered.connect(func() -> void:
+		if not button.disabled:
+			AudioManager.play(&"ui_hover"))
+	button.focus_entered.connect(func() -> void: AudioManager.play(&"ui_hover"))
 
 
 static func make_label(text: String, size: int, color: Color) -> Label:

@@ -1,9 +1,13 @@
 # status: draft (Phase 6a, 2026-11-03), waiting for the owner's approval
 # Elderroot villagers: the Elder, Maren the herbalist and young Tamsin (DIALOGUE_DESIGN.md §10).
+# Phase 7 (draft, 2026-11-04): the Elder gives the dragon egg once both village tasks are done (`elder_egg`).
 # Voices: DIALOGUE_DESIGN.md §7. Names and terms: dialogue/glossary.md.
 # Only GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene and AudioManager may be called.
 
 ~ elder
+if not GameState.has_flag("egg_received") and QuestManager.is_done("herbs_for_maren") and QuestManager.is_done("lost_satchel")
+	do GameState.set_flag("met_elder")
+	=> elder_egg
 if GameState.has_flag("met_elder")
 	=> elder_repeat
 do GameState.set_flag("met_elder")
@@ -20,13 +24,35 @@ Aurelia: [#determined] Right. I'll do my best!
 => END
 
 ~ elder_repeat
-if QuestManager.is_done("herbs_for_maren") and QuestManager.is_done("lost_satchel")
+if DragonManager.is_hatched()
+	Elder: [#proud] So this is {{DragonManager.dragon_name}}. Twelve winters in my cupboard, and look at it now.
+	Aurelia: [#happy] It ate my breakfast this morning. And then my bookmark.
+elif DragonManager.has_egg()
+	Elder: Keep that egg close. Walk far, stand brave. When it glows, rest at a Lantern Shrine.
+elif QuestManager.is_done("herbs_for_maren") and QuestManager.is_done("lost_satchel")
 	Elder: [#proud] Maren's remedies, Tamsin's smile... The whole village is talking about you.
 	Aurelia: [#embarrassed] It was mostly running around. And a few braziers.
 elif PlayerData.rank >= 1
 	Elder: [#proud] Your lantern burns brighter than it did. Don't let it go to your head.
 else
 	Elder: Maren is in her herb garden. Tamsin is up in the meadow, by the pond.
+=> END
+
+~ elder_egg
+Elder: [#proud] Maren's remedies, Tamsin's satchel... You have earned something, I think. Wait here.
+Elder: This was left with Elderroot long ago, to keep until the right hands came along.
+Aurelia: [#surprised] Is that... an egg? It's warm!
+Elder: A dragon egg. It has slept in my cupboard for twelve winters and never once stirred.
+Elder: [#worried] Until this morning. It hummed when you walked past my door.
+- A dragon? For me?
+	Elder: [#proud] For you. I am too old to keep up with a dragon, and you are too stubborn to give up on one.
+- What if I drop it?
+	Elder: Then you pick it up again. Dragon shells are tougher than apprentices.
+do DragonManager.receive_egg()
+do QuestManager.start("dragon_egg")
+Elder: Eggs warm to courage and to new roads. Fight beside it, walk far with it.
+Elder: When it glows, rest at a Lantern Shrine. It will want a calm place to wake.
+Aurelia: [#excited] I'll keep it safe. I promise!
 => END
 
 ~ elder_bark

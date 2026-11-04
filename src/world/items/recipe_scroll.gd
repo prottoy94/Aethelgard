@@ -42,6 +42,7 @@ func _process(delta: float) -> void:
 
 func _on_taken(_by: Node) -> void:
 	Inventory.learn_recipe(recipe)
+	AudioManager.play(&"ui_quest_update")
 	GameState.set_object_state(persist_id, {"taken": true})
 	var tween := create_tween()
 	tween.tween_property(_scroll, "scale", Vector3.ONE * 1.5, 0.15)

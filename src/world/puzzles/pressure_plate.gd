@@ -48,6 +48,8 @@ func _update() -> void:
 	if pressed == is_pressed:
 		return
 	is_pressed = pressed
+	if pressed:
+		AudioManager.play(&"puzzle_plate_press", global_position)
 	_plate.position.y = 0.03 if pressed else 0.08
 	_rune.material_override = ToonMaterials.glow(RUNE, 3.0 if pressed else 0.3)
 	state_changed.emit()

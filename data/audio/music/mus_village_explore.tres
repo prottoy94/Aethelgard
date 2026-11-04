@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MusicTrack" format=3]
+
+[ext_resource type="Script" path="res://src/audio/music_track.gd" id="1"]
+
+; The owner's music (AUDIO_DESIGN.md §10). Copy the files with tools/audio/import_owner_music.py.
+[resource]
+script = ExtResource("1")
+id = &"mus_village_explore"
+file = "res://assets/audio/music/owner/edge_of_the_blue.mp3"
+volume_db = -3.0
+loop = true
+loop_start = 20.69
+loop_end = 169.16
+start = 0.0
+bpm = 76.0
+notes = "Edge of the Blue (owner): bright, F# major. Suggested for Elderroot Village by day (owner to confirm; it could also suit the Azure Coast or the Floating Isle later). Loop 0:20.7 to 2:49.2."

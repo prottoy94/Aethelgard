@@ -73,13 +73,13 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ### 1.5 Dragons (DRG)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-DRG-01 | The player receives a dragon egg that hatches after progress. | MVP | The egg hatches at the end of the vertical slice. | ⬜ |
-| FR-DRG-02 | Pet dragon follows Aurelia and fights with her. | V1 (MVP: follow only) | The dragon attacks enemies near the player. | ⬜ |
-| FR-DRG-03 | Commands: Follow / Attack / Guard, plus a dragon skill on cooldown. | V1 | Each command visibly changes behaviour. | ⬜ |
-| FR-DRG-04 | Growth stages: hatchling → juvenile → adult. | V1 | Model, stats and skills change per stage. | ⬜ |
-| FR-DRG-05 | Bond level 1–10 raised by battle, treats, petting and training; unlocks skills. | V1 | Feeding a treat raises bond XP. | ⬜ |
-| FR-DRG-06 | Element chosen at hatching (Frost/Wind/Earth/Light), each with its own skill set. (Pending approval.) | V1 | Different element → different skills. | ⬜ |
-| FR-DRG-07 | Knocked-out dragon returns after a delay or at a rest point; never dies permanently. | V1 | Dragon reappears after ~20 s. | ⬜ |
+| FR-DRG-01 | The player receives a dragon egg that hatches after progress. | MVP | The egg hatches at the end of the vertical slice. | ✅ Phase 7 (the Elder gives the egg after both village tasks, a stand-in until the story scenes; fighting, puzzles, new places and walking warm it; resting at a Lantern Shrine with a warm egg plays the hatching scene; tested). Phase 8 moves the hatch to the end of the slice |
+| FR-DRG-02 | Pet dragon follows Aurelia and fights with her. | V1 (MVP: follow only) | The dragon attacks enemies near the player. | ✅ Phase 7 (follows Aurelia, appears beside her when left behind, bites enemies that come after her; bitten enemies turn on it for a moment; tested) |
+| FR-DRG-03 | Commands: Follow / Attack / Guard, plus a dragon skill on cooldown. | V1 | Each command visibly changes behaviour. | ✅ Phase 7 (G cycles Follow / Attack / Guard: Attack goes after her target, Guard stands between her and the nearest threat and catches bolts; H: breath skill with its own cooldown; keeps out of telegraph rings; tested) |
+| FR-DRG-04 | Growth stages: hatchling → juvenile → adult. | V1 | Model, stats and skills change per stage. | 🟨 Hatchling stage built (stats per stage in data); juvenile and adult with their models and skills come with Phase 10 |
+| FR-DRG-05 | Bond level 1–10 raised by battle, treats, petting and training; unlocks skills. | V1 | Feeding a treat raises bond XP. | 🟨 Phase 7: bond 1–10 from fighting together, Dragon Treats (crafted) and petting (E beside it, bond once every 4 game hours); bond raises HP, bite damage and Magic Power, and bond 3 unlocks each species' trait (tested). Training games come later |
+| FR-DRG-06 | Element chosen at hatching (Frost/Wind/Earth/Light), each with its own skill set. | V1 | Different element → different skills. | ✅ Phase 7 (approved by the owner 2026-11-04: Aurelia picks Frost, Wind, Earth or Light in the hatching scene; each has its own breath and trait, one body recoloured; tested) |
+| FR-DRG-07 | Knocked-out dragon returns after a delay or at a rest point; never dies permanently. | V1 | Dragon reappears after ~20 s. | ✅ Phase 7 (at 0 HP it curls up and comes back after 20 s, or at once when Aurelia rests at a shrine; can't be hit meanwhile; tested) |
 | FR-DRG-08 | Adult dragon flight: fast travel between Dragon Roosts and access to the Floating Isle. | V1 | Flying to the Floating Isle works only with an adult dragon. | ⬜ |
 | FR-DRG-09 | Good wild dragons (Sylvaris, Brinecoil, sun dragon) as story NPCs. | V1 | Each appears in the main quest. | ⬜ |
 | FR-DRG-10 | More than one pet dragon. | Stretch | — | ⬜ |
@@ -94,9 +94,9 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-ITM-04 | Crafting at the workbench using recipes and materials. | MVP | Crafting consumes inputs and adds the output. | ✅ Phase 5 (workbench makes everything, the shrine's crafting kit makes potions; inputs used up; tested) |
 | FR-ITM-05 | Recipes are found, given, bought or earned from bosses. | MVP | Unknown recipes are hidden or shown as "???". | 🟨 Recipes found as scrolls in the world; unknown ones show as "???" (tested). Given/bought/boss recipes come with NPCs and bosses |
 | FR-ITM-06 | Equipment upgrades +1 to +3. | V1 | Upgrading raises stats and consumes materials. | ⬜ |
-| FR-ITM-07 | Consumables: potions, stamina tonics, element oils, cleansing water, dragon treats. | MVP (potion, tonic) / V1 | Using a potion heals. | 🟨 MVP part done: Healing Potion and Stamina Tonic, used from the Inventory (tested). Oils, cleansing water, treats in V1 |
+| FR-ITM-07 | Consumables: potions, stamina tonics, element oils, cleansing water, dragon treats. | MVP (potion, tonic) / V1 | Using a potion heals. | 🟨 Healing Potion and Stamina Tonic (Phase 5) and Dragon Treats (Phase 7: fed from the Inventory or the Dragon page; tested). Oils and cleansing water in V1 |
 | FR-ITM-08 | The journal shows where each material can be found. | V1 | Material entries list regions/enemies. | ⬜ |
-| FR-ITM-09 | ~25 recipes, ~15 accessories, ~5 staffs. | V1 | Content counts met. | 🟨 5 of ~25 recipes, 3 of ~15 accessories, 1 of ~5 staffs (the vertical-slice amounts, GDD §15.1) |
+| FR-ITM-09 | ~25 recipes, ~15 accessories, ~5 staffs. | V1 | Content counts met. | 🟨 6 of ~25 recipes (the slice's 5 plus the Dragon Treat), 3 of ~15 accessories, 1 of ~5 staffs |
 
 ### 1.7 Puzzles (PUZ)
 | ID | Requirement | Priority | Acceptance check | Status |
@@ -105,7 +105,7 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-PUZ-02 | Light/lantern puzzles: hidden runes and paths revealed by light. | MVP | A hidden path appears under Lantern Glow. | ✅ Phase 6a (Lantern Glow reveals hidden spirit steps up to a ledge; hidden tome since Phase 4; tested) |
 | FR-PUZ-03 | Rune-sequence puzzles. | V1 | Correct order opens the door; a wrong one resets. | ⬜ |
 | FR-PUZ-04 | Day/night-dependent puzzles. | V1 | A moon door opens only at night. | ⬜ |
-| FR-PUZ-05 | Dragon-assisted puzzles. | V1 | The dragon hits a switch the player can't reach. | ⬜ |
+| FR-PUZ-05 | Dragon-assisted puzzles. | V1 | The dragon hits a switch the player can't reach. | 🟨 Phase 7: the dragon's breath reaches puzzle objects (a Light dragon lights braziers, a Wind dragon pushes blocks; tested). Puzzles built around the dragon come with later regions |
 | FR-PUZ-06 | Solved puzzles stay solved (persisted). | MVP | Reloading keeps the puzzle solved. | ✅ Phase 6b (puzzle states live in GameState, which is saved; tested) |
 | FR-PUZ-07 | Lumen gives an optional hint after the player is stuck for a while. | V1 | Hint appears after N seconds without progress. | ✅ Phase 6a, early (Lumen hints after time near a puzzle without progress; Lumen approved 2026-11-03) |
 
@@ -138,9 +138,9 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
 | FR-UI-01 | HUD: HP, stamina (Exhausted flash), 4 spell slots with radial cooldowns, rank badge, quest tracker. | MVP | All elements update live. | ✅ HP, stamina with Exhausted warning, radial cooldowns (Phase 3), rank badge, status chips (Phase 4), quest tracker (Phase 6a) |
-| FR-UI-02 | HUD dragon panel: portrait, HP, current command. | V1 | Shows after hatching. | ⬜ |
+| FR-UI-02 | HUD dragon panel: portrait, HP, current command. | V1 | Shows after hatching. | ✅ Phase 7 (bottom left: placeholder portrait, name, stage, HP, command, bond and the breath's cooldown; the egg's warmth before hatching; hidden in cutscenes; tested) |
 | FR-UI-03 | Menus: Inventory, Equipment, Grimoire, Crafting, Journal, Map, Settings. | MVP (Inventory, Grimoire, Crafting, Settings) / V1 | Each opens and closes with keyboard and gamepad. | 🟨 Tab/Start menu: Inventory, Grimoire, Journal, Save (Esc), Options (Q/R turns the page, J opens the Journal); Crafting at stations; all pause and close with Esc/B/Start (tested). Map later |
-| FR-UI-04 | Dragon menu (stats, bond, skills, name). | V1 | — | ⬜ |
+| FR-UI-04 | Dragon menu (stats, bond, skills, name). | V1 | — | ✅ Phase 7 (Tab menu Dragon page: stats, bond progress, skills with what unlocks the locked ones, pick a command, feed a treat, rename; tested) |
 | FR-UI-05 | Title screen with New / Continue / Settings / Quit. | MVP | Continue loads the latest save. | ✅ Phase 6b (title screen: Continue = latest save, New Game, Load Game, Options, Quit; the owner's song comes with the audio work, 6c) |
 | FR-UI-06 | Dialogue box with portraits and text speed option. | MVP | Text speed setting is applied. | ✅ Phase 6a (dialogue box with placeholder portraits; text speed applies at once) |
 
@@ -150,20 +150,20 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-SAV-01 | Saves are JSON files in `user://saves/`, never Godot resources. | MVP | No `.tres`/`.res` loaded from `user://`. | ✅ Phase 6b (JSON files in user://saves/; only JSON is ever read from user://, by id; tested) |
 | FR-SAV-02 | Autosave at rest points and region changes; 3 manual slots. | MVP | — | ✅ Phase 6b (autosave when resting at a Lantern Shrine and on arriving in a region; 3 manual slots on the Save page, saving next to a shrine; tested) |
 | FR-SAV-03 | Save files carry a version number and are migrated when the format changes. | MVP | Loading an older-version save works or shows a clear message. | ✅ Phase 6b (format version 1; older saves upgraded step by step, newer or damaged ones refused with a message; tested) |
-| FR-SAV-04 | Save → load round-trip restores player, inventory, quests, dragon and world state exactly. | MVP | Unit test compares dictionaries before and after. | ✅ Phase 6b (region, position, health, world state, items, spells, quests, clock round-trip; tested. The dragon joins in Phase 7) |
+| FR-SAV-04 | Save → load round-trip restores player, inventory, quests, dragon and world state exactly. | MVP | Unit test compares dictionaries before and after. | ✅ Phase 6b + 7 (region, position, health, world state, items, spells, quests, clock and the dragon (egg, element, name, bond, command, health, knock-out) round-trip through JSON; tested) |
 
 ### 1.12 Dialogue & cutscenes (DLG) — details in [DIALOGUE_DESIGN.md](DIALOGUE_DESIGN.md)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
 | FR-DLG-01 | Conversations are written in Dialogue Manager `.dialogue` files under `res://dialogue/`. | MVP | No dialogue text is hard-coded in scripts. | ✅ Phase 6a (villager and Lumen lines in `dialogue/*.dialogue`; system toasts are UI text, not dialogue) |
-| FR-DLG-02 | Story/NPC dialogue box: name plate, two portrait positions, expression tags, typewriter text with per-character blips. | MVP | `[#happy]` switches the portrait expression. | 🟨 Name plate, portraits on two sides, [#mood] expressions, typewriter text (Phase 6a, tested); per-character blips come with the audio work (6c) |
+| FR-DLG-02 | Story/NPC dialogue box: name plate, two portrait positions, expression tags, typewriter text with per-character blips. | MVP | `[#happy]` switches the portrait expression. | ✅ Phases 6a + 6c (name plate, portraits on two sides, [#mood] expressions, typewriter text with soft blips as it types) |
 | FR-DLG-03 | Player choices (keyboard, mouse, gamepad); choices change conversations and some side-quest outcomes, not the main story. | MVP | A choice leads to a different reply. | ✅ Phase 6a (choice buttons work with mouse, keyboard focus and gamepad; a choice changes the reply, tested) |
 | FR-DLG-04 | Dialogue reads and changes game state only through the allowed objects (GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene, AudioManager). | MVP | Code review + FR-DLG-10 test. | ✅ Phase 6a (test checks every do/if/set target is one of the allowed objects) |
 | FR-DLG-05 | Barks: speech bubbles with triggers, cooldowns and priority, without pausing gameplay. | MVP (Lumen, enemies) / V1 | Lumen remarks near a secret; the same bark doesn't repeat within its cooldown. | 🟨 Speech bubbles with cooldowns and priority for Lumen and villagers (Phase 6a, tested); enemy barks come with the boss work (Phase 8) |
-| FR-DLG-06 | `Cutscene` API (letterbox, camera, spawn, move, face, anim, emote, wait, fade, shake, play); timed actions are awaited. | MVP | The prologue Ignis scene plays fully from a `.dialogue` file. | 🟨 Cutscene basics: letterbox, fade out/in, wait, all awaitable from dialogue (Phase 6a, tested); camera, actors and the prologue scene in Phase 8 |
+| FR-DLG-06 | `Cutscene` API (letterbox, camera, spawn, move, face, anim, emote, wait, fade, shake, play); timed actions are awaited. | MVP | The prologue Ignis scene plays fully from a `.dialogue` file. | 🟨 Letterbox, fade out/in, wait (Phase 6a); Phase 7 adds scripted scenes (`Cutscene.play(id)` with `do Cutscene.cue(...)` from dialogue) and a name box (`ask_text`), all awaitable (tested). Camera, actors and the prologue scene in Phase 8 |
 | FR-DLG-07 | All cutscenes are skippable, and skipping still applies their game effects. | MVP | Skipping the egg cutscene still gives the egg. | ⬜ |
 | FR-DLG-08 | NPCs change lines with story flags (before/during/after) and give short repeat lines. | MVP | The Elder's lines change after the Warden is defeated. | 🟨 Villagers change lines with quest progress and give short repeat lines (Phase 6a, tested); the Elder's after-Warden lines come with the boss (Phase 8) |
-| FR-DLG-09 | Dragon naming text input at hatching. | MVP | The chosen name appears in later dialogue. | ⬜ |
+| FR-DLG-09 | Dragon naming text input at hatching. | MVP | The chosen name appears in later dialogue. | ✅ Phase 7 (a name box in the hatching scene; empty keeps Pip, owner decision 2026-11-04; markup characters are removed; the name appears in later lines, e.g. the Elder's; tested) |
 | FR-DLG-10 | Automated test: every `do`/`if` target referenced in `.dialogue` files exists. | MVP | Test fails if a referenced function is renamed. | ✅ Phase 6a (tests/unit/test_dialogue_scripts.gd) |
 | FR-DLG-11 | Text speed, auto-advance and instant-finish options. | MVP | Settings apply immediately. | ✅ Phase 6a (Options page: Slow/Normal/Fast/Instant and auto-advance, saved; pressing during typing shows the whole line) |
 | FR-DLG-12 | Dialogue history log. (Pending approval.) | V1 | Last ~50 lines can be reviewed. | ⬜ |
@@ -185,19 +185,19 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 ### 1.13 Audio (AUD) — details in [AUDIO_DESIGN.md](AUDIO_DESIGN.md)
 | ID | Requirement | Priority | Acceptance check | Status |
 |---|---|---|---|---|
-| FR-AUD-01 | `AudioManager` plays sounds by **event ID** through `SoundEvent` resources; game code never references audio files directly. | MVP | Swapping a SoundEvent's stream changes the sound with no code edit. | ⬜ |
+| FR-AUD-01 | `AudioManager` plays sounds by **event ID** through `SoundEvent` resources; game code never references audio files directly. | MVP | Swapping a SoundEvent's stream changes the sound with no code edit. | ✅ Phase 6c (AudioManager plays SoundEvents by id from assets/audio/sound_library.tres; events list file paths, so swapping a path swaps the sound; tested) |
 | FR-AUD-02 | Bus layout Master / Music / Ambience / SFX (Player, Enemies, Dragon, World) / UI / Dialogue, with reverb on SFX. | MVP | Buses exist in `default_bus_layout.tres`. | ✅ Phase 1 (tested) |
-| FR-AUD-03 | Every enemy and boss attack has a telegraph sound that matches the visual wind-up. | MVP | No attack in the slice lacks a telegraph sound. | ⬜ |
-| FR-AUD-04 | Each element has its own sound family for casts, impacts and puzzle reactions. | MVP (Light, Wind, Ember) / V1 | Blind test: elements are recognisable by ear. | ⬜ |
-| FR-AUD-05 | Random pitch/volume and 3–5 variants for frequent sounds; per-sound polyphony limit. | MVP | Repeated hits don't sound identical; big fights don't clip. | ⬜ |
-| FR-AUD-06 | Footsteps change with the ground surface (surface metadata on terrain/materials). | MVP (grass, stone, water) / V1 | Walking from grass to stone changes the sound. | ⬜ |
-| FR-AUD-07 | Adaptive music: explore ↔ combat transitions, day/night versions, boss phase sections. | MVP (explore/combat, boss phases) / V1 | Combat layer fades in when an enemy notices the player. | ⬜ |
-| FR-AUD-08 | Stingers for spell learned, rank up, quest complete, secret found, crafted, dragon hatched, boss defeated. | MVP | Each event plays its stinger and ducks the music. | ⬜ |
-| FR-AUD-09 | Region ambience with day/night and weather variants; positional sources (waterfalls, braziers). | MVP (Elderroot) / V1 | Ambience changes at dusk. | ⬜ |
-| FR-AUD-10 | Per-region reverb; muffled music/ambience when paused; music ducks during dialogue. | V1 | Pausing muffles music; UI sounds stay clear. | ⬜ |
-| FR-AUD-12 | Owner's song *Sunlight on Ancient Stone* plays on the title screen and in the prologue opening; credits use it too. | MVP (title, prologue) / V1 (credits) | Title screen plays the song; prologue scene uses intro + verse 1. | ⬜ |
-| FR-AUD-13 | *Tides of the Morning Shore* is the Azure Coast day exploration loop (trimmed at loop end, `loop_offset` at loop start, seamless). | V1 | Loop point has no audible gap or click. | ⬜ |
-| FR-AUD-14 | An instrumental version of *Sunlight on Ancient Stone* is used for Elderroot Meadow exploration (vocal version never loops during gameplay). | MVP | Elderroot exploration music has no vocals. | ⬜ (stem-separated version removed by owner; instrumental still needed) |
+| FR-AUD-03 | Every enemy and boss attack has a telegraph sound that matches the visual wind-up. | MVP | No attack in the slice lacks a telegraph sound. | ✅ Phase 6c (Thornling and Ember Wisp wind-up sounds start with the visual telegraph and last as long; placeholders; tested). Bosses in Phase 8 |
+| FR-AUD-04 | Each element has its own sound family for casts, impacts and puzzle reactions. | MVP (Light, Wind, Ember) / V1 | Blind test: elements are recognisable by ear. | 🟨 Placeholder families: Light = chimes, Wind = whooshes, Ember = crackle (Phase 6c). The by-ear blind test is for the owner; final sounds later |
+| FR-AUD-05 | Random pitch/volume and 3–5 variants for frequent sounds; per-sound polyphony limit. | MVP | Repeated hits don't sound identical; big fights don't clip. | ✅ Phase 6c (3–4 variants for footsteps, hits and swings; random pitch and volume; per-sound polyphony and minimum interval; tested) |
+| FR-AUD-06 | Footsteps change with the ground surface (surface metadata on terrain/materials). | MVP (grass, stone, water) / V1 | Walking from grass to stone changes the sound. | 🟨 Grass and stone footsteps from the floor's "surface" (Phase 6c). Water when there is walkable water |
+| FR-AUD-07 | Adaptive music: explore ↔ combat transitions, day/night versions, boss phase sections. | MVP (explore/combat, boss phases) / V1 | Combat layer fades in when an enemy notices the player. | 🟨 MVP part done: a combat layer fades in while an enemy is engaged and leaves 4 s after; day/night music versions (Phase 6c, tested). Boss phases in Phase 8 |
+| FR-AUD-08 | Stingers for spell learned, rank up, quest complete, secret found, crafted, dragon hatched, boss defeated. | MVP | Each event plays its stinger and ducks the music. | 🟨 Stingers for spell learned, rank up, quest complete, secret found, crafted, defeat (Phase 6c) and dragon hatched (Phase 7), ducking the music; one at a time. Boss defeated comes with Phase 8 |
+| FR-AUD-09 | Region ambience with day/night and weather variants; positional sources (waterfalls, braziers). | MVP (Elderroot) / V1 | Ambience changes at dusk. | 🟨 MVP part done: Elderroot ambience by day and night, rain sounds in rain (placeholders, Phase 6c). Positional sources (waterfall, braziers) later |
+| FR-AUD-10 | Per-region reverb; muffled music/ambience when paused; music ducks during dialogue. | V1 | Pausing muffles music; UI sounds stay clear. | 🟨 Music and ambience are muffled while paused and music ducks under dialogue (Phase 6c). Per-region reverb in V1 |
+| FR-AUD-12 | Owner's song *Sunlight on Ancient Stone* plays on the title screen and in the prologue opening; credits use it too. | MVP (title, prologue) / V1 (credits) | Title screen plays the song; prologue scene uses intro + verse 1. | 🟨 The title screen plays the song (Phase 6c); the prologue opening comes with the prologue (Phase 8) |
+| FR-AUD-13 | *Tides of the Morning Shore* is the Azure Coast day exploration loop (trimmed at loop end, `loop_offset` at loop start, seamless). | V1 | Loop point has no audible gap or click. | 🟨 MusicTrack with the loop points is ready (0:08.8 to 2:20.9); plays when the Azure Coast exists (V1) |
+| FR-AUD-14 | An instrumental version of *Sunlight on Ancient Stone* is used for Elderroot Meadow exploration (vocal version never loops during gameplay). | MVP | Elderroot exploration music has no vocals. | 🟨 Elderroot exploration has no vocals (acceptance met) using the owner's *Where the Forest Remembers* (F# major like *Sunlight*), as a suggestion until an instrumental *Sunlight* exists; owner to confirm |
 | FR-AUD-11 | Spell sounds gain layers with mastery level. (Pending approval.) | V1 | Mastery V sounds fuller than I. | ⬜ |
 
 ---
@@ -216,10 +216,10 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | NFR-ART-01 | Placeholders are simple 3D shapes at real size using the final shaders; swapping in real models needs no gameplay-code change. | MVP | Replacing a visual child scene works without script edits. | 🟨 Primitive placeholders in the test level (Phase 1b) |
 | NFR-ART-02 | Base resolution 1920×1080; 1 unit = 1 m; Aurelia ≈ 1.6 m; characters ~20–40k triangles; textures mostly 1K–2K. | MVP | Checked on import and in the overlay. | 🟨 Resolution + units set (Phase 1b) |
 | NFR-ART-03 | No assets copied from existing games; reference screenshots are for mood only. | MVP | All shipped assets are original or properly licensed (tracked in CREDITS.md). | ⬜ |
-| NFR-AUD-01 | Audio formats: SFX `.wav` 44.1 kHz/16-bit (mono if positional), music/ambience `.ogg` with loop points; naming per AUDIO_DESIGN.md §2.1. | MVP | Import check: all files follow the rules. | ⬜ |
-| NFR-AUD-02 | Every shipped audio file is original or properly licensed and listed in `CREDITS.md`; no NC/ND licences; nothing taken from other games/anime. | MVP | CREDITS.md covers every file in `assets/audio/` except placeholders. | ⬜ |
-| NFR-AUD-03 | Placeholder sounds use the final IDs/names, so final audio is a drop-in swap. | MVP | Replacing a placeholder needs no code change. | ⬜ |
-| NFR-AUD-04 | Audio accessibility: volume slider per bus, mono option, captions for story moments, visual cue option for off-screen sounds. | V1 (MVP: sliders) | Options exist and work. | ⬜ |
+| NFR-AUD-01 | Audio formats: SFX `.wav` 44.1 kHz/16-bit (mono if positional), music/ambience `.ogg` with loop points; naming per AUDIO_DESIGN.md §2.1. | MVP | Import check: all files follow the rules. | 🟨 Placeholders are WAV 44.1 kHz/16-bit (ambience 22 kHz mono); the owner's music plays as MP3 with loop points set in data. OGG conversion needs ffmpeg later |
+| NFR-AUD-02 | Every shipped audio file is original or properly licensed and listed in `CREDITS.md`; no NC/ND licences; nothing taken from other games/anime. | MVP | CREDITS.md covers every file in `assets/audio/` except placeholders. | 🟨 CREDITS.md lists the owner's six tracks (Google generative AI; the owner still has to confirm the tool's terms); placeholders are generated by our own script |
+| NFR-AUD-03 | Placeholder sounds use the final IDs/names, so final audio is a drop-in swap. | MVP | Replacing a placeholder needs no code change. | ✅ Phase 6c (placeholders carry their final ids and names; real sounds replace the files only) |
+| NFR-AUD-04 | Audio accessibility: volume slider per bus, mono option, captions for story moments, visual cue option for off-screen sounds. | V1 (MVP: sliders) | Options exist and work. | 🟨 MVP part done: volume sliders for Master, Music, Ambience, Sound effects and Menu sounds, saved (Phase 6c). Mono, captions and visual cues in V1 |
 | NFR-INP-01 | Full keyboard+mouse and gamepad support; all actions remappable. | MVP (KB/M) / V1 (gamepad, remap) | Whole game playable with each input type. | ⬜ |
 | NFR-ACC-01 | Accessibility: text size, text speed, subtitles, screen-shake toggle, damage-number toggle. | V1 | Options exist and work. | ⬜ |
 | NFR-ACC-02 | Elements are distinguishable by icon/shape, not colour alone. | MVP | Readable in a greyscale screenshot. | 🟨 Element icons differ by shape (Phase 1 placeholders) |
@@ -241,11 +241,11 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | Puzzle types | 2 | 6+ |
 | Trials | 1 | ~10 |
 | Side tasks | 2 | ~20 |
-| Recipes | 5 | ~25 |
+| Recipes | 5 (+ Dragon Treat, Phase 7) | ~25 |
 | Accessories | 3 | ~15 |
 | Pet dragons | Egg → hatch | 1 dragon, 3 stages, 4 element variants |
 
 ---
 
 ## 4. Open items blocking requirements
-See GAME_DESIGN.md §16. FR-BOS-07 (Ember Cores) and FR-DRG-06 (element choice) wait for the owner's approval.
+See GAME_DESIGN.md §16. FR-BOS-07 (Ember Cores) waits for the owner's approval. (FR-DRG-06, the element choice, was approved 2026-11-04.)

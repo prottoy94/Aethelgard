@@ -10,6 +10,7 @@ const SHOT_HEIGHT := 1.2
 
 func perform_attack() -> void:
 	visual.play_attack()
+	play_sound("attack")
 	if not has_live_target():
 		return
 	var bolt := Projectile.new()

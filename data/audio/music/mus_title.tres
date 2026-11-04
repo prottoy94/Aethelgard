@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MusicTrack" format=3]
+
+[ext_resource type="Script" path="res://src/audio/music_track.gd" id="1"]
+
+; The owner's music (AUDIO_DESIGN.md §10). Copy the files with tools/audio/import_owner_music.py.
+[resource]
+script = ExtResource("1")
+id = &"mus_title"
+file = "res://assets/audio/music/owner/sunlight_on_ancient_stone.mp3"
+volume_db = 0.0
+loop = true
+loop_start = 0.0
+loop_end = 0.0
+start = 0.0
+bpm = 80.0
+notes = "Sunlight on Ancient Stone (owner, Aurelia sings): the full song on the title screen (FR-AUD-12)."

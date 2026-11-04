@@ -1,0 +1,35 @@
+# status: draft (Phase 7, 2026-11-04), waiting for the owner's approval
+# The dragon egg hatches at a Lantern Shrine (DIALOGUE_DESIGN.md §10 `dragon_hatch`). Started by DragonHatchCutscene;
+# `do Cutscene.cue(...)` lines run its effects. The pet dragon never speaks (§7): chirps and emote bubbles only.
+# Aurelia picks the colour it hatches as (its element, owner decision 2026-11-04) and names it (default "Pip").
+# Only GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene and AudioManager may be called.
+
+~ dragon_hatch
+do Cutscene.letterbox(true)
+do Cutscene.cue("egg_down")
+Aurelia: [#surprised] It's so warm... Lumen, look! It's glowing!
+Lumen: Listen. Someone is knocking.
+do Cutscene.cue("wobble")
+Aurelia: [#excited] It's moving! Come on, little one. You can do it!
+Aurelia: [#thinking] The shell keeps changing colour, like it's waiting for something. Waiting for me?
+Aurelia: What colour will you be?
+- Frost-blue, like the pond in winter. (Frost. Its breath chills enemies.)
+	do DragonManager.choose_element("frost")
+- Silver-green, like wind in the long grass. (Wind. Its breath throws enemies back.)
+	do DragonManager.choose_element("wind")
+- Moss-brown, like the old shrine stones. (Earth. Tough, and a good guard.)
+	do DragonManager.choose_element("earth")
+- Lantern-gold, like the shrine light. (Light. Its breath dazes enemies and lights lanterns.)
+	do DragonManager.choose_element("light")
+do Cutscene.cue("crack")
+Aurelia: [#excited] It's cracking!
+do Cutscene.cue("hatch")
+Aurelia: [#happy] Oh... Hello. Hello, you!
+Aurelia: [#embarrassed] Every book says a dragon needs a name. A good one. A brave one!
+do DragonManager.ask_name()
+Aurelia: [#happy] {{DragonManager.dragon_name}}. Welcome to the world, {{DragonManager.dragon_name}}.
+do Cutscene.cue("chirp")
+Aurelia: [#embarrassed] ...I'll take that as a yes.
+Lumen: Two small lights. Now you walk together.
+do Cutscene.letterbox(false)
+=> END

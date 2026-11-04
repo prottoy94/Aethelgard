@@ -2,7 +2,8 @@ class_name Hud
 extends CanvasLayer
 ## In-game HUD (FR-UI-01): health and stamina bars (with the Exhausted warning), Arcane Rank badge with progress,
 ## status effect icons with timers, the 4 spell slots, a banner when Aurelia ranks up or finishes a quest, a feed of
-## picked-up items, and the clock, weather and tracked quest's current step (top right).
+## picked-up items, and the clock, weather and tracked quest's current step (top right). Bottom left: the pet dragon
+## panel (FR-UI-02) once Aurelia has an egg.
 ## Call bind(player) once the player exists.
 
 const BAR_SIZE := Vector2(320, 20)
@@ -34,6 +35,7 @@ var _feed: VBoxContainer
 var _tracker: Label
 var _clock: Label
 var _time := 0.0
+var dragon_panel: DragonPanel
 
 
 func _ready() -> void:
@@ -85,6 +87,8 @@ func _ready() -> void:
 	_feed.alignment = BoxContainer.ALIGNMENT_END
 	add_child(_feed)
 	EventBus.item_collected.connect(_on_item_collected)
+	Cutscene.cutscene_started.connect(_on_cutscene_started)
+	Cutscene.cutscene_finished.connect(_on_cutscene_finished)
 	var top_right := VBoxContainer.new()
 	top_right.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	top_right.grow_horizontal = Control.GROW_DIRECTION_BEGIN
@@ -115,6 +119,13 @@ func _ready() -> void:
 		var slot := SpellSlot.new()
 		bottom.add_child(slot)
 		_slots.append(slot)
+	dragon_panel = DragonPanel.new()
+	dragon_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	dragon_panel.offset_left = 24.0
+	dragon_panel.offset_right = 24.0 + DragonPanel.SIZE.x
+	dragon_panel.offset_bottom = -24.0
+	dragon_panel.offset_top = -24.0 - DragonPanel.SIZE.y
+	add_child(dragon_panel)
 
 
 func bind(player_: Player) -> void:
@@ -170,6 +181,15 @@ func _refresh_tracker() -> void:
 	var quest := QuestManager.LIBRARY.find(QuestManager.tracked)
 	_tracker.text = "%s
 %s" % [quest.title, QuestManager.step_text(quest.id)] if quest else ""
+
+
+## The HUD steps aside during scripted scenes.
+func _on_cutscene_started(_id: StringName) -> void:
+	visible = false
+
+
+func _on_cutscene_finished(_id: StringName) -> void:
+	visible = true
 
 
 func _on_item_collected(item_id: StringName, amount: int) -> void:

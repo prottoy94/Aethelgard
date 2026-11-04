@@ -45,6 +45,7 @@ func light_up() -> void:
 	if is_lit:
 		return
 	_show_lit(false)
+	AudioManager.play(&"puzzle_brazier_ignite", global_position)
 	GameState.set_object_state(persist_id, {"lit": true})
 	state_changed.emit()
 

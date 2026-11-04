@@ -18,6 +18,7 @@ func enter(_previous: StringName, _data: Dictionary) -> void:
 func physics_update(delta: float) -> void:
 	var enemy := actor as Enemy
 	if enemy.distance_to_target() <= enemy.data.aggro_range:
+		enemy.play_sound("alert")
 		machine.transition_to(&"Chase")
 		return
 	_pause -= delta

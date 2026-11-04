@@ -4,6 +4,7 @@ extends CharacterBody3D
 ## Stagger, Dead. Every attack follows Telegraph → Attack → Recover, so it is always readable (FR-CMB-05).
 ## Children: Visual (with telegraph/attack/flash methods), Health, Hurtbox, AttackHitbox, StateMachine.
 ## A LootDropper is added in code when the data has a loot table.
+## Its target is Aurelia, or for a few seconds the pet dragon after it bites or breathes on it (distract()).
 
 signal defeated(enemy: Enemy)
 
@@ -15,11 +16,13 @@ const ENGAGED_RANGE_FACTOR := 1.3
 
 @export var data: EnemyData
 
-var target: Player
+var target: Node3D                ## who it is after: Aurelia, or her dragon while distracted
 var home := Vector3.ZERO
 var knockback := Vector3.ZERO
 var _health_bar: WorldHealthBar
 var _loot: LootDropperComponent
+var _distracted_by: Node3D
+var _distract_left := 0.0
 
 @onready var visual: Node3D = $Visual
 @onready var health: HealthComponent = $Health
@@ -64,16 +67,59 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	knockback = knockback.move_toward(Vector3.ZERO, KNOCKBACK_DECAY * delta)
+	if _distract_left > 0.0:
+		_distract_left -= delta
+		if _distract_left <= 0.0 or not is_alive(_distracted_by):
+			_distract_left = 0.0
+			if target == _distracted_by:
+				target = null
+			_distracted_by = null
+		else:
+			target = _distracted_by
 	if target == null or not is_instance_valid(target):
-		target = get_tree().get_first_node_in_group(&"player") as Player
+		target = get_tree().get_first_node_in_group(&"player") as Node3D
 	if not health.is_dead() and distance_to_target() <= data.aggro_range * ENGAGED_RANGE_FACTOR:
 		_health_bar.keep_visible()  # show rank and health while engaged (FR-CMB-02)
 
 
 # --- Used by states ------------------------------------------------------------------------
 
+## True while it is after Aurelia: chasing, winding up, attacking or recovering (for the combat music).
+func is_engaged() -> bool:
+	return not health.is_dead() and has_live_target() and (state_machine.is_in(&"Chase") \
+			or state_machine.is_in(&"Telegraph") or state_machine.is_in(&"Attack") or state_machine.is_in(&"Recover"))
+
+
 func has_live_target() -> bool:
-	return target != null and is_instance_valid(target) and not target.health.is_dead()
+	return is_alive(target)
+
+
+## True for a character (with a `health` HealthComponent) that is still standing.
+static func is_alive(node: Node3D) -> bool:
+	if node == null or not is_instance_valid(node):
+		return false
+	var node_health := node.get(&"health") as HealthComponent
+	return node_health != null and not node_health.is_dead()
+
+
+## The pet dragon bit it: it goes after `by` for `seconds` instead of Aurelia (GAME_DESIGN.md §8.2: "distracts").
+func distract(by: Node3D, seconds: float) -> void:
+	if health.is_dead() or not is_alive(by):
+		return
+	_distracted_by = by
+	_distract_left = maxf(_distract_left, seconds)
+	target = by
+	if state_machine.is_in(&"Idle"):
+		state_machine.transition_to(&"Chase")
+
+
+func is_distracted() -> bool:
+	return _distract_left > 0.0
+
+
+## Radius of the ground ring its attack covers (the pet dragon keeps out of it while it winds up).
+func danger_radius() -> float:
+	return data.attack_radius
 
 
 func distance_to_target() -> float:
@@ -106,10 +152,16 @@ func face(direction: Vector3) -> void:
 		visual.rotation.y = Player.yaw_of(direction)
 
 
+## Plays this enemy's sound `part` (alert, telegraph, attack, hurt, death): "enemy_<id>_<part>".
+func play_sound(part: String) -> void:
+	AudioManager.play(StringName("enemy_%s_%s" % [data.id, part]), global_position)
+
+
 ## The hit itself. Melee enemies switch on their attack hitbox; ranged enemies override this to shoot.
 func perform_attack() -> void:
 	attack_hitbox.activate()
 	visual.play_attack()
+	play_sound("attack")
 
 
 func end_attack() -> void:
@@ -134,6 +186,7 @@ func _on_hurt(info: DamageInfo, amount: float) -> void:
 	_health_bar.set_ratio(health.ratio())
 	if health.is_dead():
 		return
+	play_sound("hurt")
 	if info.stagger and not state_machine.is_in(&"Dead"):
 		state_machine.transition_to(&"Stagger")
 	elif state_machine.is_in(&"Idle"):
@@ -142,6 +195,7 @@ func _on_hurt(info: DamageInfo, amount: float) -> void:
 
 func _on_died() -> void:
 	state_machine.transition_to(&"Dead")
+	play_sound("death")
 	if _loot:
 		_loot.drop.call_deferred(global_position, get_parent())  # not during the physics step that killed it
 	EventBus.enemy_defeated.emit(data.id)

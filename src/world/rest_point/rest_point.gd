@@ -54,6 +54,7 @@ func _on_interacted(by: Node) -> void:
 	if player == null:
 		return
 	var result := player.rest(respawn_position())
+	AudioManager.play(&"world_rest_point_activate")
 	rested.emit(player, result)
 
 

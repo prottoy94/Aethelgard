@@ -1,0 +1,64 @@
+[gd_resource type="Resource" script_class="DragonSpeciesData" format=3]
+
+[ext_resource type="Script" path="res://src/actors/dragon/dragon_species_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/actors/dragon/dragon_stage_stats.gd" id="2"]
+[ext_resource type="Script" path="res://src/actors/dragon/dragon_skill_data.gd" id="3"]
+
+[sub_resource type="Resource" id="hatchling"]
+script = ExtResource("2")
+stage = 2
+max_health = 36.0
+defense = 0.0
+move_speed = 6.6
+bite_damage = 4.0
+bite_cooldown = 1.2
+bite_range = 1.3
+bite_radius = 0.7
+size = 1.0
+
+[sub_resource type="Resource" id="active"]
+script = ExtResource("3")
+id = &"gale_puff"
+display_name = "Gale Puff"
+description = "A gust of breath that throws enemies back and staggers them. Pushes light objects."
+kind = 0
+stage = 2
+bond_required = 1
+cooldown = 7.0
+damage = 5.0
+element = 2
+radius = 4.0
+angle_deg = 75.0
+knockback = 9.0
+stagger = true
+status = &""
+status_duration = 0.0
+wind_up = 0.3
+approach_range = 8.0
+
+[sub_resource type="Resource" id="passive"]
+script = ExtResource("3")
+id = &"swift_wings"
+display_name = "Swift Wings"
+description = "Runs a quarter faster, and its bites push enemies back."
+kind = 1
+stage = 2
+bond_required = 3
+element = 2
+bite_knockback_bonus = 4.0
+speed_multiplier = 1.25
+
+; Wind dragon (GAME_DESIGN.md §8.2). Hatchling stage only so far: juvenile and adult come in Phase 10.
+[resource]
+script = ExtResource("1")
+element = 2
+display_name = "Wind dragon"
+description = "Silver-green and quick, with a voice like a whistle. Its breath is a small gale."
+body_color = Color(0.659, 0.863, 0.769, 1)
+belly_color = Color(0.933, 0.973, 0.937, 1)
+wing_color = Color(0.435, 0.749, 0.647, 1)
+horn_color = Color(0.965, 0.949, 0.902, 1)
+eye_color = Color(0.137, 0.259, 0.227, 1)
+breath_color = Color(0.784, 0.961, 0.902, 1)
+stages = Array[ExtResource("2")]([SubResource("hatchling")])
+skills = Array[ExtResource("3")]([SubResource("active"), SubResource("passive")])

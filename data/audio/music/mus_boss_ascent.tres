@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MusicTrack" format=3]
+
+[ext_resource type="Script" path="res://src/audio/music_track.gd" id="1"]
+
+; The owner's music (AUDIO_DESIGN.md §10). Copy the files with tools/audio/import_owner_music.py.
+[resource]
+script = ExtResource("1")
+id = &"mus_boss_ascent"
+file = "res://assets/audio/music/owner/the_last_ascent.mp3"
+volume_db = 0.0
+loop = true
+loop_start = 68.48
+loop_end = 146.77
+start = 0.0
+bpm = 86.0
+notes = "The Last Ascent (owner): instrumental, C# minor, builds to a climax. Suggested for the first boss (Cinder Warden, Phase 8) or the Stormspire climb (owner to confirm). Loop 1:08.5 to 2:26.8."

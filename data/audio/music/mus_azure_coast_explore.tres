@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MusicTrack" format=3]
+
+[ext_resource type="Script" path="res://src/audio/music_track.gd" id="1"]
+
+; The owner's music (AUDIO_DESIGN.md §10). Copy the files with tools/audio/import_owner_music.py.
+[resource]
+script = ExtResource("1")
+id = &"mus_azure_coast_explore"
+file = "res://assets/audio/music/owner/tides_of_the_morning_shore.mp3"
+volume_db = -2.0
+loop = true
+loop_start = 8.8
+loop_end = 140.9
+start = 0.0
+bpm = 76.0
+notes = "Tides of the Morning Shore (owner): Azure Coast by day (V1, FR-AUD-13). Loop 0:08.8 to 2:20.9."

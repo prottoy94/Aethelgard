@@ -1,0 +1,63 @@
+[gd_resource type="Resource" script_class="DragonSpeciesData" format=3]
+
+[ext_resource type="Script" path="res://src/actors/dragon/dragon_species_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/actors/dragon/dragon_stage_stats.gd" id="2"]
+[ext_resource type="Script" path="res://src/actors/dragon/dragon_skill_data.gd" id="3"]
+
+[sub_resource type="Resource" id="hatchling"]
+script = ExtResource("2")
+stage = 2
+max_health = 50.0
+defense = 1.0
+move_speed = 5.6
+bite_damage = 5.0
+bite_cooldown = 1.2
+bite_range = 1.3
+bite_radius = 0.7
+size = 1.0
+
+[sub_resource type="Resource" id="active"]
+script = ExtResource("3")
+id = &"pebble_burst"
+display_name = "Pebble Burst"
+description = "Spits a wide burst of grit and pebbles that hits hard and staggers."
+kind = 0
+stage = 2
+bond_required = 1
+cooldown = 8.0
+damage = 10.0
+element = 4
+radius = 3.0
+angle_deg = 90.0
+knockback = 4.0
+stagger = true
+status = &""
+status_duration = 0.0
+wind_up = 0.3
+approach_range = 8.0
+
+[sub_resource type="Resource" id="passive"]
+script = ExtResource("3")
+id = &"stone_hide"
+display_name = "Stone Hide"
+description = "Takes 30% less damage. A good guard."
+kind = 1
+stage = 2
+bond_required = 3
+element = 4
+damage_taken_multiplier = 0.7
+
+; Earth dragon (GAME_DESIGN.md §8.2). Hatchling stage only so far: juvenile and adult come in Phase 10.
+[resource]
+script = ExtResource("1")
+element = 4
+display_name = "Earth dragon"
+description = "Moss-brown and sturdy, with pebbly scales. Slow to anger, hard to knock down."
+body_color = Color(0.561, 0.478, 0.306, 1)
+belly_color = Color(0.847, 0.788, 0.627, 1)
+wing_color = Color(0.373, 0.431, 0.227, 1)
+horn_color = Color(0.937, 0.894, 0.784, 1)
+eye_color = Color(0.165, 0.129, 0.086, 1)
+breath_color = Color(0.788, 0.651, 0.420, 1)
+stages = Array[ExtResource("2")]([SubResource("hatchling")])
+skills = Array[ExtResource("3")]([SubResource("active"), SubResource("passive")])

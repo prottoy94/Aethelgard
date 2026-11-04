@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=18
+type="Resource"
+uid="uid://but66guir4grv"
+path="res://.godot/imported/dragon_hatch.dialogue-a2bb069f0181d93963c52f7e3338ff80.tres"
+
+[deps]
+
+source_file="res://dialogue/story/dragon_hatch.dialogue"
+dest_files=["res://.godot/imported/dragon_hatch.dialogue-a2bb069f0181d93963c52f7e3338ff80.tres"]
+
+[params]
+
+defaults=true

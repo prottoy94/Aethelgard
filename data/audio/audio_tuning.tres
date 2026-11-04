@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AudioTuning" format=3]
+
+[ext_resource type="Script" path="res://src/audio/audio_tuning.gd" id="1"]
+
+; Mixer behaviour (AUDIO_DESIGN.md §3, §5.3).
+[resource]
+script = ExtResource("1")
+voices_2d = 12
+voices_3d = 24
+music_fade = 2.0
+loop_crossfade = 1.5
+combat_fade_in = 1.0
+combat_fade_out = 3.0
+calm_delay = 4.0
+combat_explore_dip_db = -4.0
+stinger_duck_db = -9.0
+dialogue_duck_db = -6.0
+duck_fade = 0.3
+ambience_fade = 3.0
+footstep_stride = 1.25

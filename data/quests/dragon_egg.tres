@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="QuestData" format=3]
+
+[ext_resource type="Script" path="res://src/quests/quest_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/quests/quest_step.gd" id="2"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="3"]
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="4"]
+[ext_resource type="Resource" path="res://data/items/dragon_treat.tres" id="5"]
+[ext_resource type="Resource" path="res://data/recipes/dragon_treat.tres" id="6"]
+
+[sub_resource type="Resource" id="step_0"]
+script = ExtResource("2")
+description = "Keep the dragon egg warm: fight and explore together"
+objective = 6
+target = &"egg_warm"
+amount = 1
+
+[sub_resource type="Resource" id="step_1"]
+script = ExtResource("2")
+description = "Rest at a Lantern Shrine while the egg glows"
+objective = 6
+target = &"dragon_hatched"
+amount = 1
+
+; The pet dragon thread (GAME_DESIGN.md §8.2, FR-DRG-01). The Elder gives the egg for now (owner decision 2026-11-04);
+; the story version comes with Phase 8. Status: draft.
+[resource]
+script = ExtResource("1")
+id = &"dragon_egg"
+title = "A Dragon Egg"
+kind = 0
+giver = "Elder"
+summary = "The Elder gave Aurelia a dragon egg that has slept in Elderroot for years. It warms to courage and new roads: fight and explore with it, and when it glows, rest at a Lantern Shrine."
+steps = Array[ExtResource("2")]([SubResource("step_0"), SubResource("step_1")])
+reward_items = Array[ExtResource("3")]([ExtResource("5"), ExtResource("5")])
+reward_recipes = Array[ExtResource("4")]([ExtResource("6")])

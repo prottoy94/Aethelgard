@@ -13,6 +13,7 @@ func enter(_previous: StringName, _data: Dictionary) -> void:
 	_time = 0.0
 	player.grant_invulnerability(player.stats.dash_invulnerable_time)
 	player.dash_cooldown.start(player.stats.dash_cooldown)
+	AudioManager.play(&"player_dash", player.global_position)
 	player.facing_yaw = Player.yaw_of(_direction)
 	player.visual.rotation.y = player.facing_yaw
 	player.dashed.emit()

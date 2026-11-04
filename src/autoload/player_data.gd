@@ -1,7 +1,7 @@
 extends Node
 ## Aurelia's magical growth, kept across scenes and saved by SaveManager (GAME_DESIGN.md §5.2, §6.3):
 ## learned spells with mastery, unread spell tomes, the 4-slot loadout, Magic Power and Arcane Rank.
-## Magic Power = Σ spell power × mastery bonus + equipment power; rank follows from it.
+## Magic Power = Σ spell power × mastery bonus + equipment power + dragon bond power; rank follows from it.
 ## Equipment power and the gear's spell-cooldown bonus follow Inventory's equipped items (Phase 5).
 
 signal spell_learned(spell: SpellData)
@@ -20,6 +20,7 @@ var learned: Dictionary[StringName, Dictionary] = {}
 var tomes: Array[StringName] = []
 var loadout: Array[StringName] = [&"", &"", &"", &""]
 var equipment_power := 0  ## Magic Power from equipped gear
+var dragon_power := 0     ## Magic Power from the dragon's bond (DragonManager; not saved here)
 var gear_cooldown := 0.0  ## −fraction of every spell cooldown from equipped gear
 var magic_power := 0
 var rank := 0
@@ -34,6 +35,7 @@ func reset(starting_spells: Array[SpellData]) -> void:
 	learned.clear()
 	tomes.clear()
 	loadout = [&"", &"", &"", &""]
+	dragon_power = 0
 	_read_gear()
 	for spell in starting_spells:
 		learned[spell.id] = {"level": 1, "xp": 0}
@@ -162,6 +164,14 @@ func set_equipment_power(value: int) -> void:
 	_recompute()
 
 
+## Magic Power from the pet dragon's bond (GAME_DESIGN.md §5.2), set by DragonManager.
+func set_dragon_power(value: int, announce := true) -> void:
+	if value == dragon_power:
+		return
+	dragon_power = value
+	_recompute(announce)
+
+
 func rank_label() -> String:
 	return PROGRESSION.rank_label(rank)
 
@@ -214,7 +224,7 @@ func _put_in_free_slot(id: StringName) -> void:
 
 
 func _recompute(announce := true) -> void:
-	var total := float(equipment_power)
+	var total := float(equipment_power + dragon_power)
 	for id in learned:
 		var spell := LIBRARY.find(id)
 		if spell:

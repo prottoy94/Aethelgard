@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ConsumableData" format=3]
+
+[ext_resource type="Script" path="res://src/items/consumable_data.gd" id="1"]
+
+; Dragon Treat (GAME_DESIGN.md §8.3, FR-ITM-07): fed to the pet dragon from the bag. Made at a crafting kit.
+[resource]
+script = ExtResource("1")
+id = &"dragon_treat"
+display_name = "Dragon Treat"
+description = "A crunchy Sunpetal biscuit baked around a warm Ember Cinder. Dragons adore them."
+color = Color(0.910, 0.580, 0.318, 1)
+max_stack = 20
+dragon_bond = 20
+dragon_heal = 20.0

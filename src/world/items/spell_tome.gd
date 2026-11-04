@@ -55,11 +55,14 @@ func reveal() -> void:
 	hidden = false
 	remove_from_group(&"revealable")
 	_interactable.monitorable = true
+	AudioManager.play(&"puzzle_hidden_reveal", global_position)
+	EventBus.secret_found.emit(persist_id)
 	create_tween().tween_method(_set_alpha, HINT_ALPHA, 1.0, 0.6)
 
 
 func _on_taken(_by: Node) -> void:
 	PlayerData.add_tome(spell)
+	AudioManager.play(&"combat_loot_pickup", global_position)
 	GameState.set_object_state(persist_id, {"taken": true})
 	var tween := create_tween()
 	tween.tween_property(_book, "scale", Vector3.ONE * 1.6, 0.15)

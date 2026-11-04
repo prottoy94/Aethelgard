@@ -60,6 +60,7 @@ func _process(delta: float) -> void:
 func pop_from(origin: Vector3) -> void:
 	var rest := global_position
 	_can_take = false
+	AudioManager.play(&"combat_loot_drop", origin)
 	var tween := create_tween()
 	tween.tween_method(func(t: float) -> void:
 		global_position = origin.lerp(rest, t) + Vector3(0, sin(t * PI) * POP_HEIGHT, 0), 0.0, 1.0, POP_TIME)
@@ -74,6 +75,7 @@ func collect() -> bool:
 	var added := Inventory.add(item, amount)
 	if added > 0:
 		EventBus.item_collected.emit(item.id, added)
+		AudioManager.play(&"combat_loot_pickup", global_position)
 		amount -= added
 	if amount > 0:
 		return false

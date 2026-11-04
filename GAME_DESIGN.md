@@ -280,13 +280,28 @@ All keys can be remapped.
 | **Juvenile** | Act 2 | Full combat companion, 2–3 skills |
 | **Adult** | End of Act 3 | Strong skills, **flight**: fast travel between Dragon Roosts and the way to the Floating Isle |
 
-- **Element chosen at hatching** 💡: Frost, Wind, Earth or Light (a different skill set per element; one body shape with recolours keeps art cost low).
+- **Element chosen at hatching** (approved by the owner 2026-11-04): Frost, Wind, Earth or Light (a different skill set per element; one body shape with recolours keeps art cost low).
+- **Getting the egg (for now):** the Village Elder gives it once both Elderroot tasks are done (owner decision 2026-11-04, a
+  stand-in until the story scenes; Sylvaris 💡 is still unapproved). Fighting, solving puzzles, reaching new places and
+  walking warm it; when it glows, resting at a Lantern Shrine plays the hatching scene, where Aurelia picks its colour
+  (element) and names it (empty keeps **Pip**, owner decision 2026-11-04). Phase 8 moves the hatch to the end of the slice.
+- **Hatchling skills (built in Phase 7, draft names):**
+
+  | Element | Breath (H, from bond 1) | Trait (bond 3) | Body |
+  |---|---|---|---|
+  | Frost | *Frost Puff*: cone, chills (three chills freeze) | *Cold Nip*: bites chill | 40 HP |
+  | Wind | *Gale Puff*: cone, throws back and staggers, pushes blocks | *Swift Wings*: runs 25% faster, bites push | 36 HP, fastest |
+  | Earth | *Pebble Burst*: wide cone, hits hard, staggers | *Stone Hide*: takes 30% less damage | 50 HP, slowest |
+  | Light | *Glow Breath*: cone, dazes, lights braziers | *Lantern Heart*: glows softly, bites daze | 38 HP |
   ❓ More than one pet dragon is a stretch goal.
 
 ### 8.3 Training & bond
-- **Bond level 1–10**, raised by: fighting together, feeding **dragon treats** (crafted), petting/playing at the **Dragon Roost**,
+- **Bond level 1–10**, raised by: fighting together, feeding **dragon treats** (crafted), petting/playing at the **Dragon Roost**
+  (built in Phase 7: petting with E beside the dragon anywhere outside a fight, raising the bond once every 4 game hours,
+  until the Roost exists; Dragon Treat = Sunpetal + Ember Cinder at a crafting kit, learned when the egg hatches),
   and short **training games** (target practice, fetch race).
 - Bond unlocks **new dragon skills** and stat boosts. Dragons can wear crafted **dragon charms**.
+- Each bond level adds **3 Magic Power** and +6% HP and bite damage (Phase 7 values, `data/dragons/dragon_tuning.tres`).
 
 ### 8.4 Dragon in battle
 - **Commands:** **Follow** (stay close, attack nearby threats), **Attack** (go after Aurelia's target), **Guard** (stay at Aurelia's side and block or intercept).
@@ -431,7 +446,7 @@ Puzzles use **the spells the player has**, so learning a spell feels useful outs
 - Aurelia: movement, dash, staff strike, **4 spells** (Light Mote, Lantern Glow, Gust, Mending Bloom), stamina and cooldowns, Magic Power and rank.
 - **3 enemy types** + **boss Cinder Warden**.
 - **2 puzzle types** (element and lantern), **1 Trial**.
-- Inventory, **5 recipes**, **3 accessories**, workbench.
+- Inventory, **5 recipes** (+ the Dragon Treat from Phase 7), **3 accessories**, workbench.
 - Dragon egg (hatches at the end of the slice).
 - Rest point with save/load, day/night, dialogue, quest journal.
 
@@ -460,7 +475,7 @@ More pet dragons, riding the dragon in real time, New Game+, the Unknown One bos
 2. ❓ Approve the 💡 **sealed magic** idea for Aurelia?
 3. ❓ Approve the 💡 **Ember Core** mechanic (Ignis weakens as cores are destroyed)?
 4. ❓ Spell loadout changes: anywhere outside combat, or only at rest points?
-5. ❓ Pet dragon: one dragon with element choice (recommended), or a fixed dragon?
+5. ✅ Pet dragon: one dragon with element choice, chosen at hatching (owner decision 2026-11-04).
 6. ❓ Keep the names suggested here (Sylvaris, Brinecoil, Hollow King, Vharka, Aurorath)? *Lumen approved 2026-11-03. Draft villager names from Phase 6a: Maren, Tamsin (dialogue/glossary.md).*
 
 ---

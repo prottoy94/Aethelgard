@@ -11,6 +11,8 @@ const PICKED_SCALE := 0.3
 const STONE := Color(0.55, 0.53, 0.5)
 const STEM := Color(0.35, 0.55, 0.25)
 const BARK := Color(0.45, 0.31, 0.2)
+const GATHER_SOUNDS: Array[StringName] = [&"world_gather_herb", &"world_gather_ore", &"world_gather_wood",
+		&"world_gather_crystal"]  ## by GatherNodeData.Look
 
 @export var data: GatherNodeData
 @export var persist_id: StringName
@@ -68,6 +70,7 @@ func gather(by: Node = null) -> int:
 		return 0
 	EventBus.item_collected.emit(data.item.id, added)
 	gathered.emit(data.item, added)
+	AudioManager.play(GATHER_SOUNDS[data.look], global_position)
 	if by is Player:
 		(by as Player).play_role(&"interact")
 	_regrow_at = TimeOfDay.total_minutes() + data.regrow_hours * 60.0

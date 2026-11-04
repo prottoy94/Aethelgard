@@ -36,6 +36,7 @@ func apply(id: StringName, duration: float, power := 0.0, element := Elements.Ty
 		if stacks >= RULES.freeze_stacks:
 			effects.erase(CHILL)
 			effects[FREEZE] = {"time": RULES.freeze_time, "power": 0.0, "stacks": 1, "element": element, "tick": 0.0}
+			_play_sound(FREEZE)
 			frozen.emit(RULES.freeze_time)
 			changed.emit()
 			return
@@ -44,7 +45,14 @@ func apply(id: StringName, duration: float, power := 0.0, element := Elements.Ty
 		var old: Dictionary = effects.get(id, {})
 		effects[id] = {"time": maxf(duration, float(old.get("time", 0.0))), "power": maxf(power, float(old.get("power", 0.0))),
 				"stacks": 1, "element": element, "tick": float(old.get("tick", 0.0))}
+	_play_sound(id)
 	changed.emit()
+
+
+func _play_sound(id: StringName) -> void:
+	var owner_node := get_parent() as Node3D
+	if owner_node:
+		AudioManager.play(StringName("combat_status_%s" % id), owner_node.global_position)
 
 
 func tick(delta: float) -> void:

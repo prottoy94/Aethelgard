@@ -1,6 +1,7 @@
 extends Node
 ## Player options, stored in user://settings.cfg (ConfigFile): graphics preset (Phase 1b), dialogue text speed and
-## auto-advance (FR-DLG-11, Phase 6). Volumes, key bindings and accessibility join them with the audio work.
+## auto-advance (FR-DLG-11, Phase 6a), and a volume per mixer bus (NFR-AUD-04, Phase 6c). Key bindings and
+## accessibility options come later.
 
 signal graphics_changed(preset: GraphicsPreset)
 signal changed
@@ -17,6 +18,8 @@ const TEXT_SPEEDS := 4  ## slow, normal, fast, instant (DialogueTuning.SPEED_NAM
 var graphics: GraphicsPreset
 var text_speed := 1
 var auto_advance := false
+## Linear volume 0–1 per bus (AudioManager.VOLUME_BUSES).
+var volumes: Dictionary[StringName, float] = {&"Master": 1.0, &"Music": 0.8, &"Ambience": 0.8, &"SFX": 1.0, &"UI": 0.8}
 ## False while running tests or tools, so they never overwrite the player's file.
 var persist := true
 
@@ -28,6 +31,10 @@ func _ready() -> void:
 		preset = StringName(config.get_value("graphics", "preset", String(DEFAULT_GRAPHICS)))
 		text_speed = clampi(int(config.get_value("dialogue", "text_speed", text_speed)), 0, TEXT_SPEEDS - 1)
 		auto_advance = bool(config.get_value("dialogue", "auto_advance", auto_advance))
+		for bus: StringName in volumes:
+			volumes[bus] = clampf(float(config.get_value("audio", String(bus), volumes[bus])), 0.0, 1.0)
+	for bus: StringName in volumes:
+		_apply_volume(bus)
 	for arg in OS.get_cmdline_user_args():  # e.g. `-- --graphics=low` for testing
 		if arg.begins_with("--graphics="):
 			preset = StringName(arg.trim_prefix("--graphics="))
@@ -56,6 +63,19 @@ func set_auto_advance(on: bool) -> void:
 	save()
 
 
+func set_volume(bus: StringName, linear: float) -> void:
+	volumes[bus] = clampf(linear, 0.0, 1.0)
+	_apply_volume(bus)
+	save()
+
+
+func _apply_volume(bus: StringName) -> void:
+	var index := AudioServer.get_bus_index(bus)
+	if index != -1:
+		AudioServer.set_bus_volume_db(index, linear_to_db(maxf(volumes[bus], 0.0001)))
+		AudioServer.set_bus_mute(index, volumes[bus] <= 0.001)
+
+
 func save() -> void:
 	changed.emit()
 	if not persist:
@@ -64,6 +84,8 @@ func save() -> void:
 	config.set_value("graphics", "preset", String(graphics.id) if graphics else String(DEFAULT_GRAPHICS))
 	config.set_value("dialogue", "text_speed", text_speed)
 	config.set_value("dialogue", "auto_advance", auto_advance)
+	for bus: StringName in volumes:
+		config.set_value("audio", String(bus), volumes[bus])
 	config.save(PATH)
 
 

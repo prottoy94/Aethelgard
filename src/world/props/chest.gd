@@ -60,6 +60,7 @@ func open() -> bool:
 		return false
 	is_opened = true
 	GameState.set_object_state(persist_id, {"unlocked": true, "opened": true})
+	AudioManager.play(&"world_chest_open", global_position)
 	_interactable.set_deferred(&"monitorable", false)
 	create_tween().tween_property(_lid, "rotation:x", -1.9, 0.4).set_trans(Tween.TRANS_BACK)
 	for item in contents:

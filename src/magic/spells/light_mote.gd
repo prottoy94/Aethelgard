@@ -92,6 +92,7 @@ func _burst() -> void:
 	if _done:
 		return
 	_done = true
+	AudioManager.play(&"spell_light_mote_impact", global_position)
 	_touch_elements()  # e.g. it hit a brazier's solid body before reaching its centre
 	_hitbox.deactivate()
 	for child in get_children():

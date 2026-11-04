@@ -688,6 +688,7 @@ func _mesh(parent: Node, mesh: Mesh, material: Material, pos: Vector3) -> MeshIn
 func _solid_root(pos: Vector3) -> StaticBody3D:
 	var body := StaticBody3D.new()
 	body.collision_layer = WORLD_LAYER
+	body.set_meta(&"surface", "stone")  # footsteps (FR-AUD-06); the open ground stays grass
 	body.position = pos
 	add_child(body)
 	return body

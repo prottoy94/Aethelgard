@@ -223,7 +223,7 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 - Inventory, equipment (staff, cloak, 3 accessories), gathering herbs/ore, loot drops, workbench + recipes, potions.
 - **You'll play:** gather materials, craft an accessory, equip it and feel the difference.
 
-### Phase 6: World systems, story & sound (M5 + M6) · **L** · 🟨 In progress (built in 3 parts with a check-in after each, owner decision 2026-11-03)
+### Phase 6: World systems, story & sound (M5 + M6) · **L** · ✅ Done 2026-11-04 (built in 3 parts with a check-in after each)
 > **6a, world systems: ✅ done 2026-11-03.** Three villagers to talk to: the **Elder** by the shrine, **Maren** the
 > herbalist and little **Tamsin** by the pond. Talking opens a parchment **dialogue box** with name plate,
 > placeholder **portraits** that change expression, typing text and **choices**. Two **side quests**: *Herbs for Maren*
@@ -247,7 +247,16 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 > **158/158 tests pass.** 1080p RTX 3050 High: 207–276 FPS (title 366); Intel UHD Low at night in rain: 60 FPS;
 > ≤ 1.3 GB RAM. Try it: `-- --region=elderroot_village`, `-- --hour=22 --weather=rain`, `-- --open=save`
 > (any option skips the title, with saving off; add `--saves` to keep saving).
-> **Next: 6c** (the audio system and your music, including analysing your four new tracks).
+> **6c, audio: ✅ done 2026-11-04.** The game now has sound. Your song **Sunlight on Ancient Stone** plays on the title
+> screen; **Where the Forest Remembers** plays in the meadow by day and its quiet middle by night; **Edge of the Blue**
+> plays in the village (suggestions: you decide). A drum **combat layer** fades in while an enemy is after you and
+> leaves a few seconds after. About 70 **placeholder sounds** (made by our own script): footsteps on grass and stone,
+> staff, spells, hits per element, status effects, enemy alerts and wind-ups (as long as the visual warning), loot,
+> chests, gathering, shrines, puzzles, menus, dialogue blips, and short stingers for new spells, rank-ups, quests,
+> secrets and crafting. Birds and breeze by day, crickets by night, rain when it rains. Music is muffled while
+> paused and quieter during conversations. **Options** has volume sliders. I analysed your four new tracks (tempo,
+> key, vocals, loops: AUDIO_DESIGN.md §10.7). **169/169 tests pass**; 194–348 FPS.
+> **Phase 6 is complete.**
 - Conversations with portraits and choices (Dialogue Manager), NPCs, quests, journal, first puzzles (brazier, push block, hidden path), Lumen hints.
 - **Save/Load** (JSON), rest points, day/night cycle, rain, region transitions.
 - **Audio system** with your music: title song *Sunlight on Ancient Stone*, region music, adaptive explore↔combat music, placeholder sound effects.
@@ -255,6 +264,21 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 - **You'll play:** talk to villagers, finish a small side quest with a puzzle, save, quit, reload, and everything is as you left it.
 
 ### Phase 7: Your dragon (M7) · **M**
+> **✅ Done 2026-11-04.** Help both villagers, then talk to the **Elder**: he gives Aurelia a **dragon egg** (your choice:
+> the Elder gives it for now). Fight, solve puzzles and explore to warm it (the HUD shows its warmth); when it glows,
+> **rest at a Lantern Shrine**: the egg wobbles, you pick its colour, **Frost, Wind, Earth or Light** (your choice: one
+> dragon, element picked at hatching), it hatches and you **name it** (empty keeps **Pip**). The hatchling follows
+> Aurelia and fights: **G** switches **Follow** (bites what comes after her) / **Attack** (goes after her target) /
+> **Guard** (stands between her and danger, catches bolts); **H** is its **breath** (Frost chills, Wind throws back,
+> Earth hits hard, Light dazes and lights braziers). It steps out of enemy warning rings, enemies it bites turn on it,
+> and at 0 HP it curls up and comes back after 20 s or when you rest. **Bond** 1–10 grows from fighting together,
+> **Dragon Treats** (new kit recipe) and petting (**E**); it adds Magic Power and unlocks a trait at bond 3. New HUD
+> panel (bottom left) and a **Dragon page** in the Tab menu (stats, skills, command, feed, rename). Placeholder dragon
+> of simple shapes, recoloured per element; 16 new placeholder sounds and a hatching stinger. Lines are drafts.
+> **203/203 tests pass.** RTX 3050 High 207 FPS in a fight with the dragon; Intel UHD Low 62–63 FPS (64 without it);
+> ~0.9 GB RAM. Try it: `-- --dragon=hatch` (the hatching scene now), `-- --dragon=frost --spawn=combat`
+> (or wind, earth, light), `-- --dragon=ready` (then rest at the shrine), `-- --open=dragon --give=treats`.
+> **Next: Phase 8, the first boss and the vertical slice.**
 - Dragon egg → hatching cutscene → naming → the hatchling follows Aurelia; commands (Follow / Attack / Guard); bond.
 - **You'll play:** hatch and name your dragon.
 

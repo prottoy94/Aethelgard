@@ -59,7 +59,7 @@ if PlayerData.rank >= Ranks.LANTERN
 | `do Something()` | Make something happen in the game (quest, item, flag, cutscene action) |
 | `set GameState.x = y` | Change a value |
 | `=> title` / `=> END` | Jump to another part / end the conversation |
-| `{{PlayerData.dragon_name}}` | Insert a value into the text |
+| `{{DragonManager.dragon_name}}` | Insert a value into the text |
 
 ### 2.3 What dialogue is allowed to call
 To keep things safe and tidy, dialogue only talks to these game objects:
@@ -69,8 +69,8 @@ To keep things safe and tidy, dialogue only talks to these game objects:
 | `GameState` | `has_flag()`, `set_flag()`: story memory |
 | `QuestManager` | `start()`, `advance()`, `is_active()`, `is_done()` |
 | `Inventory` | `has()`, `add()`, `remove()` |
-| `PlayerData` | rank, Magic Power, learned spells, `dragon_name` |
-| `DragonManager` | stage, element, bond |
+| `PlayerData` | rank, Magic Power, learned spells |
+| `DragonManager` | `dragon_name`, stage, element, bond; `receive_egg()`, `choose_element("frost")`, `ask_name()`, `is_hatched()`, `has_egg()` (Phase 7: the name lives here, not in PlayerData) |
 | `Cutscene` | camera, movement, animation, fades (§5) |
 | `AudioManager` | music changes, stingers |
 
@@ -110,7 +110,7 @@ Keeping scope small means **choices change the conversation, not the main story*
 | **Story branches** | Different endings | ❌ Not in v1 |
 
 - Aurelia **speaks** (she has her own personality). Choices are *how* she says things, not a silent hero picking anything.
-- **Naming the dragon:** a text input during the hatching cutscene. If left empty, a default name is used (❓ suggestion: "Pip").
+- **Naming the dragon:** a text input during the hatching cutscene. If left empty, the default name **Pip** is used (owner decision 2026-11-04). Built in Phase 7 (`do DragonManager.ask_name()` → `Cutscene.ask_text`); text-markup characters are removed.
 
 ---
 
@@ -141,6 +141,10 @@ Keeping scope small means **choices change the conversation, not the main story*
 `move(actor_id, marker, time)`, `face(actor_id, direction)`, `anim(actor_id, name)`, `emote(actor_id, icon)` (💡 ! ? ♪ … bubbles),
 `wait(seconds)`, `fade_out(time)` / `fade_in(time)`, `flash(color)`, `shake(strength)`, `play(cutscene_scene_id)`.
 Actors and markers are found by ID inside the current region scene (`Marker3D` nodes in a `CutsceneMarkers` group). The cutscene camera is a separate `Camera3D` that blends from the play camera.
+**Built so far:** `letterbox`, `fade_out`/`fade_in`, `wait` (Phase 6a); Phase 7 adds `play(id)` (adds that id's
+`CutsceneScene` next to Aurelia; the scene runs its own dialogue), `cue(name)` (the dialogue asks the playing scene for an
+effect, e.g. `do Cutscene.cue("hatch")`, awaited) and `ask_text(question, default, max_length)` (a parchment name box).
+The bars sit under the dialogue box; the HUD hides while a scene plays. First scene: `src/cutscenes/dragon_hatch/`.
 
 ### 5.3 Rules
 - **Every cutscene can be skipped** (hold a button). Skipping still applies all of its game effects (flags, quests, items),
@@ -263,8 +267,8 @@ How each character **sounds in writing**. Use this to keep lines consistent.
 | `quest_lost_satchel` | Side task: find a child's lost satchel | NPC | Villager child (Tamsin). *Draft written (Phase 6a): `npcs/elderroot_villagers.dialogue`, cues `tamsin`, `tamsin_return`* |
 | `quest_herbalist` | Side task: gather herbs → first recipe | NPC | Herbalist (Maren). *Draft written (Phase 6a): cues `maren`, `maren_hand_over`* |
 | `warden_intro` / `warden_defeat` | Boss intro and defeat | Cutscene | Cinder Warden, Aurelia |
-| `egg_gift` | Sylvaris gives the egg | Story | Sylvaris, Aurelia |
-| `dragon_hatch` | Egg hatches, naming the dragon | Cutscene | Aurelia, dragon, Lumen |
+| `egg_gift` | Sylvaris gives the egg | Story | Sylvaris, Aurelia. *Stand-in written (Phase 7): the Elder gives it, cue `elder_egg` in `npcs/elderroot_villagers.dialogue` (owner decision 2026-11-04)* |
+| `dragon_hatch` | Egg hatches, naming the dragon | Cutscene | Aurelia, dragon, Lumen. *Draft written (Phase 7): `story/dragon_hatch.dialogue` (colour = element choice, name box)* |
 | `barks_*` | Lumen hints, Emberbound shouts, villager remarks | Barks | Various. *Draft written (Phase 6a): `barks/lumen.dialogue`, villager `*_bark` cues* |
 
 ---
@@ -318,7 +322,7 @@ How each character **sounds in writing**. Use this to keep lines consistent.
 | M0 Setup | Install Dialogue Manager, `dialogue/` folders, glossary file |
 | M5 World systems | Dialogue box + portraits + choices, barks, NPC interaction, flags, `Cutscene` API basics. ✅ Built in Phase 6a; also a first Elder conversation (`elder`, a stand-in until `elder_quest_start`) |
 | M6 Persistence | Flags saved/loaded; repeat-talk handling |
-| M7 Dragon | Hatching cutscene, dragon naming, emote bubbles |
+| M7 Dragon | Hatching cutscene, dragon naming, emote bubbles. ✅ Built in Phase 7 (emotes ♥ ! ? ♪ zzz above the dragon; the Elder mentions it by name) |
 | M8 Boss | Boss intro/defeat cutscenes, prologue Ignis scenes, skip system |
 | 🎯 Vertical slice | All scripts in §10 written, approved and playable |
 | M9–M10 | Scripts for Acts 1–4 and the ending |
@@ -329,7 +333,7 @@ How each character **sounds in writing**. Use this to keep lines consistent.
 ## 15. Open questions
 
 1. ❓ Approve the 💡 **Rank Examiner** and **Rival apprentice** characters? (Names to be chosen.)
-2. ❓ Default dragon name (or always ask the player)?
+2. ✅ Default dragon name: ask the player; empty keeps **Pip** (owner decision 2026-11-04).
 3. ❓ Short voice exclamations in v1, or text blips only?
 4. ❓ Languages other than English?
 5. ❓ History log in v1 or later?

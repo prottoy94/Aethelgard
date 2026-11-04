@@ -32,6 +32,9 @@ var strike_cooldown := Cooldown.new()
 var knockback := Vector3.ZERO
 ## Bonuses of the equipped gear (FR-ITM-02), refreshed when the equipment changes.
 var gear := GearBonus.new()
+## The last enemy her staff or a spell hit (the pet dragon's Attack command goes after it) and how long ago.
+var combat_target: Node3D
+var combat_target_age := INF
 
 var _dash_buffer := 0.0
 var _strike_buffer := 0.0
@@ -42,6 +45,7 @@ var _mouse_aim := true
 var _interactables: Array[InteractableComponent] = []
 var _interact_target: InteractableComponent
 var _reticle: MeshInstance3D
+var _stride := 0.0  ## m walked since the last footstep
 
 @onready var visual: Node3D = $Visual
 @onready var state_machine: StateMachine = $StateMachine
@@ -67,7 +71,15 @@ func _ready() -> void:
 	hurtbox.invulnerable_check = func() -> bool: return is_invulnerable or health.is_dead()
 	hurtbox.hurt.connect(_on_hurt)
 	health.died.connect(_on_died)
+	spell_caster.cast_failed.connect(func(_slot: int, reason: StringName) -> void:
+		if reason == &"stamina" or reason == &"exhausted":
+			AudioManager.play(&"player_cast_fail", global_position))
+	stamina.exhausted_changed.connect(func(is_exhausted: bool) -> void:
+		if not is_exhausted:
+			AudioManager.play(&"player_stamina_ready"))
 	strike_hitbox.source = self
+	strike_hitbox.hit.connect(func(hit_hurtbox: HurtboxComponent, _info: DamageInfo) -> void:
+		remember_target(hit_hurtbox.get_parent()))
 	_build_reticle()
 
 
@@ -78,8 +90,10 @@ func _physics_process(delta: float) -> void:
 	_strike_buffer = maxf(_strike_buffer - delta, 0.0)
 	_invulnerable_time = maxf(_invulnerable_time - delta, 0.0)
 	_aim_hold = maxf(_aim_hold - delta, 0.0)
+	combat_target_age += delta
 	knockback = knockback.move_toward(Vector3.ZERO, combat.knockback_decay * delta)
 	_update_interact_target()
+	_update_footsteps(delta)
 
 
 func _process(delta: float) -> void:
@@ -344,6 +358,7 @@ func use_item(item: ConsumableData) -> bool:
 	health.heal(item.heal)
 	stamina.restore(item.stamina)
 	play_role(&"interact")
+	AudioManager.play(&"player_heal", global_position)
 	return true
 
 
@@ -351,8 +366,23 @@ func _on_cast_succeeded(_slot: int, spell: SpellData) -> void:
 	PlayerData.add_mastery_xp(spell.id, PlayerData.PROGRESSION.xp_per_cast)
 
 
-func _on_spell_landed(spell: SpellData, _target: Node) -> void:
+func _on_spell_landed(spell: SpellData, target: Node) -> void:
 	PlayerData.add_mastery_xp(spell.id, PlayerData.PROGRESSION.xp_per_hit)
+	remember_target(target)
+
+
+## Remembers an enemy she just hit as her target.
+func remember_target(node: Node) -> void:
+	if node is Enemy:
+		combat_target = node as Node3D
+		combat_target_age = 0.0
+
+
+## Her target if she hit it within `memory` seconds and it still exists, else null.
+func recent_target(memory: float) -> Node3D:
+	if combat_target == null or not is_instance_valid(combat_target) or combat_target_age > memory:
+		return null
+	return combat_target
 
 
 ## Rest at a Lantern Shrine: full health and stamina, effects cleared, respawn here, read carried tomes.
@@ -371,6 +401,7 @@ func _on_hurt(info: DamageInfo, _amount: float) -> void:
 		return
 	knockback = info.knockback
 	grant_invulnerability(combat.hurt_invulnerable)
+	AudioManager.play(&"player_hurt", global_position)
 	CombatFx.flash(visual)
 	if camera_rig:
 		camera_rig.add_shake(0.35)
@@ -380,12 +411,40 @@ func _on_hurt(info: DamageInfo, _amount: float) -> void:
 
 func _on_died() -> void:
 	state_machine.transition_to(&"Dead")
+	AudioManager.play(&"player_defeated", global_position)
+	AudioManager.play_stinger(&"stg_defeat")
 	if camera_rig:
 		camera_rig.add_shake(0.6)
 	died.emit()
 
 
+## A footstep every stride while walking on the ground; the floor's "surface" meta picks the sound (FR-AUD-06).
+func _update_footsteps(delta: float) -> void:
+	var speed := Vector2(velocity.x, velocity.z).length()
+	if not is_on_floor() or speed < 0.5 or state_machine.is_in(&"Dash"):
+		return
+	_stride += speed * delta
+	if _stride < AudioManager.TUNING.footstep_stride:
+		return
+	_stride = 0.0
+	var surface := "grass"
+	for i in get_slide_collision_count():
+		var hit := get_slide_collision(i)
+		if hit.get_normal().y > 0.7:
+			var floor_body := hit.get_collider() as Node
+			if floor_body:
+				surface = floor_body.get_meta(&"surface", surface)
+			break
+	AudioManager.play(StringName("player_footstep_%s" % surface), global_position)
+
+
 # --- Aim reticle ---------------------------------------------------------------------------
+
+## The aim ring hides while the game is paused (conversations, cutscenes, menus); _update_reticle shows it again.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PAUSED and _reticle:
+		_reticle.visible = false
+
 
 func _build_reticle() -> void:
 	_reticle = MeshInstance3D.new()
@@ -405,7 +464,7 @@ func _build_reticle() -> void:
 
 
 func _update_reticle() -> void:
-	_reticle.visible = not health.is_dead()
+	_reticle.visible = not health.is_dead() and not Cutscene.is_playing()
 	var point: Variant = mouse_ground_point() if _mouse_aim else null
 	if point == null:
 		point = global_position + aim_direction() * RETICLE_STICK_DISTANCE

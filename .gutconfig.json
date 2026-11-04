@@ -1,0 +1,3 @@
+{
+	"post_run_script": "res://tests/post_run.gd"
+}

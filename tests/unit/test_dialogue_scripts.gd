@@ -12,6 +12,7 @@ const CODE_CUES := {
 			"tamsin_bark"],
 	"res://dialogue/barks/lumen.dialogue": ["lumen_secret_nearby", "lumen_low_health", "lumen_hint_braziers",
 			"lumen_hint_steps", "lumen_hint_block"],
+	"res://dialogue/story/dragon_hatch.dialogue": ["dragon_hatch"],
 }
 
 var _reference := RegEx.create_from_string("\\b([A-Z][A-Za-z]+)\\.([a-z_][a-z_0-9]*)")

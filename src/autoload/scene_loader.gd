@@ -29,6 +29,7 @@ func change_region(region_id: StringName, spawn_id: StringName = &"", player_sta
 		return false
 	is_changing = true
 	_arrival = {"spawn": spawn_id, "player": player_state}
+	AudioManager.play(&"world_region_transition")
 	await Cutscene.fade_out(FADE_TIME)
 	get_tree().paused = false
 	TimeOfDay.running = false

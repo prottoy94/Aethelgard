@@ -5,6 +5,8 @@ extends CanvasLayer
 ##
 ## Benchmark mode: run the game with `-- --benchmark=<output folder>`. The overlay disables V-Sync,
 ## waits WARMUP_FRAMES, measures MEASURE_FRAMES, saves benchmark.txt and benchmark.png there, and quits.
+## Capture mode: `-- --capture=<output folder> --capture-at=1.5,4,8` saves capture_01.png… at those seconds (real
+## time, also while paused) without the overlay text, then quits. Handy with `--autoplay` for cutscenes.
 
 const WARMUP_FRAMES := 120
 const MEASURE_FRAMES := 300
@@ -16,6 +18,10 @@ var _frames := 0
 var _sum_ms := 0.0
 var _sum_gpu_ms := 0.0
 var _done := false
+var _capture_dir := ""
+var _capture_at: Array[float] = []
+var _capture_count := 0
+var _clock := 0.0
 
 
 func _ready() -> void:
@@ -33,6 +39,16 @@ func _ready() -> void:
 		if arg.begins_with("--benchmark="):
 			_benchmark_dir = arg.trim_prefix("--benchmark=")
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+		elif arg.begins_with("--capture="):
+			_capture_dir = arg.trim_prefix("--capture=")
+		elif arg.begins_with("--capture-at="):
+			for part in arg.trim_prefix("--capture-at=").split(","):
+				_capture_at.append(float(part))
+			_capture_at.sort()
+	if _capture_dir != "":
+		_label.visible = false
+		if _capture_at.is_empty():
+			_capture_at.append(3.0)
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -46,6 +62,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	if _capture_dir != "":
+		_update_capture(delta)
 	var gpu_ms := RenderingServer.viewport_get_measured_render_time_gpu(get_viewport().get_viewport_rid())
 	if _label.visible:
 		_label.text = _stats_text(delta * 1000.0, gpu_ms)
@@ -72,7 +90,33 @@ func _stats_text(frame_ms: float, gpu_ms: float) -> String:
 			Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0],
 		"%s   %s" % [RenderingServer.get_video_adapter_name(), RenderingServer.get_current_rendering_method()],
 		"Graphics: %s   (F1 Low  F2 Medium  F3 High  F4 hide)" % preset,
+		_audio_text(),
 	])
+
+
+## What is playing and how loud (peak dB on the Master and Music buses), to check the mix without listening.
+func _audio_text() -> String:
+	var master := AudioServer.get_bus_index(&"Master")
+	var music := AudioServer.get_bus_index(&"Music")
+	return "music %s%s   peak Master %.0f dB  Music %.0f dB" % [
+		AudioManager.current_music() if AudioManager.current_music() != &"" else "-",
+		"  + combat layer" if AudioManager.in_combat else "",
+		AudioServer.get_bus_peak_volume_left_db(master, 0), AudioServer.get_bus_peak_volume_left_db(music, 0)]
+
+
+func _update_capture(delta: float) -> void:
+	_clock += delta
+	if _capture_at.is_empty() or _clock < _capture_at[0]:
+		return
+	_capture_at.pop_front()
+	_capture_count += 1
+	var path := _capture_dir.path_join("capture_%02d.png" % _capture_count)
+	var last := _capture_at.is_empty()
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(path)
+	print("saved ", path)
+	if last:
+		get_tree().quit()
 
 
 func _finish_benchmark() -> void:

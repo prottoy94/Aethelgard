@@ -31,6 +31,13 @@ func _ready() -> void:
 	add_child(_label)
 
 
+## Changes the prompt's verb (e.g. after the pet dragon is renamed).
+func set_prompt(verb: String) -> void:
+	prompt_verb = verb
+	if _label:
+		_label.text = "%s  %s" % [_key_name(), prompt_verb]
+
+
 func show_prompt(visible_now: bool) -> void:
 	_shown = visible_now
 	_label.visible = visible_now and not get_tree().paused

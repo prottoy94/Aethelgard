@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MusicTrack" format=3]
+
+[ext_resource type="Script" path="res://src/audio/music_track.gd" id="1"]
+
+; The owner's music (AUDIO_DESIGN.md §10). Copy the files with tools/audio/import_owner_music.py.
+[resource]
+script = ExtResource("1")
+id = &"mus_elderroot_night"
+file = "res://assets/audio/music/owner/where_the_forest_remembers.mp3"
+volume_db = -5.0
+loop = true
+loop_start = 101.6
+loop_end = 138.5
+start = 101.6
+bpm = 76.0
+notes = "The quiet middle of Where the Forest Remembers (1:41.6 to 2:18.5), looped for Elderroot at night (suggested)."

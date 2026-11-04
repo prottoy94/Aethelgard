@@ -35,6 +35,7 @@ var _more: Label
 func _ready() -> void:
 	layer = 30
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	add_to_group(&"dialogue_box")  # scripted scenes (CutsceneScene) talk through it
 	_build()
 	_root.visible = false
 
@@ -51,6 +52,7 @@ func start(resource: DialogueResource, cue: String, extra_states: Array = []) ->
 	_right.clear()
 	_root.visible = true
 	get_tree().paused = true
+	AudioManager.duck(&"dialogue", AudioManager.TUNING.dialogue_duck_db)
 	started.emit()
 	_show(await _resource.get_next_dialogue_line(cue, _extra_states))
 
@@ -129,6 +131,7 @@ func _finish() -> void:
 	_clear_choices()
 	_root.visible = false
 	get_tree().paused = false
+	AudioManager.duck(&"dialogue", 0.0)
 	finished.emit()
 
 
@@ -218,6 +221,9 @@ func _build() -> void:
 	_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_text.add_theme_font_size_override("normal_font_size", 25)
 	_text.add_theme_color_override("default_color", INK)
+	_text.spoke.connect(func(letter: String, index: int, _speed: float) -> void:
+		if index % 2 == 0 and letter.strip_edges() != "":
+			AudioManager.play(&"ui_dialogue_blip"))  # a soft blip as the text types (DIALOGUE_DESIGN.md §3.1)
 	column.add_child(_text)
 	_choices = VBoxContainer.new()
 	_choices.add_theme_constant_override("separation", 4)

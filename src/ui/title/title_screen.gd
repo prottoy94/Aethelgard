@@ -1,7 +1,7 @@
 class_name TitleScreen
 extends Control
 ## The title screen (FR-UI-05): Continue (the latest save), New Game, Load, Options and Quit over a painted Elderroot
-## dusk. The owner's song plays here once the audio work is done (FR-AUD-12, Phase 6c).
+## dusk, with the owner's song *Sunlight on Ancient Stone* (FR-AUD-12).
 ## Started with any test option (`-- --spawn=…`, `--region=…`, `--open=…`, `--benchmark=…` …) it goes straight into
 ## a new game, with saving off unless `--saves` is given, so quick test runs never touch real saves. `--title` keeps
 ## the title screen (e.g. `-- --title --benchmark=<dir>`).
@@ -25,6 +25,10 @@ func _ready() -> void:
 		return
 	_build()
 	_refresh()
+	AudioManager.set_combat_layer(&"")
+	AudioManager.play_ambience(&"")
+	AudioManager.play_weather(&"")
+	AudioManager.play_music(&"mus_title")  # the owner's song, sung by Aurelia (FR-AUD-12)
 	if "--benchmark" in "".join(args):
 		add_child(PerfOverlay.new())
 

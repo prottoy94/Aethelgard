@@ -1,0 +1,65 @@
+[gd_resource type="Resource" script_class="DragonSpeciesData" format=3]
+
+[ext_resource type="Script" path="res://src/actors/dragon/dragon_species_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/actors/dragon/dragon_stage_stats.gd" id="2"]
+[ext_resource type="Script" path="res://src/actors/dragon/dragon_skill_data.gd" id="3"]
+
+[sub_resource type="Resource" id="hatchling"]
+script = ExtResource("2")
+stage = 2
+max_health = 38.0
+defense = 0.0
+move_speed = 6.0
+bite_damage = 4.0
+bite_cooldown = 1.2
+bite_range = 1.3
+bite_radius = 0.7
+size = 1.0
+
+[sub_resource type="Resource" id="active"]
+script = ExtResource("3")
+id = &"glow_breath"
+display_name = "Glow Breath"
+description = "A cone of bright breath that dazes enemies. It can light lanterns and braziers."
+kind = 0
+stage = 2
+bond_required = 1
+cooldown = 8.0
+damage = 7.0
+element = 1
+radius = 3.5
+angle_deg = 70.0
+knockback = 2.0
+stagger = false
+status = &"daze"
+status_duration = 3.0
+wind_up = 0.3
+approach_range = 8.0
+
+[sub_resource type="Resource" id="passive"]
+script = ExtResource("3")
+id = &"lantern_heart"
+display_name = "Lantern Heart"
+description = "Glows softly like a little lantern, and its bites daze enemies."
+kind = 1
+stage = 2
+bond_required = 3
+element = 1
+bite_status = &"daze"
+bite_status_duration = 2.0
+glow_energy = 1.2
+
+; Light dragon (GAME_DESIGN.md §8.2). Hatchling stage only so far: juvenile and adult come in Phase 10.
+[resource]
+script = ExtResource("1")
+element = 1
+display_name = "Light dragon"
+description = "Lantern-gold, warm to the touch. Its breath is bright enough to dazzle."
+body_color = Color(0.949, 0.812, 0.420, 1)
+belly_color = Color(1.000, 0.957, 0.816, 1)
+wing_color = Color(0.878, 0.643, 0.227, 1)
+horn_color = Color(1.000, 0.984, 0.910, 1)
+eye_color = Color(0.353, 0.227, 0.063, 1)
+breath_color = Color(1.000, 0.941, 0.627, 1)
+stages = Array[ExtResource("2")]([SubResource("hatchling")])
+skills = Array[ExtResource("3")]([SubResource("active"), SubResource("passive")])

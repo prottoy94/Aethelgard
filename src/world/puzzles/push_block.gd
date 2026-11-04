@@ -19,6 +19,7 @@ var is_sliding := false
 func _ready() -> void:
 	collision_layer = 1  # world: blocks Aurelia and enemies
 	sync_to_physics = true
+	set_meta(&"surface", "stone")
 	var shape := CollisionShape3D.new()
 	var box := BoxShape3D.new()
 	box.size = Vector3.ONE * SIZE
@@ -57,6 +58,7 @@ func push(direction: Vector3) -> bool:
 	if step == Vector3.ZERO or not _is_free(global_position + step):
 		return false
 	is_sliding = true
+	AudioManager.play(&"puzzle_block_push", global_position)
 	var tween := create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 	tween.tween_property(self, "global_position", global_position + step, slide_time).set_trans(Tween.TRANS_QUAD)
 	tween.tween_callback(func() -> void:

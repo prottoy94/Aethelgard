@@ -64,11 +64,23 @@ func act() -> void:
 			_message.text = "Took off the %s." % selected.display_name
 			selected_slot = -1
 		refresh()
+	elif DragonManager.is_food(selected):
+		var treat := selected as ConsumableData
+		var reason := DragonManager.feed(treat)
+		if reason == &"":
+			_message.text = "%s gobbled the %s!" % [DragonManager.display_name(), treat.display_name]
+		else:
+			AudioManager.play(&"ui_error")
+			_message.text = {&"no_dragon": "Only a dragon would eat this.",
+					&"knocked_out": "%s is knocked out. Let it rest first." % DragonManager.display_name(),
+					&"full": "%s is full." % DragonManager.display_name()}.get(reason, "That wouldn't help right now.")
+		refresh()
 	elif selected is ConsumableData:
 		var item := selected as ConsumableData
 		if player and player.use_item(item):
 			_message.text = "Used a %s." % item.display_name
 		else:
+			AudioManager.play(&"ui_error")
 			_message.text = "That wouldn't help right now."
 		refresh()
 	elif selected is EquipmentData:
@@ -96,6 +108,7 @@ func _refresh_if_open() -> void:
 
 func _equip(gear: EquipmentData, slot: int) -> void:
 	if Inventory.equip(gear, slot):
+		AudioManager.play(&"ui_equip")
 		_message.text = "Equipped the %s." % gear.display_name
 		selected = null
 	else:
@@ -152,6 +165,8 @@ func _refresh_details() -> void:
 	_action.visible = true
 	if selected_slot != -1:
 		_action.text = "Unequip"
+	elif DragonManager.is_food(selected):
+		_action.text = "Feed %s" % DragonManager.display_name() if DragonManager.is_hatched() else "Feed"
 	elif selected is ConsumableData:
 		_action.text = "Use"
 	elif selected is EquipmentData:

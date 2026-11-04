@@ -33,7 +33,20 @@ func receive_hit(info: DamageInfo) -> bool:
 	if status_effects:
 		info.amount *= status_effects.damage_taken_multiplier()
 	var amount := health.apply_damage(info)
+	_play_hit_sound(info)
 	if status_effects and info.status != &"" and not health.is_dead():
 		status_effects.apply(info.status, info.status_duration, info.status_power, info.element)
 	hurt.emit(info, amount)
 	return true
+
+
+## The element's impact (AUDIO_DESIGN.md §6.1), plus a bright "ding" on a weakness or a dull "thunk" when resisted.
+func _play_hit_sound(info: DamageInfo) -> void:
+	var element := String(Elements.Type.find_key(info.element)).to_lower()
+	if not AudioManager.play(StringName("combat_hit_%s" % element), global_position):
+		AudioManager.play(&"combat_hit_none", global_position)
+	var multiplier := Elements.multiplier(info.element, health.element)
+	if multiplier > 1.0:
+		AudioManager.play(&"combat_weak_hit", global_position)
+	elif multiplier < 1.0:
+		AudioManager.play(&"combat_resisted", global_position)

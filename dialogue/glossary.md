@@ -13,6 +13,7 @@ waiting for the owner's approval.
 | Elder | The kind, worried Village Elder of Elderroot (no personal name yet) | draft |
 | Maren | Elderroot's herbalist; calls everyone "dear" | draft (Phase 6a) |
 | Tamsin | A village child, an explorer at heart; chases dragonflies | draft (Phase 6a) |
+| Pip | The pet dragon's default name, used when the player leaves the name empty | approved 2026-11-04 |
 
 ## Places
 Elderroot Meadow · Elderroot Village (south of the meadow: Maren's herb garden, the well) · the World Tree · Lantern Shrines · the old shrine ruins (east of the pond) · Azure Coast ·
@@ -25,4 +26,11 @@ Ruined Valley · Stormspire Highlands · Floating Isle / Sky Rift
 
 ## Things
 Sunpetal · Moonbloom · Elderwood · Iron Ore · Lumen Crystal · Thorn Fibre · Ember Cinder · Healing Potion ·
-Stamina Tonic · lantern braziers · the Emberbound · Ember Cores
+Stamina Tonic · lantern braziers · the Emberbound · Ember Cores · the dragon egg · Dragon Treat (Phase 7)
+
+## The pet dragon (Phase 7, draft names)
+- Species by element: **Frost dragon** (frost-blue), **Wind dragon** (silver-green), **Earth dragon** (moss-brown),
+  **Light dragon** (lantern-gold). Growth stages: egg, hatchling, juvenile, adult.
+- Commands: **Follow**, **Attack**, **Guard**. **Bond** 1–10.
+- Breath skills: Frost Puff, Gale Puff, Pebble Burst, Glow Breath. Traits: Cold Nip, Swift Wings, Stone Hide,
+  Lantern Heart.

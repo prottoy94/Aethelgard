@@ -1,16 +1,23 @@
 extends State
-## The hit itself: the attack hitbox is active for a moment, then the enemy recovers.
+## The hit itself: the attack hitbox is active for a moment, then the enemy recovers. A melee enemy's ring stays a
+## "danger_zone" until the hit is over, so the pet dragon doesn't walk back in too early.
 
 var _time := 0.0
 
 
 func enter(_previous: StringName, _data: Dictionary) -> void:
 	_time = 0.0
-	(actor as Enemy).perform_attack()
+	var enemy := actor as Enemy
+	if enemy.data.min_range <= 0.0:
+		enemy.add_to_group(&"danger_zone")
+	enemy.perform_attack()
 
 
 func exit() -> void:
-	(actor as Enemy).end_attack()
+	var enemy := actor as Enemy
+	enemy.end_attack()
+	if enemy.is_in_group(&"danger_zone"):
+		enemy.remove_from_group(&"danger_zone")
 
 
 func physics_update(delta: float) -> void:

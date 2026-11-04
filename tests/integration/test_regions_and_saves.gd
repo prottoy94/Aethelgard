@@ -152,3 +152,52 @@ func test_title_screen_offers_continue_after_a_save() -> void:
 	SaveManager.save_slot(&"slot_3")
 	title._refresh()
 	assert_false(title._continue.disabled, "Continue loads the latest save (FR-UI-05)")
+
+
+# --- Phase 7: the dragon in regions ------------------------------------------------------------
+
+func test_the_dragon_comes_along_and_is_saved() -> void:
+	DragonManager.receive_egg()
+	DragonManager.choose_element("earth")
+	DragonManager.hatch()
+	DragonManager.set_dragon_name("Moss")
+	assert_true(await SceneLoader.change_region(VILLAGE, &"from_meadow"))
+	var dragon := get_tree().get_first_node_in_group(&"dragon") as Dragon
+	assert_not_null(dragon, "the dragon arrives with Aurelia (FR-DRG-02)")
+	assert_lt(dragon.distance_to_player(), 3.0, "right beside her")
+	assert_eq(get_tree().get_nodes_in_group(&"dragon").size(), 1)
+	var saved := SaveManager.read_slot(SaveManager.AUTO)
+	assert_eq(saved["dragon"]["name"], "Moss", "the autosave holds the dragon (FR-SAV-04)")
+	assert_eq(saved["dragon"]["element"], "earth")
+	DragonManager.from_dict({})
+	SaveManager.apply_save(saved)
+	assert_eq(DragonManager.dragon_name, "Moss")
+	assert_eq(DragonManager.element, Elements.Type.EARTH)
+
+
+func test_resting_with_a_warm_egg_hatches_it() -> void:
+	await SceneLoader.change_region(VILLAGE, &"from_meadow")
+	Settings.text_speed = 3
+	DragonManager.receive_egg()
+	DragonManager.add_warmth(DragonManager.TUNING.warmth_needed)
+	var shrine := get_tree().get_first_node_in_group(&"rest_point") as RestPoint
+	shrine._on_interacted(_player())
+	await wait_physics_frames(3)
+	assert_true(Cutscene.is_playing(), "the egg hatches at the shrine")
+	var box := get_tree().get_first_node_in_group(&"dialogue_box") as DialogueBox
+	for i in 600:
+		await wait_physics_frames(2)
+		if Cutscene.is_asking():
+			Cutscene.submit_text("")
+		elif not box.is_open() and not Cutscene.is_playing():
+			break
+		elif box.line and not box.line.responses.is_empty():
+			box.choose(3)  # Lantern-gold: Light
+		else:
+			box.advance()
+	await wait_physics_frames(3)
+	assert_true(DragonManager.is_hatched())
+	assert_eq(DragonManager.element, Elements.Type.LIGHT)
+	assert_not_null(get_tree().get_first_node_in_group(&"dragon"), "the hatchling is here")
+	var saved := SaveManager.read_slot(SaveManager.AUTO)
+	assert_eq(int(saved["dragon"]["stage"]), DragonTypes.Stage.HATCHLING, "saved right after hatching")

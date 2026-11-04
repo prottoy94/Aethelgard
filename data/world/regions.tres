@@ -8,12 +8,22 @@ script = ExtResource("2")
 id = &"elderroot_meadow"
 display_name = "Elderroot Meadow"
 scene_path = "res://src/world/test/test_level_3d.tscn"
+music_day = &"mus_elderroot_explore"
+music_night = &"mus_elderroot_night"
+combat_layer = &"mus_elderroot_combat"
+ambience_day = &"amb_elderroot_day"
+ambience_night = &"amb_elderroot_night"
 
 [sub_resource type="Resource" id="village"]
 script = ExtResource("2")
 id = &"elderroot_village"
 display_name = "Elderroot Village"
 scene_path = "res://src/world/regions/elderroot_village/elderroot_village.tscn"
+music_day = &"mus_village_explore"
+music_night = &"mus_elderroot_night"
+combat_layer = &"mus_elderroot_combat"
+ambience_day = &"amb_elderroot_day"
+ambience_night = &"amb_elderroot_night"
 
 ; Every region (an area of the world) the game can travel to. Elderroot Meadow is still the test meadow scene.
 [resource]

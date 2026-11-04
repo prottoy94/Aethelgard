@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://src/items/item_data.gd" id="1_aphmk"]
 [ext_resource type="Resource" path="res://data/items/apprentice_staff.tres" id="2_p5kop"]
+[ext_resource type="Resource" path="res://data/items/dragon_treat.tres" id="3_3eis8"]
 [ext_resource type="Resource" path="res://data/items/elderwood.tres" id="3_h2gbl"]
 [ext_resource type="Resource" path="res://data/items/ember_cinder.tres" id="4_3eis8"]
 [ext_resource type="Resource" path="res://data/items/ember_ward_ring.tres" id="5_q0eum"]
@@ -20,11 +21,12 @@
 [ext_resource type="Resource" path="res://data/recipes/healing_potion.tres" id="17_p5da3"]
 [ext_resource type="Resource" path="res://data/recipes/stamina_tonic.tres" id="18_01ama"]
 [ext_resource type="Resource" path="res://data/recipes/ember_ward_ring.tres" id="19_ey4tn"]
+[ext_resource type="Resource" path="res://data/recipes/dragon_treat.tres" id="19_q0eum"]
 [ext_resource type="Resource" path="res://data/recipes/lantern_heart_amulet.tres" id="20_wayq6"]
 [ext_resource type="Resource" path="res://data/recipes/swift_quill_charm.tres" id="21_wvphu"]
 [ext_resource type="Script" path="res://src/items/item_library.gd" id="22_13rcy"]
 
 [resource]
 script = ExtResource("22_13rcy")
-items = Array[ExtResource("1_aphmk")]([ExtResource("2_p5kop"), ExtResource("3_h2gbl"), ExtResource("4_3eis8"), ExtResource("5_q0eum"), ExtResource("6_6rwhr"), ExtResource("7_i0xg1"), ExtResource("8_yxxwj"), ExtResource("9_auh2v"), ExtResource("10_1vp2d"), ExtResource("11_qvabq"), ExtResource("12_g7duf"), ExtResource("13_0veud"), ExtResource("14_d0onr"), ExtResource("15_p5kop"), ExtResource("15_y1idx")])
-recipes = Array[ExtResource("16_jbq0g")]([ExtResource("17_p5da3"), ExtResource("18_01ama"), ExtResource("19_ey4tn"), ExtResource("20_wayq6"), ExtResource("21_wvphu")])
+items = Array[ExtResource("1_aphmk")]([ExtResource("2_p5kop"), ExtResource("3_3eis8"), ExtResource("3_h2gbl"), ExtResource("4_3eis8"), ExtResource("5_q0eum"), ExtResource("6_6rwhr"), ExtResource("7_i0xg1"), ExtResource("8_yxxwj"), ExtResource("9_auh2v"), ExtResource("10_1vp2d"), ExtResource("11_qvabq"), ExtResource("12_g7duf"), ExtResource("13_0veud"), ExtResource("14_d0onr"), ExtResource("15_p5kop"), ExtResource("15_y1idx")])
+recipes = Array[ExtResource("16_jbq0g")]([ExtResource("19_q0eum"), ExtResource("17_p5da3"), ExtResource("18_01ama"), ExtResource("19_ey4tn"), ExtResource("20_wayq6"), ExtResource("21_wvphu")])

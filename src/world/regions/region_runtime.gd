@@ -3,7 +3,9 @@ extends Node
 ## Everything a playable region needs besides its own world (TECHNICAL_DESIGN.md §4.7): sky, sun and the day/night
 ## cycle with weather; Aurelia, placed from the SceneLoader arrival, a saved position, a `-- --spawn=<id>` start option
 ## or the "start" RegionSpawn; the camera, HUD, menus (Tab/Esc), dialogue box, Lumen, toasts and the perf overlay.
-## It links the region's NPCs, crafting stations and Lantern Shrines (resting autosaves) by group.
+## It links the region's NPCs, crafting stations and Lantern Shrines (resting autosaves) by group, and plays the
+## region's music and ambience for the time of day and weather, with the combat layer while enemies are engaged.
+## Phase 7: spawns the pet dragon beside Aurelia once hatched, and hatches a warm egg when she rests at a shrine.
 ## A region script builds its world (with RegionSpawn markers), then adds this node and calls start().
 
 signal player_spawned(player: Player)
@@ -14,6 +16,9 @@ const DAY_NIGHT := preload("res://data/world/day_night.tres")
 const ANIM_SET := preload("res://data/animations/humanoid_default.tres")
 const PLACEHOLDER := preload("res://src/actors/player/aurelia_placeholder.gd")
 const STAND_IN_TINT := Color("7a5a8a")  # plum, like Aurelia's cape
+const COMBAT_CHECK := 0.3  ## s between checks for engaged enemies
+const RAIN_AMBIENCE: StringName = &"amb_weather_rain"
+const TREAT: ConsumableData = preload("res://data/items/dragon_treat.tres")
 
 @export var region_id: StringName
 
@@ -24,12 +29,14 @@ var game_menu: GameMenu
 var crafting: CraftingMenu
 var dialogue: DialogueBox
 var lumen: Lumen
+var dragon: Dragon
 var cycle: DayNightCycle
 var environment: Environment
 var sun: DirectionalLight3D
 var _toast: Label
 var _toast_timer := 0.0
 var _animated := false
+var _combat_check := 0.0
 
 
 ## The sky, sun, environment and day/night cycle, added under `world`.
@@ -83,6 +90,8 @@ func start() -> void:
 		cycle.follow = player
 	lumen = Lumen.new()
 	world.add_child(lumen)
+	if DragonManager.is_hatched():
+		dragon = Dragon.spawn(world, player)
 	hud = Hud.new()
 	add_child(hud)
 	hud.bind(player)
@@ -92,6 +101,7 @@ func start() -> void:
 	game_menu.add_page(inventory_menu)
 	inventory_menu.bind(player)
 	game_menu.add_page(Grimoire.new())
+	game_menu.add_page(DragonMenu.new())
 	game_menu.add_page(JournalMenu.new())
 	game_menu.add_page(SaveMenu.new())
 	game_menu.add_page(OptionsMenu.new())
@@ -102,6 +112,9 @@ func start() -> void:
 	_build_toast()
 	add_child(PerfOverlay.new())
 	_link_world()
+	TimeOfDay.hour_changed.connect(_on_hour_changed)
+	TimeOfDay.weather_changed.connect(_on_weather_changed)
+	update_audio()
 	TimeOfDay.running = true
 	player_spawned.emit(player)
 	_apply_start_options()
@@ -114,6 +127,11 @@ func show_toast(text: String, seconds := 6.0) -> void:
 
 
 func _process(delta: float) -> void:
+	_combat_check -= delta
+	if _combat_check <= 0.0 and not get_tree().paused:
+		_combat_check = COMBAT_CHECK
+		AudioManager.set_combat(get_tree().get_nodes_in_group(&"enemy").any(
+				func(enemy: Node) -> bool: return enemy is Enemy and (enemy as Enemy).is_engaged()))
 	if _toast_timer > 0.0:
 		_toast_timer -= delta
 		_toast.modulate.a = clampf(_toast_timer, 0.0, 1.0)
@@ -179,18 +197,75 @@ func _link_world() -> void:
 	PlayerData.tome_found.connect(_on_tome_found)
 	Inventory.recipe_learned.connect(_on_recipe_learned)
 	QuestManager.quest_started.connect(_on_quest_started)
+	DragonManager.egg_received.connect(_on_egg_received)
+	DragonManager.egg_ready.connect(_on_egg_ready)
+	DragonManager.bond_level_up.connect(_on_bond_level_up)
+	DragonManager.skill_unlocked.connect(_on_dragon_skill_unlocked)
+
+
+## The region's music and ambience for the time of day, and rain sounds when it rains (FR-AUD-07, FR-AUD-09).
+func update_audio() -> void:
+	var region := SceneLoader.REGIONS.find(region_id)
+	if region == null:
+		return
+	var night := TimeOfDay.is_night()
+	AudioManager.play_music(region.music_night if night and region.music_night != &"" else region.music_day)
+	AudioManager.set_combat_layer(region.combat_layer)
+	AudioManager.play_ambience(region.ambience_night if night and region.ambience_night != &"" else region.ambience_day)
+	AudioManager.play_weather(RAIN_AMBIENCE if TimeOfDay.weather == &"rain" else &"")
+
+
+func _on_hour_changed(_hour: int) -> void:
+	update_audio()
+
+
+func _on_weather_changed(_weather: StringName) -> void:
+	update_audio()
 
 
 func _on_rested(_player: Player, result: Dictionary) -> void:
+	DragonManager.rest()
 	var lines: Array[String] = ["You rest at the Lantern Shrine. Health and stamina restored."]
 	for spell: SpellData in result["learned"]:
 		lines.append("You read the tome and learned %s!" % spell.display_name)
 	for spell: SpellData in result["blocked"]:
 		lines.append("The %s tome is too advanced: it needs Magic Power %d (you have %d)." % [
 			spell.display_name, spell.required_magic_power, PlayerData.magic_power])
+	if DragonManager.has_egg() and not DragonManager.is_egg_ready():
+		lines.append("The dragon egg is warm (%d%%). Fight and explore together to warm it more." % roundi(
+				DragonManager.warmth_ratio() * 100.0))
 	if SaveManager.autosave():
 		lines.append("Game saved.")
+	if DragonManager.is_egg_ready() and not Cutscene.is_playing():
+		_hatch_egg.call_deferred()
+		return
 	show_toast("\n".join(lines), 6.0)
+
+
+## The warm egg hatches here (FR-DRG-01), then the game saves with the new dragon.
+func _hatch_egg() -> void:
+	await Cutscene.play(&"dragon_hatch")
+	dragon = get_tree().get_first_node_in_group(&"dragon") as Dragon
+	if DragonManager.is_hatched():
+		SaveManager.autosave()
+		show_toast("%s hatched!   G: give a command   H: breath skill   Tab: the Dragon page" % DragonManager.display_name(),
+				7.0)
+
+
+func _on_egg_received() -> void:
+	show_toast("You received a dragon egg! Fight and explore together to warm it.  (Tab: Dragon page)", 6.0)
+
+
+func _on_egg_ready() -> void:
+	show_toast("The dragon egg is glowing! Rest at a Lantern Shrine.", 6.0)
+
+
+func _on_bond_level_up(level: int) -> void:
+	hud.show_banner("%s's bond grew!   Bond %d" % [DragonManager.display_name(), level])
+
+
+func _on_dragon_skill_unlocked(skill: DragonSkillData) -> void:
+	show_toast("%s learned %s: %s" % [DragonManager.display_name(), skill.display_name, skill.description], 6.0)
 
 
 func _on_tome_found(spell: SpellData) -> void:
@@ -209,7 +284,10 @@ func _on_quest_started(quest: QuestData) -> void:
 func _exit_tree() -> void:
 	# The autoloads outlive the region: drop the connections made to them.
 	for connection in [[PlayerData.tome_found, _on_tome_found], [Inventory.recipe_learned, _on_recipe_learned],
-			[QuestManager.quest_started, _on_quest_started], [Settings.graphics_changed, _apply_graphics]]:
+			[QuestManager.quest_started, _on_quest_started], [Settings.graphics_changed, _apply_graphics],
+			[DragonManager.egg_received, _on_egg_received], [DragonManager.egg_ready, _on_egg_ready],
+			[DragonManager.bond_level_up, _on_bond_level_up], [DragonManager.skill_unlocked, _on_dragon_skill_unlocked],
+			[TimeOfDay.hour_changed, _on_hour_changed], [TimeOfDay.weather_changed, _on_weather_changed]]:
 		var sig: Signal = connection[0]
 		if sig.is_connected(connection[1]):
 			sig.disconnect(connection[1])
@@ -237,8 +315,11 @@ func _build_toast() -> void:
 	layer.add_child(_toast)
 
 
-## Test start options: --open=inventory|grimoire|journal|save|options|crafting, --talk=<npc id>, --give=materials,
-## --visual=animated, --hour=<0–24>, --weather=clear|rain|fog (--spawn=<id> is read when spawning).
+## Test start options: --open=inventory|grimoire|dragon|journal|save|options|crafting, --talk=<npc id>,
+## --give=materials|treats, --visual=animated, --hour=<0–24>, --weather=clear|rain|fog,
+## --dragon=egg|ready|hatch|frost|wind|earth|light (an egg, a warm egg, the hatching scene right away, or a hatched
+## dragon of that element), --autoplay[=<choice>] (conversations advance by themselves; dev tool)
+## (--spawn=<id> is read when spawning).
 func _apply_start_options() -> void:
 	var args := OS.get_cmdline_user_args()
 	if "--visual=animated" in args:
@@ -247,8 +328,17 @@ func _apply_start_options() -> void:
 		for item in Inventory.LIBRARY.items:
 			if item.category == ItemData.Category.MATERIAL:
 				Inventory.add(item, 5)
-	var pages := {"inventory": InventoryMenu, "grimoire": Grimoire, "journal": JournalMenu, "save": SaveMenu,
-			"options": OptionsMenu}
+	if "--give=treats" in args:
+		Inventory.add(TREAT, 5)
+	for arg in args:
+		if arg.begins_with("--dragon="):
+			_start_with_dragon(arg.trim_prefix("--dragon="))
+		elif arg == "--autoplay" or arg.begins_with("--autoplay="):
+			var autoplay := DialogueAutoplay.new()
+			autoplay.choice = maxi(int(arg.trim_prefix("--autoplay=")) - 1, 0) if "=" in arg else 0
+			add_child(autoplay)
+	var pages := {"inventory": InventoryMenu, "grimoire": Grimoire, "dragon": DragonMenu, "journal": JournalMenu,
+			"save": SaveMenu, "options": OptionsMenu}
 	for arg in args:
 		if arg.begins_with("--hour="):
 			TimeOfDay.set_hour(float(arg.trim_prefix("--hour=")))
@@ -268,3 +358,22 @@ func _apply_start_options() -> void:
 					player.global_position = npc.global_position + Vector3(0, 0, 1.6)
 					camera_rig.snap_to_target()
 					get_tree().create_timer(0.5).timeout.connect(npc.talk.bind(player))
+
+
+## --dragon=egg (just received), ready (warm: rest at a shrine to hatch it) or an element (already hatched).
+func _start_with_dragon(option: String) -> void:
+	if DragonManager.stage == DragonTypes.Stage.NONE:
+		DragonManager.receive_egg()
+		QuestManager.start(&"dragon_egg")
+	if option == "egg":
+		return
+	DragonManager.add_warmth(DragonManager.TUNING.warmth_needed)
+	if option == "ready":
+		return
+	if option == "hatch":
+		_hatch_egg.call_deferred()
+		return
+	DragonManager.choose_element(option)
+	DragonManager.hatch()
+	if dragon == null:
+		dragon = Dragon.spawn(player.get_parent(), player)

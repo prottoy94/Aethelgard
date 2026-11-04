@@ -123,8 +123,8 @@ func test_potions_at_kit_and_workbench() -> void:
 
 
 func test_recipes_for_station_include_unknown() -> void:
-	assert_eq(Inventory.recipes_for(KIT).size(), 2, "potion + tonic")
-	assert_eq(Inventory.recipes_for(WORKBENCH).size(), 5, "all five slice recipes (unknown ones show as ???)")
+	assert_eq(Inventory.recipes_for(KIT).size(), 3, "potion, tonic and dragon treat")
+	assert_eq(Inventory.recipes_for(WORKBENCH).size(), 6, "all six slice recipes (unknown ones show as ???)")
 	assert_true(Inventory.learn_recipe(RING_RECIPE))
 	assert_false(Inventory.learn_recipe(RING_RECIPE), "already known")
 

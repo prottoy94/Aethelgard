@@ -123,7 +123,7 @@ each with `enter()`, `exit()`, `update(delta)`, `physics_update(delta)` and `han
 | Player | Idle, Move, Dash, StaffStrike, Cast, Hurt, Exhausted (overlay flag), Dead, Interacting |
 | Enemy | Idle, Patrol, Chase, Telegraph, Attack, Recover, Hurt, Dead |
 | Boss | PhaseController (HP thresholds) + an attack-pattern sequencer; same base states as enemies |
-| Pet dragon | Follow, Attack, Guard, UseSkill, Return, KnockedOut |
+| Pet dragon | Follow, Attack, Guard, UseSkill, KnockedOut (built in Phase 7; "Return" became an instant reappearance beside Aurelia, see §4.11) |
 
 **Telegraph → Attack → Recover** is a fixed pattern for every enemy attack, which guarantees readable combat (`FR-CMB-05`).
 
@@ -152,6 +152,10 @@ extends Resource
 Other Resource types: `ItemData` (→ `MaterialData`, `ConsumableData`, `EquipmentData` with stat modifiers & passive effect id),
 `RecipeData` (inputs, output, station), `EnemyData` (stats, rank, element, weakness, loot table), `BossData` (phases),
 `DragonSpeciesData` (per element: skills per bond level, stats per stage), `QuestData` (steps → objectives), `LootTable`.
+Built in Phase 7 (`src/actors/dragon/`): `DragonSpeciesData` (element, colours, `DragonStageStats` per stage, `DragonSkillData`
+list), `DragonSkillData` (ACTIVE breath with cone, damage, status, cooldown; or PASSIVE trait: bite status, speed, damage
+taken, glow; unlocked by stage + bond level) and `DragonTuning` (egg warmth, name, bond XP, companion AI distances,
+knock-out; lists the four species). Files: `data/dragons/`.
 
 **Items as built in Phase 5** (`src/items/`):
 - Materials use `ItemData` directly (no `MaterialData` subclass was needed). `ConsumableData` (heal, stamina) and
@@ -270,6 +274,22 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 - **Guard:** stay within ~2 m, face the nearest threat, block projectiles (Earth) or counter-attack.
 - Avoids active telegraph zones (enemies register danger areas in a shared group).
 - Skill on its own cooldown; stats come from `DragonSpeciesData` × stage × bond.
+- **Built in Phase 7.** `DragonManager` (autoload) keeps the lasting state: stage (NONE/EGG/HATCHLING/…), element,
+  name, warmth, bond level + XP, command, health ratio, knock-out timer, last petting; `to_dict/from_dict` (element saved
+  as "frost"/"wind"/"earth"/"light"). EventBus events warm the egg (enemy defeated, puzzle, secret, place, region) and
+  walking adds warmth; once hatched, defeated enemies give bond XP. Bond levels add Magic Power
+  (`PlayerData.set_dragon_power`). `Dragon` (`src/actors/dragon/dragon.gd`, built in code) is the actor: Health,
+  StatusEffects, a Hurtbox on the **player_hurtbox** layer (enemy attacks and bolts hit it, Aurelia's don't), a bite
+  Hitbox, an Interactable for petting (hidden in fights), a StateMachine and the `DragonPlaceholder` visual. Its body has
+  **no collision layer** (mask: world), so it never blocks Aurelia. Follow walks after her (settles at ~1.8 m, restarts
+  beyond ~3.2 m, runs to catch up) and Follow/Attack switch to the **Attack** state when `pick_target()` finds an enemy;
+  Guard picks a spot `guard_distance` from her towards the nearest engaged enemy. **Leash:** beyond ~13 m it reappears
+  just behind her. **Danger zones:** melee enemies join group `danger_zone` from Telegraph through Attack;
+  `avoid_danger()` steps out of `danger_radius() + danger_margin`. **Distraction:** its bites and breath call
+  `Enemy.distract(dragon, seconds)`, so `Enemy.target` (now a `Node3D`) is the dragon for a few seconds. Aurelia's target
+  is `Player.recent_target()` (the last enemy her staff or spells hit). `DragonBreath` hits enemies in a cone and calls
+  `on_element_hit` on puzzle receivers. Knocked out: `DragonManager.knock_out()`, KnockedOut state, back after
+  `ko_time` (`recovered`) or at a shrine (`rest()` → `rested`). Tuning: `data/dragons/dragon_tuning.tres`.
 
 ### 4.12 Bosses
 - `BossBase` extends the enemy with a `PhaseController` (HP thresholds → phase signals) and `AttackPattern` resources (sequences of moves with telegraph times).
@@ -288,7 +308,7 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 | 1 | world | walls, cliffs, props |
 | 2 | player | player body |
 | 3 | enemy | enemy bodies |
-| 4 | ally | pet dragon, NPCs |
+| 4 | ally | NPCs (the pet dragon's body has no layer, so it never blocks Aurelia; its hurtbox uses layer 5) |
 | 5 | player_hurtbox | hit by enemy attacks |
 | 6 | enemy_hurtbox | hit by player/dragon attacks |
 | 7 | interactable | NPCs, chests, rest points, gather nodes |
@@ -349,7 +369,7 @@ Each milestone ends with something **playable** that can be checked.
 | **M4** | Items & crafting | Inventory, equipment & accessories with stat modifiers, gather nodes, loot tables, workbench + recipes, consumables | Craft an accessory and see its effect |
 | **M5** | World systems | Dialogue Manager integration, NPCs, QuestManager, journal UI, 3 puzzle types, Lumen hints | Finish a side task involving dialogue and a puzzle |
 | **M6** | Persistence & atmosphere | JSON save/load + autosave, rest points + fast travel, day/night, weather, region transitions | Quit and reload with the world exactly as you left it |
-| **M7** | Dragon | Egg → hatch, follow/attack/guard AI, dragon skill, bond, dragon menu, treats | The dragon fights at your side |
+| **M7** ✅ | Dragon | Egg → hatch, follow/attack/guard AI, dragon skill, bond, dragon menu, treats | The dragon fights at your side (done 2026-11-04) |
 | **M8** | Boss framework | PhaseController, attack patterns, arena, boss HP bar; **Cinder Warden** + prologue Ignis scene | Beat the first boss |
 | **🎯 VS** | **Vertical slice** | Prologue + Elderroot Meadow polished (GDD §15.1) | 30–45 min of fun, complete play |
 | M9 | Region 2–3 | Azure Coast, Ruined Valley: enemies, spells, puzzles, bosses 2–3, juvenile dragon | Acts 1–2 playable |

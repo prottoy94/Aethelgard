@@ -88,5 +88,6 @@ func try_cast(slot: int, origin: Node3D, aim: Vector3) -> bool:
 		last_spell.global_position = origin.global_position
 		last_spell.landed.connect(func(target: Node) -> void: spell_landed.emit(spell_data, target))
 		last_spell.cast(origin, aim, spell_data, mods.damage)
+	AudioManager.play(StringName("spell_%s_cast" % spell_data.id), origin.global_position if origin.is_inside_tree() else null)
 	cast_succeeded.emit(slot, spell_data)
 	return true
