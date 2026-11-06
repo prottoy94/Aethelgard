@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=18
+type="Resource"
+uid="uid://d2tpk7w8evo5m"
+path="res://.godot/imported/elderroot_lore.dialogue-edf4b4f764c76d074a6763c2dec06404.tres"
+
+[deps]
+
+source_file="res://dialogue/world/elderroot_lore.dialogue"
+dest_files=["res://.godot/imported/elderroot_lore.dialogue-edf4b4f764c76d074a6763c2dec06404.tres"]
+
+[params]
+
+defaults=true

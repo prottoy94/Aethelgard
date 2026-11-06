@@ -18,6 +18,9 @@ const SHAKE_FREQUENCY := 30.0
 @export var target: Node3D
 
 var camera: Camera3D
+## Where sounds are heard from: at Aurelia (the rig's focus point), facing the camera's way, so her own spells and
+## steps are heard at full strength and left/right still match the screen. The camera itself is ~13 m away.
+var listener: AudioListener3D
 var _yaw := 0.0
 var _target_yaw := 0.0
 var _distance := 0.0
@@ -42,6 +45,10 @@ func _ready() -> void:
 	camera.fov = settings.fov
 	add_child(camera)
 	camera.make_current()
+	listener = AudioListener3D.new()
+	listener.top_level = true
+	add_child(listener)
+	listener.make_current()
 	snap_to_target()
 
 
@@ -126,6 +133,7 @@ func _update_camera() -> void:
 	else:
 		camera.global_transform = follow
 		camera.fov = settings.fov
+	listener.global_transform = Transform3D(Basis(Vector3.UP, camera.global_rotation.y), global_position)
 
 
 func _apply_shake(delta: float) -> void:

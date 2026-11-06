@@ -345,6 +345,7 @@ Positional ambience sources: waterfalls, streams, braziers, the World Tree (warm
 | M5 World systems | Dialogue blips, puzzle sounds, quest stingers |
 | M6 Atmosphere | Day/night ambience swap, weather, region reverb, adaptive explore/combat music |
 | M7 Dragon | Egg, hatch, hatchling chirps. ✅ Placeholders in Phase 7 (16 dragon sounds + hatching stinger) |
+| Listener (2026-11-05) | Sounds are heard from Aurelia's position (an AudioListener3D on the camera rig, facing the camera's way), not from the camera 13 m away; her spell casts were too quiet before. Light Mote and Gust casts got fuller placeholders |
 | M8 Boss | Boss music with phases, Cinder Warden and Ignis-prologue sounds. 🟨 8a: Cinder Warden and Emberbound Scout placeholders (a wind-up sound per move, as long as its warning; hit, alert, hurt, death), `world_fire_wall`, `stg_boss_defeated`; boss music = *The Last Ascent* (`mus_boss_ascent`) |
 | 🎯 Vertical slice | Complete placeholder audio + first pass of real Aurelia's theme 💡 |
 | M11 Polish | Final sounds and music swapped in, full mix pass, `CREDITS.md` complete |

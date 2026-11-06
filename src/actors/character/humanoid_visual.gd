@@ -13,6 +13,8 @@ const STAND_IN_OUTLINE := 0.01
 ## If alpha > 0, the model's materials are replaced with this toon colour (for the grey stand-in mannequin).
 @export var stand_in_tint := Color(0, 0, 0, 0)
 @export var attach_staff := true
+## Optional restyling of the run (Aurelia: a lighter, cuter run; data/animations/aurelia_run_style.tres).
+@export var run_style: RunStyle
 @export var staff_bone := &"RightHand"
 ## Staff pose relative to the hand bone. The hand bone's +Y points along the fingers (down when the arm hangs),
 ## so the staff is flipped to run upwards through the fist, parallel to the forearm.
@@ -26,6 +28,7 @@ var _scale := 1.0
 var _action_time := 0.0
 var _dead := false
 var _staff: AureliaStaff
+var _run_style_modifier: RunStyleModifier
 
 
 func _ready() -> void:
@@ -40,6 +43,10 @@ func _ready() -> void:
 	if stand_in_tint.a > 0.0:
 		_apply_tint(_model)
 	_setup_animation_player()
+	if run_style:
+		_run_style_modifier = RunStyleModifier.new()
+		skeleton.add_child(_run_style_modifier)
+		_run_style_modifier.setup(skeleton, run_style)
 	if attach_staff:
 		var attachment := BoneAttachment3D.new()
 		attachment.bone_name = staff_bone
@@ -60,12 +67,19 @@ func update_motion(speed_ratio: float, dashing: bool, delta: float, speed := 0.0
 		_action_time -= delta
 		if not dashing:
 			return
+	var running := dashing or speed >= anim_set.run_threshold
+	if _run_style_modifier:
+		_run_style_modifier.target_weight = 1.0 if running else 0.0
 	if dashing:
 		_play(anim_set.dash, anim_set.dash_speed_scale)
 	elif speed < 0.15:
 		_play(anim_set.idle, 1.0)
 	elif speed < anim_set.run_threshold:
 		_play(anim_set.walk, playback_scale(speed, anim_set.walk_native_speed))
+	elif run_style:
+		# Shorter steps cover less ground per cycle, so they play quicker.
+		var native := anim_set.run_native_speed * run_style.stride_scale * target_height / anim_set.source_height
+		_play(anim_set.run, clampf(speed / native, anim_set.min_speed_scale, run_style.max_speed_scale))
 	else:
 		_play(anim_set.run, playback_scale(speed, anim_set.run_native_speed))
 

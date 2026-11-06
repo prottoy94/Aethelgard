@@ -6,10 +6,10 @@
 [resource]
 script = ExtResource("1")
 id = &"spell_light_mote_cast"
-files = PackedStringArray("res://assets/audio/placeholders/sfx/spells/sfx_spell_light_mote_cast_01.wav")
+files = PackedStringArray("res://assets/audio/placeholders/sfx/spells/sfx_spell_light_mote_cast_01.wav", "res://assets/audio/placeholders/sfx/spells/sfx_spell_light_mote_cast_02.wav")
 bus = &"Player"
-volume_db = -4.0
-pitch_range = Vector2(0.95, 1.05)
+volume_db = 0.0
+pitch_range = Vector2(0.94, 1.08)
 max_polyphony = 4
 min_interval = 0.03
 positional = true

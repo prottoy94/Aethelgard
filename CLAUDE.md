@@ -43,6 +43,15 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   `src/actors/bosses/` (Boss, BossData, BossPhaseData, cinder_warden/), `src/world/bosses/boss_arena.gd`,
   `src/ui/hud/boss_bar.gd`, `src/actors/enemies/emberbound/` (EmberboundVisual, Scout scene). Data: `data/bosses/`,
   `data/enemies/emberbound_scout.tres`, `data/items/ember_core.tres`. Dev options `--boss`, `--spawn=warden|scout`.
+- **Bigger areas, walking animation, cast sounds** done 2026-11-05 (owner request): `src/world/props/prop_kit.gd`,
+  `src/world/places/` (Landmark, LoreStone), `src/world/regions/elderroot_meadow/meadow_landmarks.gd`,
+  `src/world/regions/elderroot_village/village_extras.gd`, dialogue drafts `dialogue/world/elderroot_lore.dialogue` and
+  `dialogue/npcs/elderroot_folk.dialogue`. Aurelia's default look = animated stand-in + `AureliaOutfit` (`--visual=shapes`
+  or V for the old placeholder). `CameraRig.listener` hears sounds at Aurelia. Spawns `--spawn=grove|watchtower|basin|camp|
+  farm|moonring`; dev `--walk[=left|right|down]`.
+- **Cute run** done 2026-11-06 (owner request): `RunStyle` + `RunStyleModifier` (`src/actors/character/`), data
+  `data/animations/aurelia_run_style.tres`, `CapeSway` (cape), face added to `AureliaOutfit`. Character viewer:
+  `character_viewer.tscn -- --style --mode=run --yaw=90` compares her run with the plain jog. **229/229 tests pass.**
   6c code: `AudioManager` (play by id, pools, MusicChannel loops/crossfades, combat layer, ambience, stingers, ducking,
   pause muffle), `src/audio/` (SoundEvent, SoundLibrary, MusicTrack, MusicLibrary, MusicChannel, AudioTuning), region
   sound ids in `data/world/regions.tres`, volumes in Settings + Options. **Audio files are git-ignored: after a clone
@@ -74,7 +83,7 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   Main scene = `src/ui/title/title_screen.tscn`. **Any start option after `--` skips the title** into a new game with saving
   off (`--saves` keeps it on; `--title` keeps the title): `--region=elderroot_meadow|elderroot_village`,
   `--spawn=start|viewpoint|combat|wisp|ruins|from_village|from_meadow`, `--open=inventory|grimoire|dragon|map|journal|save|options|crafting`,
-  `--talk=elder|maren|tamsin`, `--hour=<0-24>`, `--weather=clear|rain|fog`, `--give=materials|treats`, `--visual=animated`,
+  `--talk=elder|maren|tamsin`, `--hour=<0-24>`, `--weather=clear|rain|fog`, `--give=materials|treats`, `--visual=shapes`, `--walk`,
   `--dragon=egg|ready|hatch|frost|wind|earth|light`, `--guide`, `--autoplay[=<choice>]` (conversations advance by themselves),
   `--benchmark=<dir>`, `--capture=<dir> --capture-at=1.5,4,8` (screenshots at those seconds, then quit; good with
   `--autoplay` for cutscenes), `--graphics=low|medium|high`. The meadow is `src/world/test/test_level_3d.tscn` (region elderroot_meadow).

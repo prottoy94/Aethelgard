@@ -51,8 +51,8 @@ const RUINS_DOOR_Z := 11.0
 
 const WORLD_LAYER := 1 << 0
 const OCCLUDER_LAYER := 1 << 10  # camera_occluder
-const GRASS_BLADES := 50000
-const FLOWERS := 4000
+const GRASS_BLADES := 90000   ## spread over the bigger meadow (2026-11-05)
+const FLOWERS := 7000
 const POND_CENTER := Vector3(7, 0, 2)
 const SPAWN := Vector3(0, 0, 4)
 const PLATFORM_CENTER := Vector3(-11, 0, -13)
@@ -106,6 +106,7 @@ func _ready() -> void:
 	_build_villagers()
 	_build_village_gate()
 	_build_warden_clearing()
+	MeadowLandmarks.new().build(self, _noise, _spawn_enemy)  # more to explore (2026-11-05)
 	_build_spawns()
 	runtime.start()
 	for spot in THORNLING_SPOTS:
@@ -191,8 +192,9 @@ func _scatter(mesh: Mesh, count: int, path_clearance: float, scale_range: Vector
 	mm.mesh = mesh
 	var transforms: Array[Transform3D] = []
 	while transforms.size() < count:
-		var p := Vector3(_rng.randf_range(-40, 40), height, _rng.randf_range(-50, 30))
+		var p := Vector3(_rng.randf_range(-68, 68), height, _rng.randf_range(-66, 40))
 		var in_clearing := Vector2(p.x - WARDEN_CLEARING.x, p.z - WARDEN_CLEARING.z).length() < WARDEN_ARENA_RADIUS + 0.5
+		in_clearing = in_clearing or absf(p.z - MeadowLandmarks.stream_z(p.x)) < 1.8  # (and out of the stream)
 		if _on_path(p, path_clearance) or p.distance_to(POND_CENTER) < 4.6 or _on_platform(p) or in_clearing:
 			continue
 		var basis := Basis(Vector3.UP, _rng.randf() * TAU).scaled(Vector3.ONE * _rng.randf_range(scale_range.x, scale_range.y))
@@ -212,11 +214,11 @@ func _build_trees() -> void:
 		ToonMaterials.toon(Color(0.38, 0.56, 0.24), 0.3, 0.0, 0.05),
 	]
 	var placed := 0
-	while placed < 70:
-		var p := Vector3(_rng.randf_range(-60, 60), 0, _rng.randf_range(-65, 35))
+	while placed < 120:
+		var p := Vector3(_rng.randf_range(-66, 66), 0, _rng.randf_range(-64, 38))
 		if p.distance_to(SPAWN) < 8.0 or _on_path(p, 3.5) or p.distance_to(POND_CENTER) < 6.5 or _on_platform(p, 3.0) \
 				or _is_reserved(p) or _in_ruins(p, 3.0) or p.distance_to(VILLAGE_GATE) < VILLAGE_GATE_CLEARANCE \
-				or p.distance_to(WARDEN_CLEARING) < WARDEN_ARENA_RADIUS + 3.0:
+				or p.distance_to(WARDEN_CLEARING) < WARDEN_ARENA_RADIUS + 3.0 or MeadowLandmarks.is_reserved(p):
 			continue
 		var tree := _solid_root(p)
 		_add_shape(tree, _cylinder_shape(0.35, 3.2), Vector3(0, 1.6, 0))
@@ -553,6 +555,12 @@ func _build_spawns() -> void:
 		&"ruins": Vector3(RUINS_MIN.x - 2.5, 0, RUINS_DOOR_Z),
 		&"warden": Vector3(_path_x(WARDEN_CLEARING.z + 15.0), 0, WARDEN_CLEARING.z + 15.0),
 		&"scout": SCOUT_SPOTS[0] + Vector3(2, 0, 7),
+		&"grove": Vector3(-30, 0, -6),        # the new places (2026-11-05), each just outside it
+		&"watchtower": Vector3(36, 0, -6),
+		&"basin": Vector3(36, 0, -38),
+		&"camp": Vector3(-38, 0, -32),
+		&"farm": Vector3(24, 0, 34),
+		&"moonring": Vector3(-27, 0, 24),
 	}
 	for id: StringName in spawns:
 		var spawn := RegionSpawn.new()

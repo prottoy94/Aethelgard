@@ -121,6 +121,10 @@ func _draw_map() -> void:
 		var exit := node as RegionExit
 		var to := SceneLoader.REGIONS.find(exit.target_region)
 		_marker(font, to_map(exit.global_position), EXIT_COLOR, "▼ To %s" % (to.display_name if to else "?"), 9.0)
+	for node in get_tree().get_nodes_in_group(&"landmark"):  # places Aurelia has found, by name
+		var place := node as Landmark
+		if place.is_discovered():
+			_place_label(font, to_map(place.global_position), place.display_name)
 	for node in get_tree().get_nodes_in_group(&"rest_point"):
 		_marker(font, to_map((node as Node3D).global_position), SHRINE_COLOR, "Lantern Shrine", 8.0)
 	for node in get_tree().get_nodes_in_group(&"crafting_station"):
@@ -157,6 +161,11 @@ func _marker(font: Font, at: Vector2, color: Color, label: String, radius: float
 	_view.draw_string(font, baseline, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, INK)
 
 
+func _place_label(font: Font, at: Vector2, label: String) -> void:
+	_view.draw_string_outline(font, at + Vector2(-80, 4), label, HORIZONTAL_ALIGNMENT_CENTER, 160, 16, 5, INK)
+	_view.draw_string(font, at + Vector2(-80, 4), label, HORIZONTAL_ALIGNMENT_CENTER, 160, 16, PARCHMENT)
+
+
 func _star(at: Vector2, radius: float) -> void:
 	var points := PackedVector2Array()
 	for i in 10:
@@ -187,5 +196,5 @@ func _build_body() -> void:
 	_goal_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	side.add_child(_goal_label)
 	var legend := make_label("★  your objective\n▲  Aurelia\n●  Lantern Shrine (rest, save, craft)\n●  people\n"
-			+ "●  way to another area\n\nIn play: N shows the way.   M: map", 17, INK.lightened(0.15))
+			+ "●  way to another area\nNames: places you have found\n\nIn play: N shows the way.   M: map", 17, INK.lightened(0.15))
 	side.add_child(legend)

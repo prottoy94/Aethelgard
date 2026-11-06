@@ -13,6 +13,9 @@ const CODE_CUES := {
 	"res://dialogue/barks/lumen.dialogue": ["lumen_secret_nearby", "lumen_low_health", "lumen_hint_braziers",
 			"lumen_hint_steps", "lumen_hint_block"],
 	"res://dialogue/story/dragon_hatch.dialogue": ["dragon_hatch"],
+	"res://dialogue/world/elderroot_lore.dialogue": ["grove_stone", "tower_stone", "falls_stone", "camp_orders",
+			"farm_sign", "circle_stone", "village_notice", "mill_sign"],
+	"res://dialogue/npcs/elderroot_folk.dialogue": ["bram", "bram_bark", "wenna", "wenna_bark", "pell", "pell_bark"],
 }
 
 var _reference := RegEx.create_from_string("\\b([A-Z][A-Za-z]+)\\.([a-z_][a-z_0-9]*)")

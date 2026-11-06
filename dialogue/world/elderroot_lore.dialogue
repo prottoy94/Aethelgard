@@ -1,0 +1,51 @@
+# status: draft (2026-11-05), waiting for the owner's approval
+# Things to read around Elderroot (owner request: more to explore): carved stones, signs and notice boards.
+# Opened by LoreStone (src/world/places/lore_stone.gd). Short: one look, one thought from Aurelia.
+# Only GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene and AudioManager may be called.
+
+~ grove_stone
+The stone is soft with moss. Under it, someone carved a circle of little lights.
+Aurelia: [#thinking] "Where the old lights sleep, the forest remembers." That's from Telwyn's Almanac! Page forty... something.
+Aurelia: [#happy] The mushrooms are glowing in a ring. Like the carving. I knew books were useful.
+=> END
+
+~ tower_stone
+A worn plaque by the broken stairs. Most of the letters have weathered away.
+"...WATCH OVER ELDERROOT ...LIGHT THE BEACON IF THE SKY BURNS..."
+Aurelia: [#worried] If the sky burns? I hope nobody ever needed to.
+=> END
+
+~ falls_stone
+Water has polished this stone smooth. A spiral is cut into its face, glowing faintly.
+Aurelia: [#thinking] A spiral pointing up... at the cliff. Spirit steps, maybe? Like in the ruins?
+Lumen: Some paths only show themselves to a lantern.
+=> END
+
+~ camp_orders
+A torn sheet nailed to the board, signed with a burnt thumbprint.
+"Scouts: watch the north road. Report every Lantern Shrine. The Herald wants the elf village quiet."
+Aurelia: [#scared] The Herald? Elderroot? ...I need to tell the Elder about this.
+Aurelia: [#determined] After I deal with these tents. Carefully.
+=> END
+
+~ farm_sign
+"HOLLIN FARM. Wheat, honey and the best scarecrow in the valley."
+"PLEASE DO NOT PRACTISE SPELLS ON THE SCARECROW. THIS MEANS YOU, AURELIA."
+Aurelia: [#embarrassed] That was ONE time. And he was fine. Mostly fine.
+=> END
+
+~ circle_stone
+The stones stand in a ring around an old brazier. A line runs along the base of each one, all pointing to the middle.
+Aurelia: [#thinking] "Light at the heart, and the circle answers." Answers what, though?
+=> END
+
+~ village_notice
+The village notice board is crowded with notes.
+"LOST: one grey cat, answers to Dumpling. Ask at the mill." "Bram's forge: pots mended, hooks bent, swords NOT sharpened."
+"Lantern Shrines are for resting, not for drying socks. — The Elder"
+Aurelia: [#happy] Dumpling is on the mill roof again. He always is.
+=> END
+
+~ mill_sign
+"ELDERROOT MILL. Flour by the sack. Gossip for free."
+=> END

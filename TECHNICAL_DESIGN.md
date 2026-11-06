@@ -278,6 +278,23 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
   the page opens (`RegionData.map_center/map_size`), then markers are drawn over it.
 - Finished quests set the flag `quest_done_<id>` (`QuestManager.done_flag`), so a quest can wait for another.
 
+### 4.10c Bigger areas (2026-11-05)
+- `PropKit` (`src/world/props/prop_kit.gd`): static builders for placeholder props (trees and pines with camera
+  occluder areas, rocks, fences, tents, campfires, crates, barrels, lamp posts, cottages, stalls, windmill, bridge,
+  stream strips, invisible edge walls). `MeadowLandmarks` and `VillageExtras` (in their region folders) build the new
+  places; the level scripts call them before `RegionRuntime.start()` and keep their random trees out of them.
+- `Landmark` (`src/world/places/`): an Area3D; first entry sets `found_<id>`, emits `EventBus.place_reached` and
+  "Discovered: …"; the map shows found places. `LoreStone`: E opens a cue of `dialogue/world/elderroot_lore.dialogue`.
+- Aurelia's default visual is the animated stand-in (`HumanoidVisual`, Quaternius CC0 clips) dressed by
+  `AureliaOutfit` (hair, ears, cape, skirt on bone attachments); V switches to the shape placeholder.
+- **Aurelia's run (2026-11-06, owner request: sweet and light, not a heavy jog):** `RunStyleModifier` (a
+  SkeletonModifier3D added by `HumanoidVisual` when it has a `RunStyle`) restyles the Jog_Fwd clip while running:
+  upright spine, arms low with forearms flared out (bones turned towards directions in skeleton space), stride × 0.7
+  played quicker, head sway and hop. Values: `data/animations/aurelia_run_style.tres`. Her cape hangs on a `CapeSway`
+  (shoulder position, facing only, floats back with speed). The VRoid model will replace the stand-in; the style stays.
+- Sounds are heard from Aurelia: `CameraRig.listener` (AudioListener3D) sits at the rig's focus point, facing the
+  camera's way; the camera is ~13 m away.
+
 ### 4.11 Pet dragon AI
 - **Follow:** stay at an offset behind Aurelia; teleport back if more than ~12 m away (leash).
 - **Attack:** target = Aurelia's last-hit or aimed enemy; otherwise the nearest enemy threatening Aurelia.

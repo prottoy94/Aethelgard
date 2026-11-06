@@ -58,6 +58,7 @@ func _ready() -> void:
 	add_child(shrine)
 	_build_villagers()
 	_build_road_to_meadow()
+	VillageExtras.new().build(self)  # more to explore (2026-11-05)
 	runtime.start()
 	Settings.graphics_changed.connect(_apply_graphics)
 	_apply_graphics(Settings.graphics)
@@ -240,7 +241,7 @@ func _build_trees() -> void:
 	var placed := 0
 	while placed < 26:
 		var p := Vector3(_rng.randf_range(-34, 34), 0, _rng.randf_range(-30, 30))
-		if p.length() < 17.0 or _is_built(p, 4.0):
+		if p.length() < 17.0 or _is_built(p, 4.0) or VillageExtras.is_reserved(p):
 			continue
 		var tree := StaticBody3D.new()
 		tree.collision_layer = WORLD_LAYER

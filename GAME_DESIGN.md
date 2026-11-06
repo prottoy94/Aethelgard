@@ -98,6 +98,9 @@ This sets up the ending and a possible sequel. **Optional.** The simple version 
 
 ## 5. Player character: Aurelia
 
+- **How she moves (owner note 2026-11-06):** Aurelia is a sweet girl and runs like one: upright, light quick steps,
+  arms low with hands flicked out to the sides, a little bounce, her cape floating behind. Not a heavy, sporty jog.
+
 ### 5.1 Stats
 
 | Stat | Start | Purpose |
@@ -418,6 +421,14 @@ Puzzles use **the spells the player has**, so learning a spell feels useful outs
 - **Weather:** clear, rain, fog, storm. Some secrets only appear in certain weather.
   *Built (Phase 6b): every 3 game hours the weather is rolled (clear 65%, rain 20%, fog 15%; tune in `data/world/time_settings.tres`). Storms and per-region weather come later.*
 - **Elderroot** so far has two connected areas: the meadow (World Tree view, ruins, pond) and **Elderroot Village** south of it (cottages, well, Lantern Shrine, Maren's herb garden), where the Elder and Maren live (Phase 6b).
+- **Bigger Elderroot (owner request 2026-11-05: more to explore).** The meadow is now about 145 × 110 m inside a pine
+  border, with named places found by walking in ("Discovered: …", shown on the map): *Whispering Grove* (glowing
+  mushroom ring, carved stone, chest), *Old Watchtower* (broken tower, chest, Ember Wisps), *Silverbrook* (a stream
+  from the waterfall with a footbridge on the north path), *Mistfall Basin* (pool under the waterfall; Lantern Glow
+  reveals steps to a hidden chest), *Emberbound Camp* (tents, campfire, orders, Scouts, chest), *Hollin Farm* (wheat,
+  barn, scarecrow) and *Moonring Stones* (light the brazier: a hidden chest opens). The village (80 × 60 m) gained a
+  market square, the mill and wheat field, Bram's forge with a workbench, four cottages, lamp posts, a notice board and
+  three villagers (Bram, Wenna, Pell: draft). Stones and boards can be read (E). All texts are drafts.
 - Region sizes are kept small: each region is a few connected 3D areas, small and dense rather than huge and empty.
 
 ---

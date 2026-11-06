@@ -15,10 +15,11 @@ const CAMERA_SETTINGS := preload("res://data/camera/follow_camera.tres")
 const DAY_NIGHT := preload("res://data/world/day_night.tres")
 const ANIM_SET := preload("res://data/animations/humanoid_default.tres")
 const PLACEHOLDER := preload("res://src/actors/player/aurelia_placeholder.gd")
-const STAND_IN_TINT := Color("7a5a8a")  # plum, like Aurelia's cape
+const STAND_IN_TINT := AureliaOutfit.COAT  # her green coat; the outfit adds hair, ears, cape and skirt
 const COMBAT_CHECK := 0.3  ## s between checks for engaged enemies
 const RAIN_AMBIENCE: StringName = &"amb_weather_rain"
 const TREAT: ConsumableData = preload("res://data/items/dragon_treat.tres")
+const RUN_STYLE: RunStyle = preload("res://data/animations/aurelia_run_style.tres")
 const MAIN_QUEST: StringName = &"morning_in_elderroot"
 
 @export var region_id: StringName
@@ -81,6 +82,7 @@ func start() -> void:
 		SceneLoader.current_region = region_id  # the scene was started directly (editor, tests)
 	var world := get_parent() as Node3D
 	_spawn_player(world)
+	_set_animated(true, false)  # the animated stand-in is Aurelia's default look
 	camera_rig = CameraRig.new()
 	camera_rig.settings = CAMERA_SETTINGS
 	camera_rig.target = player
@@ -183,19 +185,24 @@ func _start_option_spawn() -> StringName:
 	return &""
 
 
-## Switches Aurelia between the shape placeholder and the animated stand-in (V), until her VRoid model arrives.
-func _set_animated(on: bool) -> void:
+## Switches Aurelia between the animated stand-in (the default since 2026-11-05: real walk, run, idle, cast and strike
+## animations, dressed by AureliaOutfit) and the old shape placeholder (V), until her VRoid model arrives.
+func _set_animated(on: bool, announce := true) -> void:
 	_animated = on
 	if on:
 		var humanoid := HumanoidVisual.new()
 		humanoid.model_scene = ANIM_SET.library_scene
 		humanoid.anim_set = ANIM_SET
 		humanoid.stand_in_tint = STAND_IN_TINT
+		humanoid.run_style = RUN_STYLE
 		player.set_visual(humanoid)
-		show_toast("Animated stand-in model (press V to switch back)", 3.0)
+		AureliaOutfit.dress(humanoid)
+		if announce:
+			show_toast("Animated Aurelia (press V for the shape placeholder)", 3.0)
 	else:
 		player.set_visual(PLACEHOLDER.new())
-		show_toast("Placeholder Aurelia (press V for the animated stand-in)", 3.0)
+		if announce:
+			show_toast("Shape placeholder (press V for the animated Aurelia)", 3.0)
 
 
 # --- Linking the world -------------------------------------------------------------------------
@@ -207,6 +214,12 @@ func _link_world() -> void:
 		(node as CraftingStation).used.connect(func(_by: Player, at: RecipeData.Station) -> void: crafting.open_station(at))
 	for node in get_tree().get_nodes_in_group(&"rest_point"):
 		(node as RestPoint).rested.connect(_on_rested)
+	for node in get_tree().get_nodes_in_group(&"lore"):
+		(node as LoreStone).read_requested.connect(func(resource: DialogueResource, cue: String) -> void:
+			dialogue.start(resource, cue))
+	for node in get_tree().get_nodes_in_group(&"landmark"):
+		(node as Landmark).discovered.connect(func(place: Landmark) -> void:
+			show_toast("Discovered: %s" % place.display_name, 4.0))
 	for node in get_tree().get_nodes_in_group(&"boss_arena"):
 		var arena := node as BossArena
 		arena.fight_started.connect(func(boss: Boss) -> void: hud.boss_bar.show_boss(boss))
@@ -353,14 +366,17 @@ func _build_toast() -> void:
 
 
 ## Test start options: --open=inventory|grimoire|dragon|journal|save|options|crafting, --talk=<npc id>,
-## --give=materials|treats, --visual=animated, --hour=<0–24>, --weather=clear|rain|fog,
+## --give=materials|treats, --visual=shapes, --hour=<0–24>, --weather=clear|rain|fog,
 ## --dragon=egg|ready|hatch|frost|wind|earth|light (an egg, a warm egg, the hatching scene right away, or a hatched
 ## dragon of that element), --autoplay[=<choice>] (conversations advance by themselves; dev tool)
 ## (--spawn=<id> is read when spawning).
 func _apply_start_options() -> void:
 	var args := OS.get_cmdline_user_args()
-	if "--visual=animated" in args:
-		_set_animated(true)
+	if "--visual=shapes" in args:
+		_set_animated(false, false)
+	for arg in args:  # --walk or --walk=left|right|down: holds a move key (dev tool, to see the run in captures)
+		if arg == "--walk" or arg.begins_with("--walk="):
+			Input.action_press(StringName("move_" + (arg.trim_prefix("--walk=") if "=" in arg else "up")))
 	if "--give=materials" in args:
 		for item in Inventory.LIBRARY.items:
 			if item.category == ItemData.Category.MATERIAL:

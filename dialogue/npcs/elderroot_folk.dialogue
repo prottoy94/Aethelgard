@@ -1,0 +1,51 @@
+# status: draft (2026-11-05), waiting for the owner's approval
+# More people in Elderroot Village (owner request: more to explore): Bram the smith, Wenna the miller and Pell, a
+# farm boy. No quests yet: a short talk each, and remarks in passing. Names are drafts (dialogue/glossary.md).
+# Only GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene and AudioManager may be called.
+
+~ bram
+if DragonManager.is_hatched()
+	Bram: Ha! A dragon. Keep it away from my coal pile, Aurelia. It's already eyeing it.
+	=> END
+Bram: Morning, little spark. Mind the anvil, it bites.
+- What are you making?
+	Bram: Hinges. Nails. A pot for Maren. Nothing that'd make a story.
+	Bram: [#worried] Though... I've had travellers asking for swords lately. Strange times.
+- Could you teach me smithing?
+	Bram: You? Ha. Your hands are made for spellbooks. Leave the hammering to me.
+=> END
+
+~ bram_bark
+% Bram: Hot iron waits for no one!
+% Bram: Mind the sparks.
+=> END
+
+~ wenna
+if GameState.has_flag("warden_defeated")
+	Wenna: [#happy] They're saying you sent a whole Emberbound captain running! My, my. Flour's on the house.
+	=> END
+Wenna: Aurelia, dear. Have you seen Dumpling? Grey cat. Round. Judgemental.
+- He's on the mill roof again.
+	Wenna: [#happy] Of course he is. Thank you, dear.
+- I'll keep an eye out.
+	Wenna: Bless you. He comes down for fish. Eventually.
+Wenna: [#worried] And do be careful in the north woods. Odd folk with red banners have been camping there.
+=> END
+
+~ wenna_bark
+% Wenna: Dumpling! Dumpling, come down!
+% Wenna: Flour, flour, everywhere...
+=> END
+
+~ pell
+Pell: Aurelia! Did you see the old watchtower, east past the pond? My grandad says it's haunted.
+- Haunted by what?
+	Pell: [#happy] Wisps! Little fire ones. They float around it at night. Brr!
+- Towers don't get haunted.
+	Pell: That's what a haunted tower WANTS you to think.
+=> END
+
+~ pell_bark
+% Pell: The scarecrow moved. I swear it moved.
+% Pell: Hollin Farm has the best honey. Don't tell Maren I said that.
+=> END

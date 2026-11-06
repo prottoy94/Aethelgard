@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="NpcLook" format=3]
+
+[ext_resource type="Script" path="res://src/actors/npcs/npc_look.gd" id="1"]
+
+; Placeholder look for bram (simple shapes at real size). Draft villager (2026-11-05).
+[resource]
+script = ExtResource("1")
+height = 1.82
+robe = Color(0.36, 0.3, 0.28, 1)
+accent = Color(0.45, 0.3, 0.2, 1)
+skin = Color(0.85, 0.66, 0.52, 1)
+hair_color = Color(0.3, 0.2, 0.15, 1)
+hair = 2
+prop = 0

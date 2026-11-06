@@ -59,7 +59,7 @@ func test_go_to_the_village_and_autosave() -> void:
 	assert_almost_eq(player.global_position.distance_to(spawn.global_position), 0.0, 0.1, "at the arrival spawn")
 	assert_true(TimeOfDay.running, "the clock runs while playing")
 	assert_true(SaveManager.has_slot(SaveManager.AUTO), "autosave on arriving (FR-SAV-02)")
-	assert_eq(get_tree().get_nodes_in_group(&"npc").size(), 2, "the Elder and Maren live here")
+	assert_eq(get_tree().get_nodes_in_group(&"npc").size(), 5, "the Elder, Maren, Bram, Wenna and Pell live here")
 
 
 func test_exit_keeps_health_and_leads_back() -> void:

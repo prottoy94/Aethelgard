@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="RunStyle" format=3]
+
+[ext_resource type="Script" path="res://src/actors/character/run_style.gd" id="1"]
+
+; Aurelia's run (owner request 2026-11-06: sweet and light, not a heavy jog): upright, arms low with hands flared out,
+; short quick steps, a small head sway and hop. Applied on top of the Jog_Fwd clip by RunStyleModifier.
+[resource]
+script = ExtResource("1")
+arm_weight = 0.8
+upper_arm_dir = Vector3(0.22, -0.95, -0.12)
+forearm_dir = Vector3(0.75, -0.62, 0.05)
+torso_upright_deg = 9.0
+stride_scale = 0.7
+max_speed_scale = 2.1
+head_sway_deg = 5.0
+bounce = 0.025
+step_rate = 1.6
+blend_speed = 8.0

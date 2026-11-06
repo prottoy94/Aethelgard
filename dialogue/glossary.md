@@ -13,10 +13,13 @@ waiting for the owner's approval.
 | Elder | The kind, worried Village Elder of Elderroot (no personal name yet) | draft |
 | Maren | Elderroot's herbalist; calls everyone "dear" | draft (Phase 6a) |
 | Tamsin | A village child, an explorer at heart; chases dragonflies | draft (Phase 6a) |
+| Bram | Elderroot's smith (forge, south-east of the well) | draft (2026-11-05) |
+| Wenna | The miller; owner of Dumpling the cat | draft (2026-11-05) |
+| Pell | A farm boy who believes the watchtower is haunted | draft (2026-11-05) |
 | Pip | The pet dragon's default name, used when the player leaves the name empty | approved 2026-11-04 |
 
 ## Places
-Elderroot Meadow · Elderroot Village (south of the meadow: Maren's herb garden, the well) · the World Tree · Lantern Shrines · the old shrine ruins (east of the pond) · Azure Coast ·
+Elderroot Meadow (Whispering Grove, Old Watchtower, Silverbrook, Mistfall Basin, Emberbound Camp, Hollin Farm, Moonring Stones, Mirror Pond, Overlook; draft names) · Elderroot Village (Market Square, Elderroot Mill, Bram's Forge) (south of the meadow: Maren's herb garden, the well) · the World Tree · Lantern Shrines · the old shrine ruins (east of the pond) · Azure Coast ·
 Ruined Valley · Stormspire Highlands · Floating Isle / Sky Rift
 
 ## Magic

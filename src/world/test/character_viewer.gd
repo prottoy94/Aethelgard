@@ -2,15 +2,19 @@ extends Node3D
 ## Close-up stage for checking character models and animations (and later Aurelia's VRoid model).
 ## Shows the animated model on the left and the placeholder Aurelia on the right, facing the camera.
 ## Start options (after `--`): --model=<res path of a .vrm/.glb>  --anim=<animation name>  --benchmark=<dir>
+## --mode=idle|walk|run|dash  --yaw=<degrees> (turn both)  --style (left: Aurelia's outfit and run style; right: the
+## plain stand-in instead of the shape placeholder, to compare)
 ## Keys: 1 idle, 2 walk, 3 run, 4 dash, 5 cast, 6 strike, 7 interact, Q/R turn the models, Esc quit.
 
 const ANIM_SET := preload("res://data/animations/humanoid_default.tres")
 const PLACEHOLDER := preload("res://src/actors/player/aurelia_placeholder.gd")
 const STAND_IN_TINT := Color("7a5a8a")
 const TURN_SPEED := 1.5
+const RUN_STYLE: RunStyle = preload("res://data/animations/aurelia_run_style.tres")
 
 var _humanoid: HumanoidVisual
 var _placeholder: Node3D
+var _plain: HumanoidVisual
 var _pivot: Node3D
 var _mode := &"idle"
 var _forced_anim := &""
@@ -26,6 +30,11 @@ func _ready() -> void:
 			model_path = arg.trim_prefix("--model=")
 		elif arg.begins_with("--anim="):
 			_forced_anim = StringName(arg.trim_prefix("--anim="))
+		elif arg.begins_with("--mode="):
+			_mode = StringName(arg.trim_prefix("--mode="))
+		elif arg.begins_with("--yaw="):
+			_pivot.rotation_degrees.y = float(arg.trim_prefix("--yaw="))
+	var styled := "--style" in OS.get_cmdline_user_args()
 	_humanoid = HumanoidVisual.new()
 	_humanoid.anim_set = ANIM_SET
 	if model_path.is_empty():
@@ -33,10 +42,23 @@ func _ready() -> void:
 		_humanoid.stand_in_tint = STAND_IN_TINT
 	else:
 		_humanoid.model_scene = load(model_path)
+	if styled:
+		_humanoid.run_style = RUN_STYLE
+		_humanoid.stand_in_tint = AureliaOutfit.COAT
 	_humanoid.position = Vector3(-0.55, 0, 0)
 	_humanoid.rotation_degrees.y = 180.0  # face the camera
 	_pivot.add_child(_humanoid)
+	if styled:
+		AureliaOutfit.dress(_humanoid)
+		_plain = HumanoidVisual.new()
+		_plain.anim_set = ANIM_SET
+		_plain.model_scene = ANIM_SET.library_scene
+		_plain.stand_in_tint = STAND_IN_TINT
+		_plain.position = Vector3(0.55, 0, 0)
+		_plain.rotation_degrees.y = 180.0
+		_pivot.add_child(_plain)
 	_placeholder = PLACEHOLDER.new()
+	_placeholder.visible = not styled
 	_placeholder.position = Vector3(0.55, 0, 0)
 	_placeholder.rotation_degrees.y = 180.0
 	_pivot.add_child(_placeholder)
@@ -51,6 +73,8 @@ func _process(delta: float) -> void:
 	if _forced_anim.is_empty() and speeds.has(_mode):
 		var speed: float = speeds[_mode]
 		_humanoid.update_motion(minf(speed / 5.0, 1.0), _mode == &"dash", delta, speed)
+		if _plain:
+			_plain.update_motion(minf(speed / 5.0, 1.0), _mode == &"dash", delta, speed)
 	_placeholder.update_motion(minf(float(speeds.get(_mode, 0.0)) / 5.0, 1.0), _mode == &"dash", delta)
 
 
