@@ -100,6 +100,31 @@ This sets up the ending and a possible sequel. **Optional.** The simple version 
 
 - **How she moves (owner note 2026-11-06):** Aurelia is a sweet girl and runs like one: upright, light quick steps,
   arms low with hands flicked out to the sides, a little bounce, her cape floating behind. Not a heavy, sporty jog.
+- **How she looks (owner note 2026-11-07):** as on the design sheet (`Game Images/white_hair_girl_character.jpeg`):
+  long silver hair with a crown braid and a beaded braid, elf ears, amber eyes; plum hooded capelet and
+  long cape with gold trim, green tunic open over a cream dress, puffed sleeves, brown belts, strap and satchel,
+  fingerless gloves, dark leggings and boots. The outfit fits her body, and her hair, cape, skirts and satchel move
+  with physics. Details after the design sheet (owner request 2026-11-07): the capelet opens at the front in a V
+  with gold edges; bands of gold scrollwork (a vine with curls between fine borders) run round the capelet's hem and
+  up its opening, along the cape's hem and edges, down the tunic's front and along its hem and front edges; a cream
+  V shows at the tunic's neck; woven lines near the dress's hem; steel buckles and studs on the belts, a buckle on
+  the strap; a satchel with a front strap, buckle and diamond plate; studded leather bracers, glove wrist straps and
+  buckled boot straps; gold toggles hold the capelet at her neck. The stand-in is built in code until her VRoid model replaces it.
+- **Her face (owner request 2026-11-07: "recreate the portrait as much as possible"):** built after the owner's
+  close-up portrait of her. A soft round face, full cheeks narrowing to a small soft chin; big amber eyes set wide
+  (a rounded opening, tall at the outer side; a large iris, violet-brown under the lid, warm amber in the middle and
+  glowing gold at the bottom, with a soft ring round a brown pupil; a big highlight, a small one, a star sparkle and
+  two small glints; a thick upper lid ending in a wing with three lashes; a fine lower line, a crease and a warm lid
+  shadow); thin light brows showing under the fringe; soft hair shadows on her forehead and cheeks; big soft pink blush with hatch strokes and a little cheek
+  highlight; a tiny nose (a shadow stroke and a highlight) and a small closed smile with a pink lower lip. Long elf
+  ears like leaves, pointing out and a little up through her hair (no earrings, as in the portrait). Hair: silver
+  with lavender shading, fine strand streaks and a glinting ring of shine round the upper head, like painted anime
+  hair; a side-swept fringe of thin pointed strands from a parting on her right,
+  a few longer ones between her eyes, and thin loose wisps by her cheeks; face-framing locks down past her chin, her right one tied in a gold cuff with
+  loose ends; fuller hair over the sides of her head, rounded like a bob; a crown braid from the parting down the right of her head that continues as
+  the beaded braid down her back; long back hair. A dark high collar under her chin. Skin and hair keep their colours
+  in any light (soft toon shading) and have fine tinted outlines up close. Her head is lifted in every pose so she
+  looks ahead (the idle animation looks at the ground) and her face shows from the game camera.
 
 ### 5.1 Stats
 

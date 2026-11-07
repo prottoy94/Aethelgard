@@ -52,7 +52,7 @@ res://
 │  ├─ materials/              # shared .tres materials using the shaders below
 │  ├─ audio/                  # music/, sfx/
 │  ├─ fonts/
-│  └─ shaders/                # toon, toon_outline, ground, grass, stone_moss, water (+ hit_flash, dissolve later)
+│  └─ shaders/                # toon, toon_soft (character skin/hair), toon_outline, ground, grass, stone_moss, water
 ├─ data/                      # ALL tunable game data as .tres Resources
 │  ├─ spells/  items/  recipes/  enemies/  bosses/  dragons/  quests/  loot_tables/
 ├─ src/
@@ -286,12 +286,44 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 - `Landmark` (`src/world/places/`): an Area3D; first entry sets `found_<id>`, emits `EventBus.place_reached` and
   "Discovered: …"; the map shows found places. `LoreStone`: E opens a cue of `dialogue/world/elderroot_lore.dialogue`.
 - Aurelia's default visual is the animated stand-in (`HumanoidVisual`, Quaternius CC0 clips) dressed by
-  `AureliaOutfit` (hair, ears, cape, skirt on bone attachments); V switches to the shape placeholder.
+  `AureliaOutfit`; V switches to the shape placeholder. **Since 2026-11-07 (owner request: a fitted, detailed outfit
+  with physics)** the mannequin mesh is hidden and her slim body, face and clothes are skinned meshes built in code
+  (`SkinnedMeshBuilder`, `src/actors/character/`: tubes, ellipsoids, boxes and two-sided sheets with up to 4 bone
+  weights, one mesh per colour) on the same skeleton, so they fit at every joint. Outfit after the design sheet:
+  plum hooded capelet and cape with gold trim and embroidery, green tunic (open at the front) over a cream dress,
+  puffed sleeves, belts, strap, satchel and pouch, fingerless gloves, leggings, boots; long hair, bangs, face locks,
+  a crown braid and a beaded braid, amber eyes, elf ears.
+- **Her face and hair (2026-11-07, after the owner's portrait reference):** the head is a tube of `HEAD_PROFILE`
+  cross-sections whose front half is a superellipse (`ring(..., power)`, flatter across eyes and cheeks); full cheeks
+  narrowing to a small chin. The features are painted on the face as **one mesh with vertex colours** (`paint()`,
+  `paint_shape()`/`paint_line()`; `SkinnedMeshBuilder.vertex_colors`), so the iris gradient, eye-white shadow, blush,
+  lid shadow and lips fade smoothly into the skin. Hair is many soft `clump`s coloured per vertex by `hair_color()`
+  (ring colours may be Callables of the place round the ring: fine darker streaks along each strand, darker edges,
+  deeper tips and a broken ring of shine, placed differently on each strand; the braid plaits shade where they tuck
+  under; the back hair sheets get the same streaks): a 17-strand fringe swept from a parting on her right (plus strands over the top to her left side), 13 crown strands
+  flowing down over the back hair, thin loose wisps, face-framing locks on the lock chains (her right
+  one gold-cuffed), side panels the ears poke through, a crown braid on her right that continues as the beaded
+  braid down her back. Skin, ears, hair and paint use the **soft toon shader** (`toon_soft.gdshader`,
+  `ToonMaterials.soft()`): each light counts for less, the shaded side keeps a tinted share and the light's hue is
+  muted, so pale skin and silver hair keep their colour in bright or warm light; it doesn't receive cast shadows.
+  Outlines are thin up close and as thick as before from the game camera (`toon_outline` `min_pixels`; the outfit
+  sets close thickness `CLOSE_LINES` and `min_pixels` = game thickness / `GAME_PIXEL`).
+- **Costume details (2026-11-07, after the design sheet):** `stitch()` lays a thin strip on any surface given a
+  mapping from band coordinates to [position, normal, weights] (`sheet_band()` for chain sheets, `torso_band()`,
+  or a capelet band), so threads bend with the cloth's bones; `embroider()` builds gold scrollwork from it (borders,
+  a vine and curls sized to the band). `buckle()` and `stud()` make steel fittings. The capelet's front opens in a V
+  (`opening(t)`) and its shape is interpolated between `CAPELET_ROWS`.
+- **Cloth and hair physics:** `ClothRig` adds bone chains to the skeleton (hair 7, face locks 2, braid, cape 5,
+  tunic 8, cream front panel 5, satchel) and simulates them with Godot's `SpringBoneSimulator3D` (three simulators:
+  hair, cape, skirts) with collision spheres/capsules on the head, chest, spine, hips and legs. Sheets are weighted
+  across neighbouring chains so they bend smoothly. Values: `data/animations/aurelia_cloth.tres`
+  (`AureliaClothTuning` → `ClothChainSettings`: stiffness, drag, gravity, radius). No measurable cost (RTX 209 FPS,
+  UHD Low 67 FPS).
 - **Aurelia's run (2026-11-06, owner request: sweet and light, not a heavy jog):** `RunStyleModifier` (a
   SkeletonModifier3D added by `HumanoidVisual` when it has a `RunStyle`) restyles the Jog_Fwd clip while running:
   upright spine, arms low with forearms flared out (bones turned towards directions in skeleton space), stride × 0.7
-  played quicker, head sway and hop. Values: `data/animations/aurelia_run_style.tres`. Her cape hangs on a `CapeSway`
-  (shoulder position, facing only, floats back with speed). The VRoid model will replace the stand-in; the style stays.
+  played quicker, head sway and hop. Values: `data/animations/aurelia_run_style.tres`. `head_lift_deg` (22°) lifts the head in every pose (the idle clip
+  looks at the ground; the camera is high): her face points ~7° down in idle. The VRoid model will replace the stand-in; the style stays.
 - Sounds are heard from Aurelia: `CameraRig.listener` (AudioListener3D) sits at the rig's focus point, facing the
   camera's way; the camera is ~13 m away.
 

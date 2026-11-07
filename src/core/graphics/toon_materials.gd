@@ -4,6 +4,7 @@ extends RefCounted
 
 const TOON := preload("res://assets/shaders/toon.gdshader")
 const OUTLINE := preload("res://assets/shaders/toon_outline.gdshader")
+const SOFT := preload("res://assets/shaders/toon_soft.gdshader")
 
 
 static func shader_material(shader: Shader, params: Dictionary = {}) -> ShaderMaterial:
@@ -19,6 +20,17 @@ static func toon(color: Color, rim := 0.35, outline := 0.0, wind := 0.0,
 		emission := Color.BLACK, emission_energy := 0.0) -> ShaderMaterial:
 	var material := shader_material(TOON, {"albedo": color, "rim_strength": rim, "wind": wind,
 			"emission": emission, "emission_energy": emission_energy})
+	if outline > 0.0:
+		material.next_pass = shader_material(OUTLINE, {"thickness": outline})
+	return material
+
+
+## Soft toon material for character skin and hair (toon_soft.gdshader): pale colours keep their tone in any light.
+## `params` sets more shader parameters (shade_tint, shade_amount, light_amount, use_vertex_color...).
+static func soft(color: Color, rim := 0.1, outline := 0.0, params: Dictionary = {}) -> ShaderMaterial:
+	var all := {"albedo": color, "rim_strength": rim}
+	all.merge(params, true)
+	var material := shader_material(SOFT, all)
 	if outline > 0.0:
 		material.next_pass = shader_material(OUTLINE, {"thickness": outline})
 	return material

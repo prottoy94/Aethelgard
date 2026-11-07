@@ -54,6 +54,8 @@ These notes come from looking at all 14 reference images. Nothing is final yet.
 ## 3. Main character (from the 4 character images)
 
 - **Look:** elf girl with long silver-white hair, side braids with small beads, pointed ears, amber/brown eyes, red teardrop earrings.
+  The owner's close-up portrait (2026-11-07) shows no earrings and a crown braid on her right; the stand-in follows the
+  portrait for her face and hair (earrings left off for now).
 - **Outfit:** dark plum hooded cape with gold embroidery, green tunic over a cream dress, brown leather belts and straps,
   a satchel on the hip, fingerless gloves, dark leggings and boots.
 - **Gear:** gnarled wooden staff with a gem on top and a **hanging lantern**.

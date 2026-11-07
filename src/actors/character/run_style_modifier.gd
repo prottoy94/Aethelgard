@@ -1,7 +1,8 @@
 class_name RunStyleModifier
 extends SkeletonModifier3D
 ## Restyles the run animation after it plays (RunStyle): upright posture, arms low with forearms and hands flared out to
-## the sides, shorter steps, a head sway and a little hop. `weight` (0–1) fades it in while running. Arm and torso
+## the sides, shorter steps, a head sway and a little hop. `weight` (0–1) fades it in while running. The head lift
+## (head_lift_deg) applies in every pose. Arm and torso
 ## changes are made in the skeleton's space by turning each bone towards a direction, so they work whatever the bone axes.
 
 var style: RunStyle
@@ -13,7 +14,7 @@ var _bones := {}
 
 func setup(skeleton: Skeleton3D, run_style: RunStyle) -> void:
 	style = run_style
-	for bone_name: StringName in [&"Hips", &"Spine", &"Head", &"LeftUpperArm", &"LeftLowerArm", &"LeftHand",
+	for bone_name: StringName in [&"Hips", &"Spine", &"Neck", &"Head", &"LeftUpperArm", &"LeftLowerArm", &"LeftHand",
 			&"RightUpperArm", &"RightLowerArm", &"RightHand", &"LeftUpperLeg", &"LeftLowerLeg", &"RightUpperLeg",
 			&"RightLowerLeg"]:
 		_bones[bone_name] = skeleton.find_bone(bone_name)
@@ -22,11 +23,15 @@ func setup(skeleton: Skeleton3D, run_style: RunStyle) -> void:
 func _process_modification_with_delta(delta: float) -> void:
 	if style == null:
 		return
-	weight = move_toward(weight, target_weight, style.blend_speed * delta)
-	if weight <= 0.001:
-		return
 	var skeleton := get_skeleton()
 	if skeleton == null:
+		return
+	if style.head_lift_deg != 0.0:  # in every pose: the idle clip looks at the ground, the camera is high
+		var lift := deg_to_rad(-style.head_lift_deg)
+		_turn(skeleton, &"Neck", Quaternion(Vector3.RIGHT, lift * 0.4), 1.0)
+		_turn(skeleton, &"Head", Quaternion(Vector3.RIGHT, lift * 0.6), 1.0)
+	weight = move_toward(weight, target_weight, style.blend_speed * delta)
+	if weight <= 0.001:
 		return
 	_time += delta
 	# Shorter steps: leg swing pulled towards the rest pose.

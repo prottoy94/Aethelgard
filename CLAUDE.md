@@ -50,8 +50,20 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   or V for the old placeholder). `CameraRig.listener` hears sounds at Aurelia. Spawns `--spawn=grove|watchtower|basin|camp|
   farm|moonring`; dev `--walk[=left|right|down]`.
 - **Cute run** done 2026-11-06 (owner request): `RunStyle` + `RunStyleModifier` (`src/actors/character/`), data
-  `data/animations/aurelia_run_style.tres`, `CapeSway` (cape), face added to `AureliaOutfit`. Character viewer:
-  `character_viewer.tscn -- --style --mode=run --yaw=90` compares her run with the plain jog. **229/229 tests pass.**
+  `data/animations/aurelia_run_style.tres`. Character viewer:
+  `character_viewer.tscn -- --style --mode=run --yaw=90` compares her run with the plain jog.
+- **Fitted outfit + physics** done 2026-11-07 (owner request): the mannequin mesh is hidden; `AureliaOutfit` builds her
+  body, face and clothes as skinned meshes (`SkinnedMeshBuilder`) and hangs hair, braid, cape, skirts and satchel on
+  spring-bone chains (`ClothRig`, Godot `SpringBoneSimulator3D`; values `data/animations/aurelia_cloth.tres`).
+  `CapeSway` is gone. Viewer `--close` / `--close=face` frames her up close (`--yaw` turns only her). Face and hair rebuilt
+  the same day in the game's round toon style: head = `HEAD_PROFILE` tube × `HEAD_SCALE`, features painted on it
+  as one vertex-coloured mesh (`paint()`/`paint_shape()`/`paint_line()`: soft gradients), hair = cap + soft `clump`s
+  (fringe, face locks on the lock chains, side panels, wisps, crown braid) coloured per vertex by `hair_color()`
+  (streaks, shine ring); rebuilt after the owner's portrait reference
+  (face, eyes, hair, ears, dark collar). Skin/hair/paint use `assets/shaders/toon_soft.gdshader`
+  (`ToonMaterials.soft()`); outlines thin up close via `toon_outline` `min_pixels`. `RunStyle.head_lift_deg` (22°: her face
+  points ~7° down in idle instead of at the ground) lifts her head in every pose. Viewer `--close=eyes` frames her eyes. Costume details: `embroider()`/`stitch()` gold scrollwork on
+  capelet, cape and tunic, open V capelet, `buckle()`/`stud()` steel fittings. **234/234 tests pass.**
   6c code: `AudioManager` (play by id, pools, MusicChannel loops/crossfades, combat layer, ambience, stingers, ducking,
   pause muffle), `src/audio/` (SoundEvent, SoundLibrary, MusicTrack, MusicLibrary, MusicChannel, AudioTuning), region
   sound ids in `data/world/regions.tres`, volumes in Settings + Options. **Audio files are git-ignored: after a clone
@@ -126,7 +138,7 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
 - **Build in milestone order** (M0 → M8 → vertical slice). Don't start content for later regions before the vertical slice works.
 - **Scope guard:** respect GDD §15 content targets. New big features go to "Stretch" unless the owner says otherwise.
 - **3D art:** placeholders are simple shapes at real size (1 unit = 1 m, Aurelia ≈ 1.6 m) using the shared shaders in `assets/shaders/`
-  (toon + toon_outline, ground, grass, stone_moss, water). Characters via VRoid → VRM; CC0 animations; props from CC0 kits/Blender, one palette.
+  (toon + toon_outline, toon_soft for character skin/hair, ground, grass, stone_moss, water). Characters via VRoid → VRM; CC0 animations; props from CC0 kits/Blender, one palette.
   Keep visuals in a child node so models swap without gameplay-code changes. No free jump in v1.
   Animations: CC0 Quaternius library retargeted to `%GeneralSkeleton` (see TECHNICAL_DESIGN.md §4.15); use `HumanoidAnimSet` roles,
   not clip names. Dev tools in `tools/dev/` (inspect_scene, make_ual_bone_map, measure_gait_speed).

@@ -1,0 +1,65 @@
+[gd_resource type="Resource" script_class="AureliaClothTuning" format=3]
+
+[ext_resource type="Script" path="res://src/actors/player/aurelia_cloth_tuning.gd" id="1"]
+[ext_resource type="Script" path="res://src/actors/character/cloth_chain_settings.gd" id="2"]
+
+[sub_resource type="Resource" id="hair"]
+script = ExtResource("2")
+stiffness = 0.5
+drag = 0.35
+gravity = 1.0
+radius = 0.025
+
+[sub_resource type="Resource" id="side_locks"]
+script = ExtResource("2")
+stiffness = 3.0
+drag = 0.4
+gravity = 0.1
+radius = 0.015
+
+[sub_resource type="Resource" id="braid"]
+script = ExtResource("2")
+stiffness = 0.6
+drag = 0.3
+gravity = 0.8
+radius = 0.025
+
+[sub_resource type="Resource" id="cape"]
+script = ExtResource("2")
+stiffness = 0.8
+drag = 0.5
+gravity = 0.3
+radius = 0.03
+
+[sub_resource type="Resource" id="tunic"]
+script = ExtResource("2")
+stiffness = 1.2
+drag = 0.45
+gravity = 0.3
+radius = 0.03
+
+[sub_resource type="Resource" id="skirt"]
+script = ExtResource("2")
+stiffness = 1.6
+drag = 0.5
+gravity = 0.2
+radius = 0.03
+
+[sub_resource type="Resource" id="satchel"]
+script = ExtResource("2")
+stiffness = 0.5
+drag = 0.3
+gravity = 1.0
+radius = 0.06
+
+; Aurelia's hair and clothes physics (owner request 2026-11-07). stiffness = pull back to shape, drag = calm,
+; gravity = extra pull down, radius = joint size for collisions (skeleton units). Used by AureliaOutfit.
+[resource]
+script = ExtResource("1")
+hair = SubResource("hair")
+side_locks = SubResource("side_locks")
+braid = SubResource("braid")
+cape = SubResource("cape")
+tunic = SubResource("tunic")
+skirt = SubResource("skirt")
+satchel = SubResource("satchel")

@@ -14,3 +14,4 @@ extends Resource
 @export var bounce := 0.025                        ## m of extra hop each step (in skeleton units)
 @export var step_rate := 1.6                     ## sways and hops per second
 @export var blend_speed := 8.0                     ## how fast the style fades in and out
+@export var head_lift_deg := 0.0                   ## always: lifts the head (neck and head share it) so the face shows

@@ -182,7 +182,7 @@ Rule: when a requirement changes, update this file in the same change. Never sil
 | FR-CAM-05 | Graphics presets Low / Medium / High (render scale + FSR, MSAA, shadows, SSAO, glow, fog, grass density). | MVP | F1–F3 switch presets live; values from `data/graphics/`. | ✅ Phase 1b (tested) |
 | FR-CAM-06 | Developer performance overlay and `--benchmark` mode. | MVP | Overlay shows FPS/ms/draw calls/memory; benchmark writes results + screenshot. | ✅ Phase 1b |
 | FR-PLY-09 | No free jump in v1; automatic step-up on stairs (≤ ~0.35 m). | MVP | See FR-WLD-02. | ✅ Phase 2 |
-| NFR-ART-04 | Characters made in VRoid Studio, imported as VRM with anime (MToon/toon) shading and spring-bone hair/cape. | MVP (Aurelia) | Aurelia's VRM imports and animates in Godot. | 🟨 Pipeline ready (Phase 2b): VRM importer, CC0 animations retargeted to Godot's humanoid skeleton, HumanoidVisual; waiting for the owner's VRoid export |
+| NFR-ART-04 | Characters made in VRoid Studio, imported as VRM with anime (MToon/toon) shading and spring-bone hair/cape. | MVP (Aurelia) | Aurelia's VRM imports and animates in Godot. | 🟨 Pipeline ready (Phase 2b): VRM importer, CC0 animations retargeted to Godot's humanoid skeleton, HumanoidVisual; until it arrives the stand-in wears a fitted skinned outfit with spring-bone hair, cape and skirts (2026-11-07); waiting for the owner's VRoid export |
 | NFR-ART-05 | One visual style: all assets use the project's toon/stone/ground shaders and one colour palette. | V1 | Style check in the Phase 2b look test. | 🟨 Shaders written (Phase 1b) |
 
 ### 1.13 Audio (AUD) — details in [AUDIO_DESIGN.md](AUDIO_DESIGN.md)

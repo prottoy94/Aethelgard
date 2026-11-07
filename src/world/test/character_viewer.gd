@@ -3,7 +3,8 @@ extends Node3D
 ## Shows the animated model on the left and the placeholder Aurelia on the right, facing the camera.
 ## Start options (after `--`): --model=<res path of a .vrm/.glb>  --anim=<animation name>  --benchmark=<dir>
 ## --mode=idle|walk|run|dash  --yaw=<degrees> (turn both)  --style (left: Aurelia's outfit and run style; right: the
-## plain stand-in instead of the shape placeholder, to compare)
+## plain stand-in instead of the shape placeholder, to compare)  --close (camera close on the left model; --close=face
+## for her face, --close=eyes closer still)
 ## Keys: 1 idle, 2 walk, 3 run, 4 dash, 5 cast, 6 strike, 7 interact, Q/R turn the models, Esc quit.
 
 const ANIM_SET := preload("res://data/animations/humanoid_default.tres")
@@ -62,6 +63,9 @@ func _ready() -> void:
 	_placeholder.position = Vector3(0.55, 0, 0)
 	_placeholder.rotation_degrees.y = 180.0
 	_pivot.add_child(_placeholder)
+	if Array(OS.get_cmdline_user_args()).any(func(arg: String) -> bool: return arg.begins_with("--close")):
+		_humanoid.rotation_degrees.y += _pivot.rotation_degrees.y  # turn only the model in front of the close camera
+		_pivot.rotation_degrees.y = 0.0
 	add_child(PerfOverlay.new())
 	if not _forced_anim.is_empty():
 		_humanoid.play_action(_forced_anim)
@@ -129,3 +133,13 @@ func _build_stage() -> void:
 	add_child(camera)
 	camera.position = Vector3(0, 1.1, 4.2)
 	camera.look_at(Vector3(0, 0.85, 0), Vector3.UP)
+	for arg in OS.get_cmdline_user_args():
+		if arg == "--close":
+			camera.position = Vector3(-0.55, 1.05, 2.3)
+			camera.look_at(Vector3(-0.55, 0.8, 0), Vector3.UP)
+		elif arg == "--close=eyes":
+			camera.position = Vector3(-0.55, 1.45, 0.42)
+			camera.look_at(Vector3(-0.55, 1.445, 0), Vector3.UP)
+		elif arg == "--close=face":
+			camera.position = Vector3(-0.55, 1.42, 0.72)  # a little above her eyes, like a portrait
+			camera.look_at(Vector3(-0.55, 1.41, 0), Vector3.UP)

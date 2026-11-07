@@ -16,3 +16,4 @@ head_sway_deg = 5.0
 bounce = 0.025
 step_rate = 1.6
 blend_speed = 8.0
+head_lift_deg = 22.0

@@ -1,6 +1,6 @@
 extends GutTest
 ## Aurelia's cute run (owner request 2026-11-06): the run style switches on while running and off when she walks or
-## stands, shortens the stride (quicker playback), and the dressed model keeps its cape on a CapeSway.
+## stands and shortens the stride (quicker playback).
 
 const ANIM_SET := preload("res://data/animations/humanoid_default.tres")
 const RUN_STYLE: RunStyle = preload("res://data/animations/aurelia_run_style.tres")
@@ -34,10 +34,3 @@ func test_shorter_steps_play_quicker() -> void:
 	plain.update_motion(1.0, false, 0.016, 5.0)
 	assert_gt(styled.animation_player.speed_scale, plain.animation_player.speed_scale, "quick little steps")
 	assert_lt(RUN_STYLE.stride_scale, 1.0)
-
-
-func test_outfit_hangs_the_cape() -> void:
-	var visual := _visual(RUN_STYLE)
-	AureliaOutfit.dress(visual)
-	var capes := visual.skeleton.find_children("*", "CapeSway", true, false)
-	assert_eq(capes.size(), 1, "the cape hangs from the shoulders instead of turning stiffly with the chest")
