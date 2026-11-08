@@ -15,6 +15,10 @@ const SLOT_NAMES: Array[String] = ["Autosave", "Slot 1", "Slot 2", "Slot 3"]
 const COMBAT: PlayerCombatStats = preload("res://data/player/aurelia_combat.tres")
 const NEW_GAME_REGION: StringName = &"elderroot_meadow"
 const NEW_GAME_SPAWN: StringName = &"start"
+## A new story starts with the prologue (Phase 8b): Rank Day in Elderroot Village, on the bench by Aurelia's cottage.
+const PROLOGUE_REGION: StringName = &"elderroot_village"
+const PROLOGUE_SPAWN: StringName = &"home"
+const PROLOGUE_FLAG: StringName = &"prologue_active"
 
 var save_dir := "user://saves/"   ## tests point this somewhere else
 ## False for quick test runs started with options, so they never overwrite the player's saves.
@@ -30,10 +34,17 @@ func _process(delta: float) -> void:
 
 # --- New game, saving and loading --------------------------------------------------------------
 
-## Everything back to the start of the story, then the first region.
-func start_new_game(region := NEW_GAME_REGION, spawn := NEW_GAME_SPAWN) -> void:
+## Everything back to the start, then `region`. Without the prologue (test starts) the game begins just after it.
+func start_new_game(region := NEW_GAME_REGION, spawn := NEW_GAME_SPAWN, with_prologue := false) -> void:
 	reset_world()
+	if with_prologue:
+		GameState.set_flag(PROLOGUE_FLAG)
 	SceneLoader.change_region(region, spawn)
+
+
+## A new story: the prologue in the village (the title screen's New Game).
+func start_prologue() -> void:
+	start_new_game(PROLOGUE_REGION, PROLOGUE_SPAWN, true)
 
 
 func reset_world() -> void:

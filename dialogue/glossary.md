@@ -17,15 +17,21 @@ waiting for the owner's approval.
 | Wenna | The miller; owner of Dumpling the cat | draft (2026-11-05) |
 | Pell | A farm boy who believes the watchtower is haunted | draft (2026-11-05) |
 | Pip | The pet dragon's default name, used when the player leaves the name empty | approved 2026-11-04 |
+| the Shrine | The voice of a Trial shrine; old and slow, calls Aurelia "lantern-bearer" | draft (Phase 8b) |
+| the Emberbound | Ignis's soldiers; short, mocking, rank-obsessed barks ("A Spark? Don't waste the fire.") | approved term; lines draft |
 
 ## Places
-Elderroot Meadow (Whispering Grove, Old Watchtower, Silverbrook, Mistfall Basin, Emberbound Camp, Hollin Farm, Moonring Stones, Mirror Pond, Overlook; draft names) · Elderroot Village (Market Square, Elderroot Mill, Bram's Forge) (south of the meadow: Maren's herb garden, the well) · the World Tree · Lantern Shrines · the old shrine ruins (east of the pond) · Azure Coast ·
+Elderroot Meadow (Windcall Shrine, the Gust Trial's shrine east of the old ruins (draft, Phase 8b: "my grandmother called it the Windcall"); Whispering Grove, Old Watchtower, Silverbrook, Mistfall Basin, Emberbound Camp, Hollin Farm, Moonring Stones, Mirror Pond, Overlook; draft names) · Elderroot Village (the Rank Stone by the well (draft, Phase 8b), Market Square, Elderroot Mill, Bram's Forge) (south of the meadow: Maren's herb garden, the well) · the World Tree · Lantern Shrines · the old shrine ruins (east of the pond) · Azure Coast ·
 Ruined Valley · Stormspire Highlands · Floating Isle / Sky Rift
 
 ## Magic
 - **Arcane Ranks:** Spark (F), Glimmer (E), Lantern (D), Beacon (C), Star (B), Radiant (A), Sovereign (S)
 - **Magic Power**, **mastery** (I–V), **spell tomes**, **Grimoire**
 - Spells: Light Mote, Lantern Glow, Gust, Mending Bloom (the vertical slice)
+- **Rank Day** (draft, Phase 8b): the day the elves of Elderroot touch the **Rank Stone**; its seven rune marks light
+  up to the toucher's rank (Spark is the first mark). "The first light" = Spark.
+- **Trials** (spell shrines): the **Gust Trial** at the Windcall Shrine (runes "one breath, then two, then three", a
+  ring of wind). Sylvaris calls Aurelia "little light"; Ignis calls her "Spark".
 
 ## Things
 Sunpetal · Moonbloom · Elderwood · Iron Ore · Lumen Crystal · Thorn Fibre · Ember Cinder · Healing Potion ·

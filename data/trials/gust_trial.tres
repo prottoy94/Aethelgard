@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="TrialData" format=3]
+
+[ext_resource type="Script" path="res://src/world/trials/trial_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/world/trials/trial_wave.gd" id="2"]
+[ext_resource type="Resource" path="res://data/spells/gust.tres" id="3"]
+[ext_resource type="PackedScene" path="res://src/actors/enemies/thornling/thornling.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://src/actors/enemies/ember_wisp/ember_wisp.tscn" id="5"]
+[ext_resource type="Resource" path="res://dialogue/system/trial_shrines.dialogue" id="6"]
+
+[sub_resource type="Resource" id="wave_1"]
+script = ExtResource("2")
+enemies = Array[PackedScene]([ExtResource("4"), ExtResource("4"), ExtResource("4")])
+
+[sub_resource type="Resource" id="wave_2"]
+script = ExtResource("2")
+enemies = Array[PackedScene]([ExtResource("5"), ExtResource("5"), ExtResource("4")])
+
+; The Gust Trial (GAME_DESIGN.md §6.4: Gust is found at the Elderroot Trial; owner decision 2026-11-07: a puzzle,
+; then a fight). The Windcall Shrine (draft name), east of the old shrine ruins. Three runes hide in the mist: Lantern
+; Glow reveals them, Light lights them in order (one curl, two, three; the nearest to the way in is the second), then
+; a ring of wind rises for two short waves: three Thornlings, then two Ember Wisps and a Thornling. Reward: the Gust
+; tome on the altar. Story music: the owner's The World Holds Its Breath (a breeze that clears the fog).
+[resource]
+script = ExtResource("1")
+id = &"gust_trial"
+display_name = "Windcall Shrine"
+place_id = &"windcall_shrine"
+spell = ExtResource("3")
+radius = 9.0
+rune_count = 3
+rune_distance = 6.0
+rune_angles = PackedFloat32Array(60, 180, 300)
+waves = Array[ExtResource("2")]([SubResource("wave_1"), SubResource("wave_2")])
+wave_delay = 2.0
+spawn_distance = 5.5
+passed_flag = &"gust_trial_passed"
+found_music = &"mus_story_world_holds_its_breath"
+dialogue = ExtResource("6")
+intro_cue = "trial_gust_intro"
+test_cue = "trial_gust_test"
+complete_cue = "trial_gust_complete"
+repeat_cue = "trial_gust_repeat"
+hint_cue = "lumen_hint_runes"

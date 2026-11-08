@@ -2,6 +2,7 @@
 # The dragon egg hatches at a Lantern Shrine (DIALOGUE_DESIGN.md §10 `dragon_hatch`). Started by DragonHatchCutscene;
 # `do Cutscene.cue(...)` lines run its effects. The pet dragon never speaks (§7): chirps and emote bubbles only.
 # Aurelia picks the colour it hatches as (its element, owner decision 2026-11-04) and names it (default "Pip").
+# The colour choice is tagged [#ask]: it still waits for the player when the scene is skipped (FR-DLG-07).
 # Only GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene and AudioManager may be called.
 
 ~ dragon_hatch
@@ -12,7 +13,7 @@ Lumen: Listen. Someone is knocking.
 do Cutscene.cue("wobble")
 Aurelia: [#excited] It's moving! Come on, little one. You can do it!
 Aurelia: [#thinking] The shell keeps changing colour, like it's waiting for something. Waiting for me?
-Aurelia: What colour will you be?
+Aurelia: [#ask] What colour will you be?
 - Frost-blue, like the pond in winter. (Frost. Its breath chills enemies.)
 	do DragonManager.choose_element("frost")
 - Silver-green, like wind in the long grass. (Wind. Its breath throws enemies back.)

@@ -76,6 +76,18 @@ This sets up the ending and a possible sequel. **Optional.** The simple version 
 | **Act 4** | Floating Isle / Sky Rift | Fly the dragon to the isle. Learn pure **Dawnflame** from the sun dragon 💡. **Final boss: Ignis Varos** (3 phases). |
 | **Ending** | — | Ignis falls → he warns that his master is coming → the Sky Rift cracks open. ❓ Cliffhanger/post-game (recommended for scope), or a final fight with the Unknown One. |
 
+**Prologue as built (Phase 8b, 2026-11-07; owner decisions: the Elder holds the rank test, no Examiner or Rival yet).**
+A new game opens on **Rank Day** in Elderroot Village: Aurelia reads on the bench by her cottage (the intro and first
+verse of *Sunlight on Ancient Stone*), walks to the **Rank Stone** by the well and touches it; light climbs only to
+the first of its seven marks: **Spark**. The Elder comforts her ("every lantern in Elderroot was lit from one small
+spark"). A strange horn: two **Emberbound Scouts** run in and the villagers hide; she fights them. Then **Ignis Varos**
+walks down the north road and calls her "Spark"; the fight cannot be won: he takes no damage ("Immune"), she cannot
+fall, and after 35 s or at 35% health he raises a great ember sphere for the final blow. **Sylvaris** lands between
+them, his breath of golden light breaks the sphere, and Ignis leaves ("Grow a little, Spark"). Sylvaris speaks to her
+("Rank measures what you are. Not what you will become."), **Lumen** wakes beside her (asleep until then), and he
+points her to an old **Trial of the wind** in the meadow. The Elder sends her there and to Maren and Tamsin; the road
+north opens. The prologue's scenes can be skipped (hold Esc). Lines: `dialogue/main/prologue.dialogue` (drafts).
+
 ---
 
 ## 4. Core gameplay loop
@@ -222,7 +234,7 @@ All keys can be remapped.
 |---|---|---|---|---|
 | 1 | **Light Mote** | Light | Weak homing bolt | Start |
 | 2 | **Lantern Glow** | Light | Light aura; reveals hidden things | Start |
-| 3 | **Gust** | Wind | Cone push + knockback | Elderroot Trial |
+| 3 | **Gust** | Wind | Cone push + knockback | Elderroot Trial (the Gust Trial, built in Phase 8b) |
 | 4 | **Mending Bloom** | Light | Small heal over time | Elderroot side task |
 | 5 | **Frost Shard** | Frost | Piercing projectile, chills | Azure Coast |
 | 6 | **Tide Ward** | Frost | Shield that absorbs one hit | Azure Coast Trial |
@@ -283,6 +295,12 @@ All keys can be remapped.
 | # | Boss | Region | Rec. Magic Power | Mechanic it tests | Reward |
 |---|---|---|---|---|---|
 | 0 | Ignis (prologue) | Elderroot | — | **Can't win**: shows how strong the enemy is | Story |
+
+**Ignis in the prologue (built in Phase 8b):** fought in the village square. He can't be hurt (hits flare on an ember
+shell: "Immune") and his rank shows as "???". He uses every kind of warning: *Ember Sweep* (a burning arc up close),
+*Flame Step* (a lane, then a burning glide), *Cinder Ring* (a ring of fire round him) and *Ember Volley* (a fan of
+seven bolts). Aurelia can't fall. After 35 s, or once she is down to 35% health, the fight stops for the story
+(Sylvaris). Numbers in `data/bosses/ignis_prologue.tres` and `data/encounters/ignis_prologue.tres`.
 | 1 | **Cinder Warden** | Elderroot Meadow | ~40 | Dodging telegraphs, stamina basics | Ember Core #1, recipe, accessory |
 
 **Cinder Warden (built in Phase 8a):** fought in a scorched clearing on the meadow's north path (owner decision
@@ -317,7 +335,8 @@ embers (*Ember Volley*). Rewards: Ember Core #1, the Ember-Ward Ring and its rec
 
 - **Element chosen at hatching** (approved by the owner 2026-11-04): Frost, Wind, Earth or Light (a different skill set per element; one body shape with recolours keeps art cost low).
 - **Getting the egg (for now):** the Village Elder gives it once both Elderroot tasks are done (owner decision 2026-11-04, a
-  stand-in until the story scenes; Sylvaris 💡 is still unapproved). Fighting, solving puzzles, reaching new places and
+  stand-in until the story scenes; Sylvaris was approved the same day and appears in the prologue since Phase 8b,
+  but the owner kept the Elder as the giver for now on 2026-11-07). Fighting, solving puzzles, reaching new places and
   walking warm it; when it glows, resting at a Lantern Shrine plays the hatching scene, where Aurelia picks its colour
   (element) and names it (empty keeps **Pip**, owner decision 2026-11-04). Phase 8 moves the hatch to the end of the slice.
 - **Hatchling skills (built in Phase 7, draft names):**
@@ -422,6 +441,14 @@ Puzzles use **the spells the player has**, so learning a spell feels useful outs
 | **Aether Shards** | Hidden collectibles; 3 shards = +max stamina | Stamina upgrade |
 
 - Target for v1: **~20 side tasks**, **~10 Trials**, **~10 bounties**.
+- **The Gust Trial (built in Phase 8b, owner decision 2026-11-07: a puzzle, then a fight):** the **Windcall Shrine**
+  (draft name), a round courtyard east of the old shrine ruins, veiled in mist. The shrine's voice asks Aurelia to
+  wake its runes "as the wind is born: one breath, then two, then three". Lantern Glow reveals three rune stones in
+  the mist (one, two and three carved curls: shapes, not colours); Light lights them, and the wrong order puts them
+  all out again (the nearest one to the way in is the second). Then a ring of wind seals the courtyard for two short
+  waves (three Thornlings; two Ember Wisps and a Thornling). Passing clears the mist and raises the **Gust tome** on
+  the altar; falling lowers the wind (walk back in to try again). Finding it plays the owner's *The World Holds Its
+  Breath*. The Gust tome no longer lies on the scenic platform (a Stamina Tonic does now).
 - The **journal** (Aurelia's book) tracks quests, a bestiary, spell descriptions, materials and lore.
 
 ---
@@ -445,6 +472,9 @@ Puzzles use **the spells the player has**, so learning a spell feels useful outs
   *Built (Phase 6b): a new game starts at 15:00 (the golden afternoon); night is 20:30–05:30, moonlit and readable.*
 - **Weather:** clear, rain, fog, storm. Some secrets only appear in certain weather.
   *Built (Phase 6b): every 3 game hours the weather is rolled (clear 65%, rain 20%, fog 15%; tune in `data/world/time_settings.tres`). Storms and per-region weather come later.*
+- **Phase 8b:** the **Windcall Shrine** (the Gust Trial) east of the old ruins in the meadow, and the **Rank Stone** by
+  the village well (touch it to see your rank light up its seven marks). On Rank Day (the prologue) the road north
+  from the village stays closed until the prologue ends.
 - **Elderroot** so far has two connected areas: the meadow (World Tree view, ruins, pond) and **Elderroot Village** south of it (cottages, well, Lantern Shrine, Maren's herb garden), where the Elder and Maren live (Phase 6b).
 - **Bigger Elderroot (owner request 2026-11-05: more to explore).** The meadow is now about 145 × 110 m inside a pine
   border, with named places found by walking in ("Discovered: …", shown on the map): *Whispering Grove* (glowing
@@ -523,7 +553,8 @@ More pet dragons, riding the dragon in real time, New Game+, the Unknown One bos
 3. ✅ **Ember Core** mechanic approved 2026-11-04 (the Cinder Warden drops Ember Core #1; Ignis's weakening comes with the final fight).
 4. ❓ Spell loadout changes: anywhere outside combat, or only at rest points?
 5. ✅ Pet dragon: one dragon with element choice, chosen at hatching (owner decision 2026-11-04).
-6. ❓ Keep the names suggested here (Sylvaris, Brinecoil, Hollow King, Vharka, Aurorath)? *Lumen approved 2026-11-03. Draft villager names from Phase 6a: Maren, Tamsin (dialogue/glossary.md).*
+6. ❓ Keep the names suggested here (Sylvaris ✅ approved 2026-11-04, Brinecoil, Hollow King, Vharka, Aurorath)? New
+   draft names from Phase 8b: the Rank Stone, Rank Day, the Windcall Shrine. *Lumen approved 2026-11-03. Draft villager names from Phase 6a: Maren, Tamsin (dialogue/glossary.md).*
 
 ---
 

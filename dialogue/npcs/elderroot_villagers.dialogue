@@ -1,10 +1,13 @@
 # status: draft (Phase 6a, 2026-11-03), waiting for the owner's approval
 # Elderroot villagers: the Elder, Maren the herbalist and young Tamsin (DIALOGUE_DESIGN.md §10).
 # Phase 7 (draft, 2026-11-04): the Elder gives the dragon egg once both village tasks are done (`elder_egg`).
+# Phase 8b (draft, 2026-11-07): Rank Day lines while the prologue runs (`*_prologue`); the Trial in elder_repeat.
 # Voices: DIALOGUE_DESIGN.md §7. Names and terms: dialogue/glossary.md.
 # Only GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene and AudioManager may be called.
 
 ~ elder
+if GameState.has_flag("prologue_active")
+	=> elder_prologue
 if not GameState.has_flag("egg_received") and QuestManager.is_done("herbs_for_maren") and QuestManager.is_done("lost_satchel")
 	do GameState.set_flag("met_elder")
 	=> elder_egg
@@ -24,7 +27,9 @@ Aurelia: [#determined] Right. I'll do my best!
 => END
 
 ~ elder_repeat
-if DragonManager.is_hatched()
+if QuestManager.is_active("gust_trial") and not GameState.has_flag("gust_trial_passed")
+	Elder: The Windcall lies east of the pond, past the old ruins. Walk softly there. It is an old place.
+elif DragonManager.is_hatched()
 	Elder: [#proud] So this is {{DragonManager.dragon_name}}. Twelve winters in my cupboard, and look at it now.
 	Aurelia: [#happy] It ate my breakfast this morning. And then my bookmark.
 elif DragonManager.has_egg()
@@ -55,12 +60,19 @@ Elder: When it glows, rest at a Lantern Shrine. It will want a calm place to wak
 Aurelia: [#excited] I'll keep it safe. I promise!
 => END
 
+~ elder_prologue
+Elder: [#proud] The Stone is awake, Aurelia. By the well, in the square. Off you go, then.
+=> END
+
 ~ elder_bark
 % Elder: Lovely morning. Too lovely, perhaps.
 % Elder: Read less, sleep more, Aurelia.
 => END
 
 ~ maren
+if GameState.has_flag("prologue_active")
+	Maren: [#happy] Rank Day, dear! Don't look so pale. The Stone doesn't bite. Mostly.
+	=> END
 if QuestManager.is_done("herbs_for_maren")
 	Maren: [#happy] The Sunpetal tea is working wonders. Brew yourself a tonic, dear.
 	=> END

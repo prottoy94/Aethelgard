@@ -45,7 +45,7 @@ func new_game() -> void:
 		_confirm_new = true
 		_new_game.text = "Start over?  (replaces the autosave)"
 		return
-	SaveManager.start_new_game()
+	SaveManager.start_prologue()  # a new story starts with Rank Day in the village (Phase 8b)
 
 
 func _quick_start(args: PackedStringArray) -> void:
@@ -55,6 +55,9 @@ func _quick_start(args: PackedStringArray) -> void:
 	for arg in args:
 		if arg.begins_with("--region="):
 			region = StringName(arg.trim_prefix("--region="))
+		if arg == "--prologue" or arg.begins_with("--prologue="):  # the prologue, from its start or a beat
+			SaveManager.start_prologue()
+			return
 	SaveManager.start_new_game(region, &"")
 
 

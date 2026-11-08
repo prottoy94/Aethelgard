@@ -36,7 +36,10 @@ var navigator: Navigator
 var cycle: DayNightCycle
 var environment: Environment
 var sun: DirectionalLight3D
+## True while a story scene chooses the music (the prologue): the clock and weather then change only the ambience.
+var hold_music := false
 var _toast: Label
+var _toast_layer: CanvasLayer
 var _toast_timer := 0.0
 var _animated := false
 var _combat_check := 0.0
@@ -129,8 +132,11 @@ func start() -> void:
 	_apply_start_options()
 
 
-## A new game starts the opening's main thread (owner request 2026-11-04: always a next step to follow).
+## A new game starts the opening's main thread (owner request 2026-11-04: always a next step to follow). During the
+## prologue its director starts the prologue's own quest instead.
 func _start_main_quest() -> void:
+	if GameState.has_flag(SaveManager.PROLOGUE_FLAG):
+		return
 	if not GameState.has_flag(DragonManager.EGG_FLAG):
 		QuestManager.start(MAIN_QUEST)
 
@@ -220,6 +226,13 @@ func _link_world() -> void:
 	for node in get_tree().get_nodes_in_group(&"landmark"):
 		(node as Landmark).discovered.connect(func(place: Landmark) -> void:
 			show_toast("Discovered: %s" % place.display_name, 4.0))
+	for node in get_tree().get_nodes_in_group(&"scripted_encounter"):  # the prologue Ignis (FR-BOS-04)
+		var encounter := node as ScriptedEncounter
+		encounter.fight_started.connect(func(boss: Boss) -> void: hud.boss_bar.show_boss(boss))
+		encounter.fight_ended.connect(func(_won: bool) -> void: hud.boss_bar.hide_boss())
+	for node in get_tree().get_nodes_in_group(&"region_exit"):
+		var exit := node as RegionExit
+		exit.blocked.connect(func(closed: RegionExit) -> void: show_toast(closed.closed_text, 4.0))
 	for node in get_tree().get_nodes_in_group(&"boss_arena"):
 		var arena := node as BossArena
 		arena.fight_started.connect(func(boss: Boss) -> void: hud.boss_bar.show_boss(boss))
@@ -240,8 +253,9 @@ func update_audio() -> void:
 	if region == null:
 		return
 	var night := TimeOfDay.is_night()
-	AudioManager.play_music(region.music_night if night and region.music_night != &"" else region.music_day)
-	AudioManager.set_combat_layer(region.combat_layer)
+	if not hold_music:
+		AudioManager.play_music(region.music_night if night and region.music_night != &"" else region.music_day)
+		AudioManager.set_combat_layer(region.combat_layer)
 	AudioManager.play_ambience(region.ambience_night if night and region.ambience_night != &"" else region.ambience_day)
 	AudioManager.play_weather(RAIN_AMBIENCE if TimeOfDay.weather == &"rain" else &"")
 
@@ -276,6 +290,8 @@ func _on_rested(_player: Player, result: Dictionary) -> void:
 ## The warm egg hatches here (FR-DRG-01), then the game saves with the new dragon.
 func _hatch_egg() -> void:
 	await Cutscene.play(&"dragon_hatch")
+	if not is_inside_tree():
+		return
 	dragon = get_tree().get_first_node_in_group(&"dragon") as Dragon
 	if DragonManager.is_hatched():
 		SaveManager.autosave()
@@ -337,10 +353,19 @@ func _exit_tree() -> void:
 			[QuestManager.quest_started, _on_quest_started], [Settings.graphics_changed, _apply_graphics],
 			[DragonManager.egg_received, _on_egg_received], [DragonManager.egg_ready, _on_egg_ready],
 			[DragonManager.bond_level_up, _on_bond_level_up], [DragonManager.skill_unlocked, _on_dragon_skill_unlocked],
-			[TimeOfDay.hour_changed, _on_hour_changed], [TimeOfDay.weather_changed, _on_weather_changed]]:
+			[TimeOfDay.hour_changed, _on_hour_changed], [TimeOfDay.weather_changed, _on_weather_changed],
+			[Cutscene.cutscene_started, _on_cutscene_started], [Cutscene.cutscene_finished, _on_cutscene_finished]]:
 		var sig: Signal = connection[0]
 		if sig.is_connected(connection[1]):
 			sig.disconnect(connection[1])
+
+
+func _on_cutscene_started(_id: StringName) -> void:
+	_toast_layer.visible = false
+
+
+func _on_cutscene_finished(_id: StringName) -> void:
+	_toast_layer.visible = true
 
 
 func _apply_graphics(preset: GraphicsPreset) -> void:
@@ -353,6 +378,10 @@ func _apply_graphics(preset: GraphicsPreset) -> void:
 func _build_toast() -> void:
 	var layer := CanvasLayer.new()
 	add_child(layer)
+	_toast_layer = layer
+	# Hidden while a cutscene plays (its timer is paused with the game, so a toast would hang over the scene).
+	Cutscene.cutscene_started.connect(_on_cutscene_started)
+	Cutscene.cutscene_finished.connect(_on_cutscene_finished)
 	_toast = Label.new()
 	_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_toast.add_theme_font_size_override("font_size", 26)
@@ -368,7 +397,8 @@ func _build_toast() -> void:
 ## Test start options: --open=inventory|grimoire|dragon|journal|save|options|crafting, --talk=<npc id>,
 ## --give=materials|treats, --visual=shapes, --hour=<0–24>, --weather=clear|rain|fog,
 ## --dragon=egg|ready|hatch|frost|wind|earth|light (an egg, a warm egg, the hatching scene right away, or a hatched
-## dragon of that element), --autoplay[=<choice>] (conversations advance by themselves; dev tool)
+## dragon of that element), --autoplay[=<choice>] (conversations advance by themselves; dev tool), --boss, --trial
+## (straight into the region's boss fight or Trial), --guide
 ## (--spawn=<id> is read when spawning).
 func _apply_start_options() -> void:
 	var args := OS.get_cmdline_user_args()
@@ -412,6 +442,18 @@ func _apply_start_options() -> void:
 				camera_rig.set_yaw(0.0)
 				camera_rig.snap_to_target()
 				arena.start_fight.call_deferred()
+		elif arg == "--trial":  # straight into the region's Trial: runes awake, the wind rises (dev tool)
+			var shrine := get_tree().get_first_node_in_group(&"trial_shrine") as TrialShrine
+			if shrine:
+				player.global_position = shrine.global_position + Vector3(-shrine.data.radius + 2.5, 0.1, 0)
+				player.face_instantly(Vector3.RIGHT)
+				camera_rig.set_yaw(Player.yaw_of(Vector3.RIGHT))
+				camera_rig.snap_to_target()
+				for rune in shrine.runes:
+					rune.reveal()
+					rune._grace = 0.0
+				for rune in shrine.runes:
+					rune.light_up()
 		elif arg == "--guide":  # press N by itself after a moment (dev tool, for captures)
 			get_tree().create_timer(1.0).timeout.connect(navigator.show_way)
 		elif arg.begins_with("--talk="):

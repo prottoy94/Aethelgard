@@ -53,7 +53,7 @@ if PlayerData.rank >= Ranks.LANTERN
 | Syntax | Meaning |
 |---|---|
 | `Name: text` | A spoken line |
-| `[#mood]` | Portrait expression tag (see §6). Other tags: `[#left]`/`[#right]` portrait side, `[#shake]` box shake, `[#sfx=id]` play a sound event |
+| `[#mood]` | Portrait expression tag (see §6). Other tags: `[#left]`/`[#right]` portrait side, `[#shake]` box shake, `[#sfx=id]` play a sound event, `[#ask]` on a choice line: it still waits for the player when the scene is skipped (§5.3) |
 | `- text` | A player choice; indented lines are what happens next |
 | `if / elif / else` | Show lines only when a condition is true |
 | `do Something()` | Make something happen in the game (quest, item, flag, cutscene action) |
@@ -140,16 +140,29 @@ Keeping scope small means **choices change the conversation, not the main story*
 `letterbox(on)`, `camera_to(marker, time)`, `camera_follow(actor)`, `camera_zoom(z, time)`, `spawn(actor_id, marker)`, `despawn(actor_id)`,
 `move(actor_id, marker, time)`, `face(actor_id, direction)`, `anim(actor_id, name)`, `emote(actor_id, icon)` (💡 ! ? ♪ … bubbles),
 `wait(seconds)`, `fade_out(time)` / `fade_in(time)`, `flash(color)`, `shake(strength)`, `play(cutscene_scene_id)`.
-Actors and markers are found by ID inside the current region scene (`Marker3D` nodes in a `CutsceneMarkers` group). The cutscene camera is a separate `Camera3D` that blends from the play camera.
+Actors and markers are found by ID inside the current region scene (`CutsceneMarker` nodes, a `Marker3D`, in the group
+`cutscene_marker`; actors tagged with `CutsceneActor.tag()`: "aurelia", "lumen", "dragon", NPCs by their id, "ignis",
+"sylvaris", "rank_stone"). The cutscene camera is a separate `Camera3D` that blends from the play camera.
 **Built so far:** `letterbox`, `fade_out`/`fade_in`, `wait` (Phase 6a); Phase 7 adds `play(id)` (adds that id's
 `CutsceneScene` next to Aurelia; the scene runs its own dialogue), `cue(name)` (the dialogue asks the playing scene for an
 effect, e.g. `do Cutscene.cue("hatch")`, awaited) and `ask_text(question, default, max_length)` (a parchment name box).
 The bars sit under the dialogue box; the HUD hides while a scene plays. First scene: `src/cutscenes/dragon_hatch/`.
+**Phase 8b** adds `camera_to(marker, time)` / `camera_back(time)`, `spawn`, `despawn`, `move`, `face`, `anim` (Aurelia's
+roles, "idle" to stand again, or the actor's own: Sylvaris "land", "roar", "breath", "bow", "rise", "take_off";
+Ignis "gather", "release", "recoil", "vanish"), `emote`, `shake(strength, time)`, `flash(colour, time)` and skipping.
+Conversations pause the game, so these run while paused; the actors a scene touches keep animating, and the dialogue
+box steps aside while a timed action runs. Story scenes written as a single title (`StoryScene`) can be played by a
+region with `play_scene()`, which answers their cues (the prologue: `VillagePrologue`). `camera_follow`/`camera_zoom`
+are not needed yet.
 
 ### 5.3 Rules
-- **Every cutscene can be skipped** (hold a button). Skipping still applies all of its game effects (flags, quests, items),
-  and the dialogue file marks those lines `# required` so the skip logic runs them.
-- Cutscenes play once; their flag (`cs_prologue_ignis_seen`) prevents replays.
+- **Every cutscene can be skipped** (hold Esc or B for a second). Skipping still applies all of its game effects (flags,
+  quests, items). *Built in Phase 8b as a fast-forward* rather than the `# required` marking first planned: lines
+  finish at once, flavour choices take the first answer and timed actions end at once, so every line's effect runs in
+  order and nothing has to be marked. A choice the player must make is tagged `[#ask]` and still waits (the dragon's
+  colour), and so does the name box.
+- Cutscenes play once; their flag (`cs_prologue_ignis_seen`) prevents replays. *Built: every scene sets
+  `cs_<id>_seen` when it ends; the prologue also keeps beat flags so a game saved part-way picks up at the last beat.*
 - Keep them short: the prologue under ~3 minutes in total, most others under 1 minute.
 
 ---
@@ -166,12 +179,14 @@ The bars sit under the dialogue box; the HUD hides while a scene plays. First sc
 | Aurelia | neutral, happy, wink (from `pose_2`), excited, embarrassed, sad, scared, determined, angry, surprised, thinking |
 | Lumen | (3D butterfly model only, no portrait: a glowing butterfly icon in the name plate) |
 | Sylvaris | calm, pleased, stern, sad, surprised |
-| Ignis Varos | cold, smirk, angry, amused, wounded |
+| Ignis Varos | cold, smirk, angry, amused, wounded *(placeholder: a crown of embers, a high collar)* |
 | Village Elder | neutral, worried, proud |
 | Rank Examiner 💡 | neutral, dismissive, impressed |
 | Rival apprentice 💡 | smug, annoyed, surprised, respectful |
 | Brinecoil / Vharka / Hollow King | 3–4 each (neutral, angry, pained, freed/defeated) |
 | Generic NPCs | 1–2 each, recolour variants |
+| The Shrine (Trial voice) | calm, pleased *(placeholder: carved rings round a curl of wind)* |
+| Emberbound (barks and the prologue) | one helmet with a glowing visor |
 
 Estimated count: ~60–70 portrait images for v1 (~20 for the vertical slice).
 
@@ -257,13 +272,13 @@ How each character **sounds in writing**. Use this to keep lines consistent.
 
 | ID | Scene | Type | Characters |
 |---|---|---|---|
-| `prologue_morning` | Aurelia wakes and reads her spellbook (`pose_1` art) | Story | Aurelia, Lumen (hidden) |
-| `prologue_rank_trial` | Rank trial: she scores **Spark**; the rival mocks her | Story | Aurelia, Examiner, Rival, Elder |
-| `prologue_ignis_arrives` | Emberbound attack, Ignis appears | Cutscene | Aurelia, Ignis, Elder |
-| `prologue_unwinnable` | Scripted fight → Sylvaris drives Ignis away | Cutscene | Ignis, Sylvaris |
-| `sylvaris_first_meeting` | Sylvaris speaks to Aurelia; Lumen awakens | Story | Aurelia, Sylvaris, Lumen |
-| `elder_quest_start` | The Elder asks Aurelia to find the Trial shrine | NPC | Elder |
-| `trial_gust_intro` / `_complete` | Trial shrine voice and reward | System | Shrine |
+| `prologue_morning` | Aurelia wakes and reads her spellbook (`pose_1` art) | Story | Aurelia, Lumen (hidden). *Draft written (Phase 8b): `main/prologue.dialogue`; she reads on the bench by her cottage, the Elder calls from off-screen* |
+| `prologue_rank_trial` | Rank trial: she scores **Spark**; the rival mocks her | Story | Aurelia, Examiner, Rival, Elder. *Draft written (Phase 8b): the Elder holds the test at the Rank Stone (owner decision 2026-11-07: no Examiner or Rival yet); ends with the Emberbound horn* |
+| `prologue_ignis_arrives` | Emberbound attack, Ignis appears | Cutscene | Aurelia, Ignis, Elder. *Draft written (Phase 8b): after the two Scouts fall* |
+| `prologue_unwinnable` | Scripted fight → Sylvaris drives Ignis away | Cutscene | Ignis, Sylvaris. *Draft written (Phase 8b)* |
+| `sylvaris_first_meeting` | Sylvaris speaks to Aurelia; Lumen awakens | Story | Aurelia, Sylvaris, Lumen. *Draft written (Phase 8b): follows `prologue_unwinnable` in one scene* |
+| `elder_quest_start` | The Elder asks Aurelia to find the Trial shrine | NPC | Elder. *Draft written (Phase 8b): a short scene; also sends her to Maren and Tamsin and starts both quests* |
+| `trial_gust_intro` / `_complete` | Trial shrine voice and reward | System | Shrine. *Draft written (Phase 8b): `system/trial_shrines.dialogue` (+ `trial_gust_test`, `trial_gust_repeat`); Lumen's hint `lumen_hint_runes`* |
 | `quest_lost_satchel` | Side task: find a child's lost satchel | NPC | Villager child (Tamsin). *Draft written (Phase 6a): `npcs/elderroot_villagers.dialogue`, cues `tamsin`, `tamsin_return`* |
 | `quest_herbalist` | Side task: gather herbs → first recipe | NPC | Herbalist (Maren). *Draft written (Phase 6a): cues `maren`, `maren_hand_over`* |
 | `warden_intro` / `warden_defeat` | Boss intro and defeat | Cutscene | Cinder Warden, Aurelia |
@@ -323,7 +338,7 @@ How each character **sounds in writing**. Use this to keep lines consistent.
 | M5 World systems | Dialogue box + portraits + choices, barks, NPC interaction, flags, `Cutscene` API basics. ✅ Built in Phase 6a; also a first Elder conversation (`elder`, a stand-in until `elder_quest_start`) |
 | M6 Persistence | Flags saved/loaded; repeat-talk handling |
 | M7 Dragon | Hatching cutscene, dragon naming, emote bubbles. ✅ Built in Phase 7 (emotes ♥ ! ? ♪ zzz above the dragon; the Elder mentions it by name) |
-| M8 Boss | Boss intro/defeat cutscenes, prologue Ignis scenes, skip system |
+| M8 Boss | Boss intro/defeat cutscenes, prologue Ignis scenes, skip system. 🟨 8b: the prologue scenes, the Cutscene camera/actor API and skipping (fast-forward) are built; Trial shrine lines; villagers' Rank Day lines. Boss intro/defeat scenes for the Warden come with 8c |
 | 🎯 Vertical slice | All scripts in §10 written, approved and playable |
 | M9–M10 | Scripts for Acts 1–4 and the ending |
 | M11 Polish | Real portraits, text pass, history log, translation export (if wanted) |

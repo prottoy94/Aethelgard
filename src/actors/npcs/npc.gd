@@ -26,6 +26,7 @@ var _player: Player
 func _ready() -> void:
 	add_to_group(&"npc")
 	Waypoint.mark(self, npc_id)
+	CutsceneActor.tag(self, npc_id)  # cutscenes can move and turn villagers (Phase 8b)
 	collision_layer = 1  # world
 	var shape := CollisionShape3D.new()
 	var capsule := CapsuleShape3D.new()

@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="QuestData" format=3]
+
+[ext_resource type="Script" path="res://src/quests/quest_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/quests/quest_step.gd" id="2"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="3"]
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="4"]
+
+[sub_resource type="Resource" id="step_0"]
+script = ExtResource("2")
+description = "Find the old Trial shrine, east of the ruins in the meadow"
+objective = 6
+target = &"found_windcall_shrine"
+amount = 1
+waypoint = &"trial_shrine"
+waypoint_region = &"elderroot_meadow"
+
+[sub_resource type="Resource" id="step_1"]
+script = ExtResource("2")
+description = "Wake the runes hidden in the mist, in order"
+objective = 4
+target = &"gust_trial_runes"
+amount = 1
+waypoint = &"trial_shrine"
+waypoint_region = &"elderroot_meadow"
+
+[sub_resource type="Resource" id="step_2"]
+script = ExtResource("2")
+description = "Stand in the wind: pass the Trial"
+objective = 6
+target = &"gust_trial_passed"
+amount = 1
+waypoint = &"trial_shrine"
+waypoint_region = &"elderroot_meadow"
+
+[sub_resource type="Resource" id="step_3"]
+script = ExtResource("2")
+description = "Take the Gust tome and read it at a Lantern Shrine"
+objective = 5
+target = &"gust"
+amount = 1
+waypoint = &"lantern_shrine"
+waypoint_region = &""
+
+; The Gust Trial (GAME_DESIGN.md §6.4, §11; FR-QST-03): started by the Elder at the end of the prologue. The Trial
+; itself is data/trials/gust_trial.tres (owner decision 2026-11-07: hidden runes, then a ring of wind). Status: draft.
+[resource]
+script = ExtResource("1")
+id = &"gust_trial"
+title = "The Gust Trial"
+kind = 2
+giver = "Sylvaris and the Elder"
+summary = "Sylvaris spoke of an old Trial of the wind, asleep in the meadow for a hundred years. A Trial gives its spell to whoever passes it."
+steps = Array[ExtResource("2")]([SubResource("step_0"), SubResource("step_1"), SubResource("step_2"), SubResource("step_3")])
+reward_items = Array[ExtResource("3")]([])
+reward_recipes = Array[ExtResource("4")]([])

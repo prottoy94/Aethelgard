@@ -10,10 +10,14 @@ signal died
 @export var max_health := 100.0
 @export var defense := 0.0                          ## flat reduction per hit
 @export var element := Elements.Type.NONE           ## the owner's own element (for weaknesses)
+## Takes no damage at all (scripted fights: Ignis in the prologue, FR-BOS-04). Hits still land and are reported.
+@export var invulnerable := false
 ## −fraction of damage taken per attacking element (from gear, e.g. the Ember-Ward Ring).
 var resistances: Dictionary[Elements.Type, float] = {}
 
 var current := 0.0
+## Health never drops below this (scripted fights Aurelia must survive). 0 = normal.
+var minimum := 0.0
 
 
 func _ready() -> void:
@@ -24,8 +28,13 @@ func _ready() -> void:
 func apply_damage(info: DamageInfo) -> float:
 	if is_dead():
 		return 0.0
+	if invulnerable:
+		damaged.emit(0.0, info)
+		return 0.0
 	var amount := compute_damage(info.amount * (1.0 - resistances.get(info.element, 0.0)), info.element, element, defense)
-	current = maxf(current - amount, 0.0)
+	var before := current
+	current = maxf(current - amount, minf(minimum, before))
+	amount = before - current
 	damaged.emit(amount, info)
 	changed.emit(current, max_health)
 	if current <= 0.0:

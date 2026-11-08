@@ -43,6 +43,20 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   `src/actors/bosses/` (Boss, BossData, BossPhaseData, cinder_warden/), `src/world/bosses/boss_arena.gd`,
   `src/ui/hud/boss_bar.gd`, `src/actors/enemies/emberbound/` (EmberboundVisual, Scout scene). Data: `data/bosses/`,
   `data/enemies/emberbound_scout.tres`, `data/items/ember_core.tres`. Dev options `--boss`, `--spawn=warden|scout`.
+  **8b done** 2026-11-07 (prologue + Ignis + Sylvaris + Gust Trial): **263/263 tests pass. Waiting for the owner's
+  check-in before 8c (the slice put together).** Owner decisions 2026-11-07: the Elder holds the rank test (no
+  Examiner/Rival yet), the Gust Trial = hidden runes then a ring of wind with 2 waves, the Elder still gives the egg
+  (village tasks and the Trial run side by side after the prologue), the owner's songs + placeholder loops.
+  A new game (title New Game, `SaveManager.start_prologue()`, flag `prologue_active`) starts in the village at spawn
+  `home`; `VillagePrologue` (`src/world/regions/elderroot_village/`) runs the beats with `StoryScene`s from
+  `dialogue/main/prologue.dialogue` (drafts). Cutscene API now has camera/actors/emotes/shake/flash and skip (hold
+  Esc = fast-forward, `[#ask]` choices still wait); `CutsceneMarker`, `CutsceneActor`, `EmoteBubble` in
+  `src/cutscenes/`. `ScriptedEncounter` (`src/world/bosses/`, `data/encounters/ignis_prologue.tres`), Ignis
+  (`src/actors/ignis/`, `data/bosses/ignis_prologue.tres`, invulnerable), `Sylvaris` (`src/actors/sylvaris/`),
+  `RankStone`, Lumen sleeps until `lumen_awakened`. Trials: `src/world/trials/` (TrialShrine, TrialRune,
+  RuneSequence, WindRing), `data/trials/gust_trial.tres`, `dialogue/system/trial_shrines.dialogue`; the Windcall
+  Shrine is east of the ruins in the meadow (the Gust tome left the scenic platform). Quests `prologue`, `gust_trial`.
+  Quick test starts begin *after* the prologue. Side fix: the CameraRig camera isn't physics-interpolated any more.
 - **Bigger areas, walking animation, cast sounds** done 2026-11-05 (owner request): `src/world/props/prop_kit.gd`,
   `src/world/places/` (Landmark, LoreStone), `src/world/regions/elderroot_meadow/meadow_landmarks.gd`,
   `src/world/regions/elderroot_village/village_extras.gd`, dialogue drafts `dialogue/world/elderroot_lore.dialogue` and
@@ -97,6 +111,8 @@ crafting gear and raising a pet dragon, and her goal is to defeat **Ignis Varos,
   `--spawn=start|viewpoint|combat|wisp|ruins|from_village|from_meadow`, `--open=inventory|grimoire|dragon|map|journal|save|options|crafting`,
   `--talk=elder|maren|tamsin`, `--hour=<0-24>`, `--weather=clear|rain|fog`, `--give=materials|treats`, `--visual=shapes`, `--walk`,
   `--dragon=egg|ready|hatch|frost|wind|earth|light`, `--guide`, `--autoplay[=<choice>]` (conversations advance by themselves),
+  `--prologue[=stone|attack|ignis|sylvaris|elder]` (a new story: the prologue in the village, or from that beat; every
+  other start option begins *after* the prologue), `--trial` (meadow: straight into the Gust Trial's fight), `--spawn=trial`,
   `--benchmark=<dir>`, `--capture=<dir> --capture-at=1.5,4,8` (screenshots at those seconds, then quit; good with
   `--autoplay` for cutscenes), `--graphics=low|medium|high`. The meadow is `src/world/test/test_level_3d.tscn` (region elderroot_meadow).
   Key code: `src/actors/player/` (Player, states, placeholder model, MovementStats), `src/game/camera/` (CameraRig, CameraSettings),

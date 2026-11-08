@@ -11,11 +11,15 @@ const CODE_CUES := {
 	"res://dialogue/npcs/elderroot_villagers.dialogue": ["elder", "maren", "tamsin", "elder_bark", "maren_bark",
 			"tamsin_bark"],
 	"res://dialogue/barks/lumen.dialogue": ["lumen_secret_nearby", "lumen_low_health", "lumen_hint_braziers",
-			"lumen_hint_steps", "lumen_hint_block"],
+			"lumen_hint_steps", "lumen_hint_block", "lumen_hint_runes"],
 	"res://dialogue/story/dragon_hatch.dialogue": ["dragon_hatch"],
 	"res://dialogue/world/elderroot_lore.dialogue": ["grove_stone", "tower_stone", "falls_stone", "camp_orders",
 			"farm_sign", "circle_stone", "village_notice", "mill_sign"],
 	"res://dialogue/npcs/elderroot_folk.dialogue": ["bram", "bram_bark", "wenna", "wenna_bark", "pell", "pell_bark"],
+	"res://dialogue/main/prologue.dialogue": ["prologue_morning", "prologue_rank_trial", "prologue_ignis_arrives",
+			"prologue_unwinnable", "sylvaris_first_meeting", "elder_quest_start"],
+	"res://dialogue/system/trial_shrines.dialogue": ["trial_gust_intro", "trial_gust_test", "trial_gust_complete",
+			"trial_gust_repeat"],
 }
 
 var _reference := RegEx.create_from_string("\\b([A-Z][A-Za-z]+)\\.([a-z_][a-z_0-9]*)")

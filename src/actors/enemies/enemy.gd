@@ -18,6 +18,8 @@ const HIT_STOP := 0.05
 const ENGAGED_RANGE_FACTOR := 1.3
 const AIM_LOCK := 0.7          ## of the wind-up: after this it stops turning (the last moment can be dodged)
 const VOLLEY_HEIGHT := 1.2
+const IMMUNE_TEXT := "Immune"
+const IMMUNE_COLOR := Color(1.0, 0.55, 0.3)
 
 @export var data: EnemyData
 
@@ -48,6 +50,7 @@ func _ready() -> void:
 	health.max_health = data.max_health
 	health.defense = data.defense
 	health.element = data.element
+	health.invulnerable = data.invulnerable
 	health.reset()
 	attack_hitbox.damage = data.attack_damage
 	attack_hitbox.element = data.attack_element
@@ -369,6 +372,13 @@ func _on_status_changed() -> void:
 func _on_hurt(info: DamageInfo, amount: float) -> void:
 	knockback = info.knockback * (1.0 - data.knockback_resistance)
 	CombatFx.flash(visual)
+	if health.invulnerable:  # scripted fights (FR-BOS-04): the hit lands but does nothing
+		CombatFx.floating_text(get_parent(), global_position + Vector3(0, HEALTH_BAR_HEIGHT + 0.2, 0), IMMUNE_TEXT,
+				IMMUNE_COLOR)
+		if visual.has_method(&"play_shield"):
+			visual.call(&"play_shield")
+		play_sound("immune")
+		return
 	CombatFx.damage_number(get_parent(), global_position + Vector3(0, HEALTH_BAR_HEIGHT + 0.2, 0),
 			amount, Elements.multiplier(info.element, data.element))
 	CombatFx.hit_stop(get_tree(), HIT_STOP)

@@ -34,7 +34,7 @@ func receive_hit(info: DamageInfo) -> bool:
 		info.amount *= status_effects.damage_taken_multiplier()
 	var amount := health.apply_damage(info)
 	_play_hit_sound(info)
-	if status_effects and info.status != &"" and not health.is_dead():
+	if status_effects and info.status != &"" and not health.is_dead() and not health.invulnerable:
 		status_effects.apply(info.status, info.status_duration, info.status_power, info.element)
 	hurt.emit(info, amount)
 	return true

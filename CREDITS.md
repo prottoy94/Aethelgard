@@ -6,12 +6,12 @@ Every shipped asset that isn't a generated placeholder gets an entry here (see A
 
 | File (source) | Used as | Made by / tool | Licence / terms | Notes |
 |---|---|---|---|---|
-| `Audio_music/Sunlight_on_Ancient_Stone.mp3` | `mus_title`, `mus_ending_credits`, Aurelia's leitmotif | Project owner, using a Google generative AI tool (❓ which one) | ❓ Owner to confirm the tool's terms allow commercial use | Content credentials: "Created by Google Generative AI"; SynthID watermark. Vocals = Aurelia's voice. |
+| `Audio_music/Sunlight_on_Ancient_Stone.mp3` | `mus_title`, `mus_prologue_morning` (intro + verse 1 in the prologue, Phase 8b), `mus_ending_credits`, Aurelia's leitmotif | Project owner, using a Google generative AI tool (❓ which one) | ❓ Owner to confirm the tool's terms allow commercial use | Content credentials: "Created by Google Generative AI"; SynthID watermark. Vocals = Aurelia's voice. |
 | `Audio_music/Tides_of_the_Morning_Shore.mp3` | `mus_azure_coast_explore` | Project owner, using a Google generative AI tool (❓ which one) | ❓ Owner to confirm | Content credentials: "Created by Google Generative AI"; SynthID watermark. Instrumental. |
 | `Audio_music/Where_the_Forest_Remembers.mp3` | `mus_elderroot_explore`, `mus_elderroot_night` (suggested, owner to confirm) | Project owner, Google generative AI tool (❓ which one) | ❓ Owner to confirm | Added 2026-11-03; content credentials mention Google. Instrumental, F# major |
 | `Audio_music/Edge_Of_The_Blue.mp3` | `mus_village_explore` (suggested, owner to confirm) | Project owner, Google generative AI tool (❓) | ❓ Owner to confirm | Added 2026-11-03; content credentials mention Google. Instrumental, F# major |
 | `Audio_music/The_Last_Ascent.mp3` | `mus_boss_ascent` (suggested for the first boss, not used yet) | Project owner, Google generative AI tool (❓) | ❓ Owner to confirm | Added 2026-11-03; content credentials mention Google. Instrumental, C# minor |
-| `Audio_music/The_World_Holds_Its_Breath.mp3` | `mus_story_world_holds_its_breath` (suggested for a story moment, not used yet) | Project owner, Google generative AI tool (❓) | ❓ Owner to confirm | Added 2026-11-03; content credentials mention Google. Spoken lines at the start |
+| `Audio_music/The_World_Holds_Its_Breath.mp3` | `mus_story_world_holds_its_breath` (finding the Gust Trial shrine, Phase 8b; owner decision 2026-11-07) | Project owner, Google generative AI tool (❓) | ❓ Owner to confirm | Added 2026-11-03; content credentials mention Google. Spoken lines at the start |
 
 ## Animations
 

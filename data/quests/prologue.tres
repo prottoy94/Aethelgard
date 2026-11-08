@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="QuestData" format=3]
+
+[ext_resource type="Script" path="res://src/quests/quest_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/quests/quest_step.gd" id="2"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="3"]
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="4"]
+
+[sub_resource type="Resource" id="step_0"]
+script = ExtResource("2")
+description = "Touch the Rank Stone in the village square"
+objective = 6
+target = &"prologue_rank_done"
+amount = 1
+waypoint = &"rank_stone"
+waypoint_region = &"elderroot_village"
+
+[sub_resource type="Resource" id="step_1"]
+script = ExtResource("2")
+description = "Drive the Emberbound out of the village"
+objective = 6
+target = &"prologue_scouts_done"
+amount = 1
+waypoint = &"enemy"
+waypoint_region = &"elderroot_village"
+
+[sub_resource type="Resource" id="step_2"]
+script = ExtResource("2")
+description = "Stand against the stranger in red"
+objective = 6
+target = &"prologue_done"
+amount = 1
+waypoint = &""
+waypoint_region = &""
+
+; The prologue (GAME_DESIGN.md §3.6, FR-QST-01): Rank Day in Elderroot Village, run by VillagePrologue. The steps follow
+; its beat flags, so the journal, the HUD tracker and N (show the way) always say what comes next. Status: draft.
+[resource]
+script = ExtResource("1")
+id = &"prologue"
+title = "Rank Day"
+kind = 0
+giver = "Elder"
+summary = "Every elf of Elderroot touches the Rank Stone on Rank Day, and today it is Aurelia's turn. Five years of reading. It has to show something."
+steps = Array[ExtResource("2")]([SubResource("step_0"), SubResource("step_1"), SubResource("step_2")])
+reward_items = Array[ExtResource("3")]([])
+reward_recipes = Array[ExtResource("4")]([])

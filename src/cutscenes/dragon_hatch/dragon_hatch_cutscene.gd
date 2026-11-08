@@ -28,6 +28,8 @@ func run() -> void:
 		player.velocity = Vector3.ZERO
 		player.face_instantly(_spot - player.global_position)
 	await talk(DIALOGUE, CUE_TITLE)
+	if not is_inside_tree():
+		return  # the game is closing mid-scene
 	# Make sure it ends hatched even if the conversation stopped early.
 	if not DragonManager.is_hatched():
 		DragonManager.hatch()

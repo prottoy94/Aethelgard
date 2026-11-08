@@ -1,9 +1,13 @@
 # status: draft (2026-11-05), waiting for the owner's approval
 # More people in Elderroot Village (owner request: more to explore): Bram the smith, Wenna the miller and Pell, a
 # farm boy. No quests yet: a short talk each, and remarks in passing. Names are drafts (dialogue/glossary.md).
+# Phase 8b (draft, 2026-11-07): a Rank Day line each while the prologue runs.
 # Only GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene and AudioManager may be called.
 
 ~ bram
+if GameState.has_flag("prologue_active")
+	Bram: Rank Day, eh? Go on, little spark. Show that old rock what you've got.
+	=> END
 if DragonManager.is_hatched()
 	Bram: Ha! A dragon. Keep it away from my coal pile, Aurelia. It's already eyeing it.
 	=> END
@@ -21,6 +25,9 @@ Bram: Morning, little spark. Mind the anvil, it bites.
 => END
 
 ~ wenna
+if GameState.has_flag("prologue_active")
+	Wenna: [#happy] Off to the Stone, dear? I'll bake something for after. Win or lose.
+	=> END
 if GameState.has_flag("warden_defeated")
 	Wenna: [#happy] They're saying you sent a whole Emberbound captain running! My, my. Flour's on the house.
 	=> END
@@ -38,6 +45,9 @@ Wenna: [#worried] And do be careful in the north woods. Odd folk with red banner
 => END
 
 ~ pell
+if GameState.has_flag("prologue_active")
+	Pell: My rank is Glimmer! Two marks! ...What do you think you'll get, Aurelia?
+	=> END
 Pell: Aurelia! Did you see the old watchtower, east past the pond? My grandad says it's haunted.
 - Haunted by what?
 	Pell: [#happy] Wisps! Little fire ones. They float around it at night. Brr!

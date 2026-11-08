@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ScriptedEncounterData" format=3]
+
+[ext_resource type="Script" path="res://src/world/bosses/scripted_encounter_data.gd" id="1"]
+[ext_resource type="PackedScene" path="res://src/actors/ignis/ignis.tscn" id="2"]
+
+; The prologue fight Aurelia can't win (GAME_DESIGN.md §3.6, FR-BOS-04): Ignis can't be hurt; after 35 s, or once she
+; is down to 35% health, the fight stops and Sylvaris arrives (prologue_unwinnable). She can't fall meanwhile.
+[resource]
+script = ExtResource("1")
+id = &"ignis_prologue"
+boss_scene = ExtResource("2")
+actor_id = &"ignis"
+duration = 35.0
+end_health_ratio = 0.35
+player_minimum_health = 1.0
+safe_time = 3.0
+music = &"mus_boss_ignis"
+done_flag = &"prologue_ignis_done"

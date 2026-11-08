@@ -293,6 +293,23 @@ Phases 1–8 build the **vertical slice**: the first 30–45 minutes of the game
 > at 30% he charges twice. Win: **Ember Core #1**, the Ember-Ward Ring and its recipe. Fall: he resets to full. New
 > enemy: the **Emberbound Scout** (sword slash, fire dash). **221/221 tests pass.** Try it: `-- --boss`
 > (straight into the fight; add `--dragon=light` for help), `-- --spawn=warden` (walk in yourself), `-- --spawn=scout`.
+> **8b: ✅ done 2026-11-07.** **New Game now opens on Rank Day** in Elderroot Village: Aurelia reads on the bench by
+> her cottage (the intro and first verse of *Sunlight on Ancient Stone*), walks to the new **Rank Stone** by the well
+> (N shows the way) and touches it: the light stops at the first mark, **Spark**, and the Elder comforts her (your
+> choice: the Elder holds the test). A strange horn: two **Emberbound Scouts** run in and the villagers hide. When
+> they fall, **Ignis Varos** walks down the north road ("Power is a ledger, Spark. Yours is empty.") and you fight
+> him: he can't be hurt ("Immune", rank "???" on the boss bar), you can't fall, and after 35 s or at 35% health he
+> raises a great ember sphere. **Sylvaris** lands between you, breaks it with golden breath and sends Ignis away;
+> he speaks to Aurelia, **Lumen wakes** (asleep until now) and he points her to an old Trial of the wind. The Elder
+> sends her to the Trial and to Maren and Tamsin (your choice: the Elder still gives the egg later), and the road
+> north opens. Every scene can be skipped by holding **Esc** (it fast-forwards, so nothing is lost; the dragon's
+> colour still asks you). In the meadow, east of the old ruins, the **Windcall Shrine** hides three runes in the mist:
+> **Lantern Glow** finds them, **Light Mote** lights them in order (one curl, two, three), then a **ring of wind**
+> seals you in for two short waves, and the **Gust tome** rises on the altar (your music *The World Holds Its
+> Breath* plays when you find it). Sylvaris and Ignis are placeholders of simple shapes; all lines are drafts.
+> **263/263 tests pass.** Try it: New Game on the title screen, or `-- --prologue` (also `=stone`, `=attack`,
+> `=ignis`, `=sylvaris`, `=elder` to start at a beat), `-- --spawn=trial` (walk to the shrine), `-- --trial`
+> (straight into the Trial's fight). **Next: 8c, the slice put together — after your check-in.**
 - Boss system (phases, arena, boss health bar), **Cinder Warden**, the prologue scene where **Ignis** appears and can't be beaten.
 - Put it all together: prologue → Elderroot Meadow → first boss → egg hatches.
 - **🎯 Milestone: the vertical slice.** 30–45 minutes of complete, polished play (placeholder art is fine).

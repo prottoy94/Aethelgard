@@ -1,0 +1,125 @@
+[gd_resource type="Resource" script_class="BossData" format=3]
+
+[ext_resource type="Script" path="res://src/actors/bosses/boss_data.gd" id="1"]
+[ext_resource type="Script" path="res://src/actors/enemies/enemy_move_data.gd" id="2"]
+[ext_resource type="Script" path="res://src/actors/bosses/boss_phase_data.gd" id="3"]
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="4"]
+[ext_resource type="Script" path="res://src/items/recipe_data.gd" id="5"]
+
+[sub_resource type="Resource" id="sweep"]
+script = ExtResource("2")
+id = &"ember_sweep"
+kind = 0
+weight = 2.0
+min_range = 0.0
+max_range = 2.6
+telegraph_time = 0.9
+active_time = 0.2
+recover_time = 0.9
+damage = 18.0
+element = 6
+knockback = 10.0
+radius = 2.8
+arc_deg = 160.0
+status = &"burn"
+status_duration = 2.0
+status_power = 2.0
+
+[sub_resource type="Resource" id="step"]
+script = ExtResource("2")
+id = &"flame_step"
+kind = 1
+weight = 1.2
+min_range = 4.0
+max_range = 11.0
+telegraph_time = 1.0
+active_time = 0.35
+recover_time = 1.0
+damage = 18.0
+element = 6
+knockback = 10.0
+radius = 1.2
+length = 9.0
+width = 1.6
+status = &"burn"
+status_duration = 2.0
+status_power = 2.0
+
+[sub_resource type="Resource" id="ring"]
+script = ExtResource("2")
+id = &"cinder_ring"
+kind = 2
+weight = 1.0
+min_range = 0.0
+max_range = 4.0
+telegraph_time = 1.2
+active_time = 0.25
+recover_time = 1.2
+damage = 22.0
+element = 6
+knockback = 12.0
+radius = 5.0
+arc_deg = 360.0
+status = &"burn"
+status_duration = 3.0
+status_power = 3.0
+
+[sub_resource type="Resource" id="volley"]
+script = ExtResource("2")
+id = &"ember_volley"
+kind = 3
+weight = 1.4
+min_range = 3.0
+max_range = 14.0
+telegraph_time = 1.0
+active_time = 0.2
+recover_time = 1.0
+damage = 14.0
+element = 6
+knockback = 4.0
+count = 7
+spread_deg = 70.0
+projectile_speed = 9.0
+projectile_range = 14.0
+projectile_radius = 0.35
+status = &"burn"
+status_duration = 2.0
+status_power = 2.0
+
+[sub_resource type="Resource" id="phase_1"]
+script = ExtResource("3")
+health_ratio = 1.0
+moves = Array[ExtResource("2")]([SubResource("sweep"), SubResource("step"), SubResource("ring"), SubResource("volley")])
+speed_multiplier = 1.0
+
+; Ignis Varos in the prologue (GAME_DESIGN.md §3.6, §7.2 boss 0; FR-BOS-04): the fight that can't be won. He takes no
+; damage (invulnerable), hits hard and fast with every kind of warning at once, and the ScriptedEncounter ends the
+; fight after a while or when Aurelia is badly hurt (data/encounters/ignis_prologue.tres); then Sylvaris arrives.
+; Rank shown as "???" (GAME_DESIGN.md §5.2: Sovereign, hidden at first). Ember element.
+[resource]
+script = ExtResource("1")
+id = &"ignis_prologue"
+display_name = "Ignis Varos"
+element = 6
+rank = "???"
+max_health = 2000.0
+defense = 0.0
+move_speed = 2.6
+wander_speed = 0.0
+knockback_resistance = 1.0
+invulnerable = true
+aggro_range = 0.0
+leash_range = 60.0
+attack_range = 2.6
+telegraph_time = 0.9
+attack_damage = 18.0
+attack_radius = 2.8
+recover_time = 0.9
+stagger_time = 0.2
+stagger_resistant = true
+title = "Herald of the Final Ember"
+phases = Array[ExtResource("3")]([SubResource("phase_1")])
+music = &"mus_boss_ignis"
+defeat_flag = &""
+reward_items = Array[ExtResource("4")]([])
+reward_recipes = Array[ExtResource("5")]([])

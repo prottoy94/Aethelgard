@@ -10,7 +10,9 @@ extends Resource
 @export var volume_db := 0.0
 @export var loop := true
 @export var loop_start := 0.0      ## s: where a repeat starts (skip the intro)
-@export var loop_end := 0.0        ## s: where it jumps back (0 = the end of the file; set it to cut an outro)
+## s: where it jumps back (0 = the end of the file; set it to cut an outro). With loop off: where it fades out, so
+## only part of a song plays (Sunlight's intro and first verse in the prologue).
+@export var loop_end := 0.0
 @export var start := 0.0           ## s: where it starts playing the first time
 @export var bpm := 0.0             ## for reference and beat-timed changes later
 @export_multiline var notes: String  ## where it comes from and why it is used here

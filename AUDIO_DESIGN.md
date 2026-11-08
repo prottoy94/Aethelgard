@@ -140,7 +140,7 @@ Short melodies that come back throughout the game in different arrangements:
 | Track | Where | States / stems | Priority |
 |---|---|---|---|
 | `mus_title` | Title screen | ✅ **Have it:** *Sunlight on Ancient Stone* (full vocal song, §10) | MVP |
-| `mus_prologue_attack` | Prologue village attack | Single tense loop | MVP |
+| `mus_prologue_attack` | Prologue village attack | Single tense loop. *Phase 8b: a generated placeholder (fast low drums, a pulsing drone, 96 BPM)* | MVP |
 | `mus_elderroot` | Elderroot Meadow | Explore (day), Explore (night: fewer instruments), Combat layer | MVP |
 | `mus_azure_coast` | Azure Coast | Explore (✅ **have it:** *Tides of the Morning Shore*, §10), Combat (needed) | V1 |
 | `mus_ruined_valley` | Ruined Valley | Explore (mysterious, night-focused), Combat | V1 |
@@ -149,7 +149,7 @@ Short melodies that come back throughout the game in different arrangements:
 | `mus_rest_point` | Lantern Shrines | Short calm loop | MVP |
 | `mus_workshop` | World Tree workbench / hub | Cozy loop | V1 |
 | `mus_boss_generic` | Region bosses | Intro, Phase 1, Phase 2 (more intense), Victory | MVP |
-| `mus_boss_ignis` | Ignis encounters + final | Intro, Phase 1, 2, 3 (choir), Defeat | MVP (prologue) / V1 |
+| `mus_boss_ignis` | Ignis encounters + final | Intro, Phase 1, 2, 3 (choir), Defeat. *Phase 8b: a generated placeholder for the prologue fight (heavy slow drums, a dark C# drone, 72 BPM) until a real Ignis theme exists* | MVP (prologue) / V1 |
 | `mus_ending` | Ending + credits | ✅ **Have it:** *Sunlight on Ancient Stone* for the credits (its outro "Now I say goodnight" fits), after a Rift theme sting | V1 |
 
 ### 5.3 Adaptive music rules
@@ -346,7 +346,7 @@ Positional ambience sources: waterfalls, streams, braziers, the World Tree (warm
 | M6 Atmosphere | Day/night ambience swap, weather, region reverb, adaptive explore/combat music |
 | M7 Dragon | Egg, hatch, hatchling chirps. ✅ Placeholders in Phase 7 (16 dragon sounds + hatching stinger) |
 | Listener (2026-11-05) | Sounds are heard from Aurelia's position (an AudioListener3D on the camera rig, facing the camera's way), not from the camera 13 m away; her spell casts were too quiet before. Light Mote and Gust casts got fuller placeholders |
-| M8 Boss | Boss music with phases, Cinder Warden and Ignis-prologue sounds. 🟨 8a: Cinder Warden and Emberbound Scout placeholders (a wind-up sound per move, as long as its warning; hit, alert, hurt, death), `world_fire_wall`, `stg_boss_defeated`; boss music = *The Last Ascent* (`mus_boss_ascent`) |
+| M8 Boss | Boss music with phases, Cinder Warden and Ignis-prologue sounds. 🟨 8a: Cinder Warden and Emberbound Scout placeholders (a wind-up sound per move, as long as its warning; hit, alert, hurt, death), `world_fire_wall`, `stg_boss_defeated`; boss music = *The Last Ascent* (`mus_boss_ascent`). 🟨 8b (owner decision 2026-11-07: the owner's songs plus placeholders): `mus_prologue_morning` = *Sunlight* 0:00–0:36 (intro + verse 1, a one-shot part: `MusicTrack.loop_end` fades it out when `loop` is off), *The World Holds Its Breath* when the Gust Trial is first found, placeholder loops `mus_prologue_attack` and `mus_boss_ignis`; sounds `enemy_ignis_prologue_*` (four moves, alert, hurt, death, `_immune`), `world_rank_stone`, `world_war_horn`, `world_sylvaris_roar`/`_wings`/`_breath`, `world_ignis_vanish`, `world_lumen_awaken`, `world_wind_ring`, `world_trial_spawn`, `puzzle_rune_light`, `puzzle_rune_wrong`, `stg_trial_passed` |
 | 🎯 Vertical slice | Complete placeholder audio + first pass of real Aurelia's theme 💡 |
 | M11 Polish | Final sounds and music swapped in, full mix pass, `CREDITS.md` complete |
 
@@ -411,7 +411,7 @@ Times are approximate (±1 s). Lyrics come from automatic transcription, so some
 | Use | Track & part | Why | Priority |
 |---|---|---|---|
 | **Title screen** (`mus_title`) | *Sunlight*: full song | The lyrics introduce Aurelia before the game starts; the first thing players hear is her voice | MVP |
-| **Prologue opening** | *Sunlight*: intro + verse 1, under the `prologue_morning` scene (Aurelia wakes and reads) | Sets the peaceful mood before the Emberbound attack shatters it | MVP |
+| **Prologue opening** | *Sunlight*: intro + verse 1, under the `prologue_morning` scene (Aurelia wakes and reads) | Sets the peaceful mood before the Emberbound attack shatters it. *Built in Phase 8b (`mus_prologue_morning`, 0:00–0:36)* | MVP |
 | **Ending credits** (`mus_ending`) | *Sunlight*: full song | "Fading in the evening light / Now I say goodnight" closes the story | V1 |
 | **Aurelia's leitmotif** | *Sunlight*: chorus melody | Quote it in other tracks and stingers: spell learned, rank up, rest point music box, finale | MVP (stingers) / V1 |
 | **Rest point / menu background** 💡 | *Sunlight*: instrumental break 1:47–2:12 | Vocal-free, calm, already in her theme. Needs a loop check | V1 |

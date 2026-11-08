@@ -1,0 +1,27 @@
+# status: draft (Phase 8b, 2026-11-07), waiting for the owner's approval
+# Trial shrines (DIALOGUE_DESIGN.md §10 `trial_gust_intro` / `_complete`). The Gust Trial at the Windcall Shrine
+# (draft name), east of the old shrine ruins: started by TrialShrine (data/trials/gust_trial.tres). The shrine speaks
+# as an old, slow voice; it calls Aurelia "lantern-bearer". Owner decision 2026-11-07: hidden runes, lit in order
+# (one curl, two, three), then a ring of wind with two short waves of enemies.
+# Only GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene and AudioManager may be called.
+
+~ trial_gust_intro
+Shrine: [#calm] ...A lantern-bearer. It has been long since one came this way.
+Shrine: Wind is born from stillness. Wake my runes as the wind is born: one breath, then two, then three.
+Lumen: The runes are sleeping in the mist. Your Lantern Glow can find them.
+Aurelia: [#thinking] One curl, then two, then three... Like counting breaths. I can do that.
+=> END
+
+~ trial_gust_test
+Shrine: [#calm] The runes remember. Now stand in the wind, lantern-bearer, and do not fall.
+=> END
+
+~ trial_gust_complete
+Shrine: [#pleased] You stood. The wind is yours to call. Take it.
+Aurelia: [#excited] A spell tome! Gust! My third spell! That's half again as many spells as this morning!
+Lumen: Read it at a Lantern Shrine. Then the wind will listen.
+=> END
+
+~ trial_gust_repeat
+Shrine: [#calm] The wind remembers you, lantern-bearer.
+=> END

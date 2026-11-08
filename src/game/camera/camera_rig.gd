@@ -43,6 +43,9 @@ func _ready() -> void:
 	camera = Camera3D.new()
 	camera.top_level = true
 	camera.fov = settings.fov
+	# Moved every rendered frame in _process, so it isn't physics-interpolated itself; it follows the target's
+	# interpolated position instead (Godot's advice for cameras; avoids the "triggered from outside physics" warning).
+	camera.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	add_child(camera)
 	camera.make_current()
 	listener = AudioListener3D.new()
@@ -66,7 +69,7 @@ func set_yaw(yaw: float) -> void:
 
 func snap_to_target() -> void:
 	if target:
-		global_position = _focus_point()
+		global_position = _focus_point(false)  # exactly where she is now (after a teleport)
 	_update_camera()
 
 
@@ -119,8 +122,10 @@ func _physics_process(delta: float) -> void:
 	_update_occlusion(delta)
 
 
-func _focus_point() -> Vector3:
-	return target.global_position + Vector3(0, settings.focus_height, 0)
+## Where the camera looks: the target's smooth (interpolated) position while following, or its exact one.
+func _focus_point(interpolated := true) -> Vector3:
+	var at := target.get_global_transform_interpolated().origin if interpolated else target.global_position
+	return at + Vector3(0, settings.focus_height, 0)
 
 
 func _update_camera() -> void:

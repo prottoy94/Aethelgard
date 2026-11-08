@@ -26,3 +26,9 @@ Lumen: Careful, little light. A shrine's warmth would help.
 % Lumen: That stone wants to move. Ask the wind.
 % Lumen: A heavy stone. A hungry plate.
 => END
+
+~ lumen_hint_runes
+% Lumen: One breath, then two, then three. Count the curls on each stone.
+% Lumen: The mist hides the runes. Your lantern does not.
+% Lumen: Wake them one at a time, in the order the wind is born.
+=> END

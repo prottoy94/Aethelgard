@@ -3,12 +3,17 @@ extends Node3D
 ## Lumen, a fragment of the World Tree's spirit (GAME_DESIGN.md §3.2, approved by the owner 2026-11-03): a small blue
 ## butterfly that follows Aurelia, glows brighter near secrets and offers gentle hints in speech bubbles
 ## (FR-DLG-05, FR-PUZ-07). Never fights. Tuning: data/dialogue/lumen_hints.tres; lines: dialogue/barks/lumen.dialogue.
+## In the prologue Lumen sleeps until Sylvaris drives Ignis off and she wakes beside Aurelia (GDD §3.6): hidden
+## while the prologue runs and the flag lumen_awakened is not set.
 
 const HINTS: LumenHints = preload("res://data/dialogue/lumen_hints.tres")
 const BARKS: DialogueResource = preload("res://dialogue/barks/lumen.dialogue")
 const WING := Color(0.45, 0.75, 1.0)
 const BASE_GLOW := 0.6
 const LOW_HEALTH_FLAG := &"lumen_low_health_hint"
+const AWAKE_FLAG := &"lumen_awakened"
+const PROLOGUE_FLAG := &"prologue_active"
+const AWAKEN_TIME := 1.4  ## s she takes to unfold
 
 ## Tuning (the shared file unless a level or test gives another).
 var hints: LumenHints = HINTS
@@ -24,6 +29,8 @@ var _secret_near := false
 
 
 func _ready() -> void:
+	add_to_group(&"lumen")
+	visible = is_awake()  # from the first frame (the prologue opens with a paused scene)
 	_build_body()
 	speaker = BarkSpeaker.new()
 	speaker.resource = BARKS
@@ -32,8 +39,32 @@ func _ready() -> void:
 	add_child(speaker)
 
 
+## False only during the prologue, before she wakes.
+static func is_awake() -> bool:
+	return not GameState.has_flag(PROLOGUE_FLAG) or GameState.has_flag(AWAKE_FLAG)
+
+
+## She wakes at `at`: a spark that unfolds into the butterfly (prologue, sylvaris_first_meeting). Awaitable.
+func awaken(at: Vector3) -> void:
+	GameState.set_flag(AWAKE_FLAG)
+	global_position = at
+	visible = true
+	scale = Vector3.ONE * 0.05
+	_light.light_energy = 3.0
+	var tween := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	if Cutscene.skipping:
+		tween.set_speed_scale(CutsceneScene.SKIP_SPEED)
+	tween.tween_property(self, "scale", Vector3.ONE, AWAKEN_TIME).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(_light, "light_energy", BASE_GLOW, AWAKEN_TIME * 1.5)
+	await Cutscene.until_done(tween)
+	scale = Vector3.ONE
+
+
 func _process(delta: float) -> void:
 	_time += delta
+	visible = is_awake()
+	if not visible:
+		return
 	if player == null or not is_instance_valid(player):
 		player = get_tree().get_first_node_in_group(&"player") as Player
 		if player == null:

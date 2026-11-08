@@ -428,6 +428,92 @@ LOOPS = {
     "amb_weather_rain": ("ambience/amb_weather_rain.wav", rain, "Ambience", -3.0, 0, "Placeholder: rain."),
 }
 
+def tense_loop(bpm=96, bars=8, sr=AMB_SR):
+    """Placeholder for the prologue attack (mus_prologue_attack): fast low drums, a pulsing drone, crackle."""
+    beat = 60 / bpm
+    total = int(bars * 4 * beat * sr)
+    out = np.zeros(total + sr)
+
+    def hit(at, sound):
+        i = int(at * sr)
+        out[i:i + len(sound)] += sound
+
+    kick = sweep(95, 40, 0.3, sr) * decay(0.3, 10, sr)
+    snare = band(noise(0.15, sr), 800, 5000, sr) * decay(0.15, 25, sr) * 0.35
+    for b in range(bars * 4):
+        at = b * beat
+        hit(at, kick)
+        hit(at + beat * 0.5, kick * 0.5)
+        if b % 2 == 1:
+            hit(at, snare)
+    x = t(total / sr, sr)
+    drone = np.sin(2 * np.pi * (F_SHARP / 4) * x) * (0.55 + 0.45 * np.sin(2 * np.pi * x / (beat * 2))) * 0.18
+    embers = crackle(total / sr, 40, sr) * 0.12
+    n = min(total, len(drone), len(embers))
+    return out[:n] + drone[:n] + embers[:n]
+
+
+def ignis_loop(bpm=72, bars=8, sr=AMB_SR):
+    """Placeholder Ignis theme (mus_boss_ignis): heavy slow drums, a low fifth drone that swells, embers crackling."""
+    beat = 60 / bpm
+    total = int(bars * 4 * beat * sr)
+    out = np.zeros(total + sr)
+
+    def hit(at, sound):
+        i = int(at * sr)
+        out[i:i + len(sound)] += sound
+
+    boom = sweep(70, 32, 0.8, sr) * decay(0.8, 4, sr)
+    tom = sweep(140, 90, 0.35, sr) * decay(0.35, 9, sr) * 0.6
+    for b in range(bars * 4):
+        at = b * beat
+        if b % 4 == 0:
+            hit(at, boom)
+        if b % 4 == 2:
+            hit(at, boom * 0.7)
+        if b % 8 == 7:
+            for k in range(3):
+                hit(at + k * beat / 3, tom)
+    x = t(total / sr, sr)
+    root = 69.3  # C#2: the fifth of F#, dark next to Aurelia's key
+    swell = 0.5 + 0.5 * np.sin(2 * np.pi * x / (beat * 8))
+    drone = (np.sin(2 * np.pi * root * x) + 0.6 * np.sin(2 * np.pi * root * 1.5 * x)
+             + 0.3 * np.sign(np.sin(2 * np.pi * root * 2 * x)) * 0.3) * swell * 0.2
+    n = min(total, len(drone))
+    return out[:n] + drone[:n]
+
+
+LOOPS.update({
+    "mus_prologue_attack": ("music/mus_prologue_attack.wav", tense_loop, "Music", -5.0, 96,
+                            "Placeholder: the Emberbound attack on Elderroot in the prologue (AUDIO_DESIGN.md §5.2)."),
+    "mus_boss_ignis": ("music/mus_boss_ignis.wav", ignis_loop, "Music", -4.0, 72,
+                       "Placeholder Ignis theme for the prologue fight: heavy drums and a dark drone (AUDIO_DESIGN.md §5.1)."),
+})
+
+LATER_LOOPS = ("mus_prologue_attack", "mus_boss_ignis")
+
+# Phase 8b (prologue, Ignis, Sylvaris, the Gust Trial): written after the loops so the earlier files stay the same.
+LATER_SOUNDS = {
+    "world_rank_stone": ("world", [lambda: mix(seq([chime(note(i, F_SHARP / 2), 1.0, 3, (1, 2, 3)) for i in (0, 2)], 0.35), band(noise(1.4), 2000, 8000) * env(int(1.4 * SR), 0.3, 0.8) * 0.15)], dict(poly=1)),
+    "world_war_horn": ("world", [lambda: mix(*[np.sin(2 * np.pi * f * t(2.2)) * env(int(2.2 * SR), 0.25, 0.9) * a for f, a in ((110, 0.5), (220, 0.25), (165, 0.2))], band(noise(2.2), 200, 1200) * env(int(2.2 * SR), 0.3, 0.9) * 0.15)], dict(poly=1, positional=False)),
+    "world_wind_ring": ("world", [lambda: mix(whoosh(1.2, 200, 3000), whoosh(1.0, 400, 5000) * 0.6)], dict(poly=1)),
+    "world_trial_spawn": ("world", [lambda: mix(whoosh(0.5, 300, 4000) * 0.7, chime(note(9, F_SHARP * 2), 0.5, 8) * 0.3)], dict(poly=3)),
+    "puzzle_rune_light": ("puzzles", [lambda: mix(chime(note(4, F_SHARP * 2), 0.9, 4, (1, 2, 3)), whoosh(0.5, 600, 6000) * 0.4)], dict(poly=2)),
+    "puzzle_rune_wrong": ("puzzles", [lambda: mix(band(impact(0.3, 90, 800), 40, 900), sweep(300, 120, 0.4) * decay(0.4, 6) * 0.4)], dict(poly=1)),
+    "world_sylvaris_roar": ("world", [lambda: mix(band(noise(1.6), 60, 900) * env(int(1.6 * SR), 0.15, 0.8) * 0.9, sweep(140, 70, 1.6) * env(int(1.6 * SR), 0.1, 0.8) * 0.6)], dict(poly=1)),
+    "world_sylvaris_wings": ("world", [lambda: seq([whoosh(0.45, 80, 900) for _ in range(3)], 0.42)], dict(poly=1)),
+    "world_sylvaris_breath": ("world", [lambda: breath(1.3, 2500, 9000, seq([chime(note(i, F_SHARP * 2), 0.6, 5) * 0.4 for i in (0, 4, 7, 9)], 0.1))], dict(poly=1)),
+    "world_ignis_vanish": ("world", [lambda: mix(crackle(1.2, 150) * env(int(1.2 * SR), 0.05, 0.6), sweep(120, 900, 1.2) * decay(1.2, 2) * 0.5)], dict(poly=1)),
+    "world_lumen_awaken": ("world", [lambda: seq([chime(note(i, F_SHARP * 2), 1.0, 3, (1, 2.4)) for i in (0, 4, 7, 11, 14)], 0.11)], dict(poly=1)),
+}
+LATER_SOUNDS.update(emberbound_set("ignis_prologue", {"ember_sweep": (0.9, "melee"), "flame_step": (1.0, "charge"),
+                                                      "cinder_ring": (1.2, "ring"), "ember_volley": (1.0, "volley")}, deep=0.6))
+LATER_SOUNDS["enemy_ignis_prologue_immune"] = ("enemies", [lambda: mix(impact(0.25, 160, 2500) * 0.6, crackle(0.3, 120) * 0.5, chime(330, 0.4, 9, (1, 2.1)) * 0.3)], dict(poly=2, interval=0.08))
+LATER_STINGERS = {
+    "stg_trial_passed": lambda: mix(seq([chime(note(i), 1.6, 2.2, (1, 2, 3)) for i in (0, 4, 7, 9, 12)], 0.12), whoosh(1.2, 300, 3000) * 0.3),
+}
+
+
 BUSES = {"player": "Player", "spells": "Player", "combat": "SFX", "enemies": "Enemies", "dragon": "Dragon",
          "world": "World", "puzzles": "World", "ui": "UI"}
 
@@ -462,6 +548,25 @@ def write_text(path, text):
         f.write(text)
 
 
+def write_loop(track_id, file, recipe, bus, volume, bpm, notes):
+    rel = "assets/audio/placeholders/" + file
+    write_wav(rel, recipe(), sr=AMB_SR, stereo=False, peak_db=-6.0, edges=False)
+    write_text("data/audio/music/%s.tres" % track_id, f'''[gd_resource type="Resource" script_class="MusicTrack" format=3]
+
+[ext_resource type="Script" path="res://src/audio/music_track.gd" id="1"]
+
+; Generated by tools/audio/generate_placeholders.py.
+[resource]
+script = ExtResource("1")
+id = &"{track_id}"
+file = "res://{rel}"
+bus = &"{bus}"
+volume_db = {volume}
+bpm = {float(bpm)}
+notes = "{notes}"
+''')
+
+
 def main():
     events = []
     for sound_id, (category, recipes, opts) in SOUNDS.items():
@@ -478,23 +583,25 @@ def main():
         write_text("assets/audio/sound_events/%s.tres" % sound_id,
                    sound_event_tres(sound_id, [rel], "ui", dict(bus="Music", poly=1, positional=False, pitch=(1.0, 1.0))))
         events.append(sound_id)
-    for track_id, (file, recipe, bus, volume, bpm, notes) in LOOPS.items():
-        rel = "assets/audio/placeholders/" + file
-        write_wav(rel, recipe(), sr=AMB_SR, stereo=False, peak_db=-6.0, edges=False)
-        write_text("data/audio/music/%s.tres" % track_id, f'''[gd_resource type="Resource" script_class="MusicTrack" format=3]
-
-[ext_resource type="Script" path="res://src/audio/music_track.gd" id="1"]
-
-; Generated by tools/audio/generate_placeholders.py.
-[resource]
-script = ExtResource("1")
-id = &"{track_id}"
-file = "res://{rel}"
-bus = &"{bus}"
-volume_db = {volume}
-bpm = {float(bpm)}
-notes = "{notes}"
-''')
+    for track_id, loop in LOOPS.items():
+        if track_id not in LATER_LOOPS:
+            write_loop(track_id, *loop)
+    for sound_id, (category, recipes, opts) in LATER_SOUNDS.items():
+        files = []
+        for i, recipe in enumerate(recipes, start=1):
+            rel = "assets/audio/placeholders/sfx/%s/sfx_%s_%02d.wav" % (category, sound_id, i)
+            write_wav(rel, recipe(), stereo=(category == "ui"))
+            files.append(rel)
+        write_text("assets/audio/sound_events/%s.tres" % sound_id, sound_event_tres(sound_id, files, category, opts))
+        events.append(sound_id)
+    for sound_id, recipe in LATER_STINGERS.items():
+        rel = "assets/audio/placeholders/music/stingers/%s.wav" % sound_id
+        write_wav(rel, recipe(), stereo=True, peak_db=-2.0)
+        write_text("assets/audio/sound_events/%s.tres" % sound_id,
+                   sound_event_tres(sound_id, [rel], "ui", dict(bus="Music", poly=1, positional=False, pitch=(1.0, 1.0))))
+        events.append(sound_id)
+    for track_id in LATER_LOOPS:
+        write_loop(track_id, *LOOPS[track_id])
     # The libraries
     ext = '[ext_resource type="Script" path="res://src/audio/sound_library.gd" id="1"]\n'
     ext += '[ext_resource type="Script" path="res://src/audio/sound_event.gd" id="2"]\n'

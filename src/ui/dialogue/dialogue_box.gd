@@ -17,6 +17,9 @@ const INK := Color("3b2a1e")
 const GOLD := Color("b8862e")
 const BOX_HEIGHT := 200.0
 const POSITION_TAGS: PackedStringArray = ["left", "right"]
+## A choice line tagged [#ask] still waits for the player while a cutscene is skipped (FR-DLG-07).
+const ASK_TAG := "ask"
+const ACTING_FADE := 6.0  ## how fast the box steps aside (and back) while a cutscene action runs
 
 var line: DialogueLine
 var _resource: DialogueResource
@@ -38,6 +41,14 @@ func _ready() -> void:
 	add_to_group(&"dialogue_box")  # scripted scenes (CutsceneScene) talk through it
 	_build()
 	_root.visible = false
+
+
+## Leaving the tree mid-conversation (quitting during a scene): let whoever waits for the end carry on, so no
+## waiting code is left behind holding the dialogue.
+func _exit_tree() -> void:
+	if is_open():
+		_root.visible = false
+		finished.emit()
 
 
 func is_open() -> bool:
@@ -74,12 +85,37 @@ func choose(index: int) -> void:
 	if not is_open() or line == null or not _choices.visible or index < 0 or index >= line.responses.size():
 		return
 	var response: DialogueResponse = line.responses[index]
+	var asked := line.has_tag(ASK_TAG)
 	_clear_choices()
+	if asked:
+		Cutscene.resume_skip()
 	_show(await _resource.get_next_dialogue_line(response.next_id, _extra_states))
+
+
+## Skipping a cutscene (FR-DLG-07): finish this line and keep going until the scene ends or a choice needs the player.
+func fast_forward() -> void:
+	if not is_open() or line == null:
+		return
+	if _choices.visible:
+		_answer_while_skipping()
+	elif _text.is_typing:
+		_text.skip_typing()
+	elif _waiting:
+		advance()
+
+
+func _answer_while_skipping() -> void:
+	if line.has_tag(ASK_TAG):
+		Cutscene.pause_skip()  # the player still decides this one
+	else:
+		choose(0)
 
 
 func _process(delta: float) -> void:
 	_more.visible = _waiting and line != null and line.responses.is_empty()
+	# While a cutscene camera moves or actors walk, the box steps aside so the scene can be seen.
+	var target := 0.0 if Cutscene.is_acting() and not _choices.visible else 1.0
+	_root.modulate.a = move_toward(_root.modulate.a, target, delta * ACTING_FADE)
 	if _auto_left > 0.0:
 		_auto_left -= delta
 		if _auto_left <= 0.0 and _waiting:
@@ -97,6 +133,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _show(next_line: DialogueLine) -> void:
+	if not is_inside_tree():
+		return  # the region closed while the conversation ran (quitting)
 	_auto_left = -1.0
 	if next_line == null:
 		_finish()
@@ -112,7 +150,7 @@ func _show(next_line: DialogueLine) -> void:
 		AudioManager.play(StringName(line.get_tag_value("sfx")))
 	_clear_choices()
 	_text.type_out()
-	if _text.seconds_per_step <= 0.0:
+	if _text.seconds_per_step <= 0.0 or Cutscene.skipping:
 		_text.skip_typing()
 	if _text.is_typing:
 		await _text.finished_typing
@@ -120,9 +158,13 @@ func _show(next_line: DialogueLine) -> void:
 		return  # a newer line was shown meanwhile
 	if not line.responses.is_empty():
 		_show_choices()
+		if Cutscene.skipping:
+			_answer_while_skipping.call_deferred()
 	else:
 		_waiting = true
-		if Settings.auto_advance:
+		if Cutscene.skipping:
+			advance.call_deferred()
+		elif Settings.auto_advance:
 			_auto_left = TUNING.auto_advance_delay + line.text.length() * TUNING.auto_advance_per_char
 
 
@@ -147,7 +189,7 @@ func _set_portraits() -> void:
 		on_left = false
 	var mood := "neutral"
 	for tag in line.tags:
-		if not tag in POSITION_TAGS and not "=" in tag:
+		if not tag in POSITION_TAGS and tag != ASK_TAG and not "=" in tag:
 			mood = tag
 			break
 	var speaking := _left if on_left else _right

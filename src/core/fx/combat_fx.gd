@@ -37,14 +37,21 @@ static func hit_stop(tree: SceneTree, seconds: float) -> void:
 
 ## Spawns a floating number above `position`. Colour shows effectiveness (strong = gold, resisted = grey).
 static func damage_number(parent: Node, position: Vector3, amount: float, multiplier: float) -> void:
+	floating_text(parent, position, str(roundi(amount)),
+			Color("ffd34d") if multiplier > 1.0 else (Color("b0b0b0") if multiplier < 1.0 else Color.WHITE),
+			56 if multiplier > 1.0 else 44)
+
+
+## Floating text above `position` that rises and fades (damage numbers, "Immune").
+static func floating_text(parent: Node, position: Vector3, text: String, color: Color, size := 44) -> void:
 	var label := Label3D.new()
-	label.text = str(roundi(amount))
+	label.text = text
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.no_depth_test = true
-	label.font_size = 56 if multiplier > 1.0 else 44
+	label.font_size = size
 	label.outline_size = 14
 	label.pixel_size = 0.005
-	label.modulate = Color("ffd34d") if multiplier > 1.0 else (Color("b0b0b0") if multiplier < 1.0 else Color.WHITE)
+	label.modulate = color
 	parent.add_child(label)
 	label.global_position = position
 	var tween := label.create_tween()

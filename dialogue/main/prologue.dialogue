@@ -1,0 +1,161 @@
+# status: draft (Phase 8b, 2026-11-07), waiting for the owner's approval
+# The prologue (GAME_DESIGN.md §3.6; DIALOGUE_DESIGN.md §10): Rank Day in Elderroot Village. Aurelia reads by her
+# cottage, the Rank Stone stops at Spark, the Emberbound attack, Ignis can't be beaten, Sylvaris drives him off,
+# Lumen wakes, and the Elder sends Aurelia to the old Trial shrine in the meadow. Played as cutscenes by
+# VillagePrologue (src/world/regions/elderroot_village/); `do Cutscene.cue(...)` lines run its effects. Every scene
+# can be skipped (hold Esc): it fast-forwards, so every line's effect still happens.
+# Owner decision 2026-11-07: the Elder holds the rank test (the Rank Examiner and Rival are not approved yet).
+# Ignis does not mention his master here (the Unknown One is still an open question).
+# Voices: DIALOGUE_DESIGN.md §7. Names and terms: dialogue/glossary.md.
+# Only GameState, QuestManager, Inventory, PlayerData, DragonManager, Cutscene and AudioManager may be called.
+
+~ prologue_morning
+do Cutscene.letterbox(true)
+do Cutscene.camera_to("cam_home", 0.0)
+do Cutscene.anim("aurelia", "rest")
+do Cutscene.fade_in(2.5)
+do Cutscene.wait(1.2)
+Aurelia: [#happy] "A mage's light is the sum of the spells they find." Chapter one, page one.
+Aurelia: [#thinking] I know it by heart. I know every page by heart. Five years of pages.
+Aurelia: [#determined] And today the Rank Stone measures me. It has to show something. It has to.
+Elder: [#right] Aurelia! The Stone is awake, and the whole square is waiting for you!
+Aurelia: [#surprised] Coming! Coming. Just one more page...
+Aurelia: [#embarrassed] ...No. No more pages. It's Rank Day!
+do Cutscene.anim("aurelia", "idle")
+do Cutscene.camera_back(1.2)
+=> END
+
+~ prologue_rank_trial
+do Cutscene.letterbox(true)
+do Cutscene.camera_to("cam_stone", 1.2)
+do Cutscene.move("aurelia", "aurelia_stone", 1.2)
+do Cutscene.face("aurelia", "rank_stone")
+do Cutscene.move("elder", "elder_stone", 1.2)
+do Cutscene.face("elder", "aurelia")
+Elder: [#proud] Every elf of Elderroot has touched this Stone. Your mother did, and her mother before her.
+Elder: Put your hand on it, child. Let it see your light.
+Aurelia: [#determined] Right. Deep breath. Five years of study. Here goes!
+do Cutscene.anim("aurelia", "interact")
+do Cutscene.camera_to("cam_marks", 0.6)
+do Cutscene.cue("rank_stone")
+Aurelia: [#surprised] It stopped. At the very first mark?
+do Cutscene.camera_to("cam_stone", 0.8)
+Elder: [#worried] Spark. The first light.
+Aurelia: [#sad] Spark. The lowest there is. Even little Tamsin lit two marks last spring.
+- Maybe it's broken? It's very old.
+	Elder: [#worried] It is old, Aurelia. It is not broken.
+	Aurelia: [#embarrassed] ...I had to ask.
+- I'll touch it again. Harder.
+	Elder: [#proud] Ha! Stone does not care how hard you push.
+Elder: [#proud] Listen to me. A rank is what your magic is today. Spells are found, and light grows.
+Elder: Every lantern in Elderroot was lit from one small spark. Remember that.
+Aurelia: [#determined] I'll remember. And next Rank Day, it will climb. I promise.
+do Cutscene.cue("horn")
+Elder: [#worried] ...That horn. That is no Elderroot horn.
+do Cutscene.camera_to("cam_road", 1.0)
+do Cutscene.cue("scouts")
+Emberbound: Lanterns out, elves! By order of the Herald, Elderroot goes dark!
+Elder: [#worried] Emberbound! Everyone inside! Aurelia, get behind me!
+Aurelia: [#determined] No! I know two spells! That's... two more than nothing!
+Emberbound: A Spark? Don't waste the fire. ...Fine. Waste a little.
+do Cutscene.cue("villagers_hide")
+do Cutscene.face("aurelia", "scout_square_1")
+do Cutscene.camera_back(0.8)
+=> END
+
+~ prologue_ignis_arrives
+do Cutscene.letterbox(true)
+do AudioManager.stop_music(1.5)
+do Cutscene.camera_to("cam_road", 1.0)
+do Cutscene.spawn("aurelia", "aurelia_square")
+do Cutscene.wait(0.5)
+do Cutscene.spawn("ignis", "ignis_gate")
+do Cutscene.move("ignis", "ignis_square", 3.0)
+do Cutscene.camera_to("cam_ignis", 1.0)
+Ignis: [#cold] So this is where the elves hide their little lights.
+do Cutscene.face("aurelia", "ignis")
+Aurelia: [#scared] W-who are you?!
+Ignis: [#smirk] Ignis Varos. Herald of the Final Ember. Remember it. Briefly.
+Ignis: [#cold] My scouts lie in the dust. A great mage must live here. Show yourself.
+do Cutscene.emote("aurelia", "!")
+Ignis: [#amused] ...You? I felt your Stone wake from the road. It barely stirred. A Spark.
+Aurelia: [#angry] A Spark can still start a fire!
+Ignis: [#cold] Power is a ledger, Spark. Yours is empty. Let me show you mine.
+do Cutscene.camera_back(1.0)
+=> END
+
+~ prologue_unwinnable
+do Cutscene.letterbox(true)
+do Cutscene.cue("stage_final_blow")
+do Cutscene.camera_to("cam_final", 0.0)
+do Cutscene.fade_in(0.6)
+do Cutscene.anim("aurelia", "hurt")
+Aurelia: [#scared] (Nothing. Not one of my spells even touched him.)
+Ignis: [#cold] Light Motes. Lantern charms. Do they teach elves anything but candles?
+do Cutscene.anim("ignis", "gather")
+do Cutscene.wait(1.4)
+Ignis: [#cold] Burn quietly, little lantern. Ash keeps no rank.
+do Cutscene.shake(0.4, 1.2)
+do AudioManager.stop_music(1.5)
+Sylvaris: [#stern] Enough.
+do Cutscene.spawn("sylvaris", "sylvaris_sky")
+do Cutscene.camera_to("cam_sky", 0.8)
+do Cutscene.move("sylvaris", "sylvaris_land", 2.4)
+do Cutscene.anim("sylvaris", "land")
+do Cutscene.shake(0.6, 0.8)
+do Cutscene.cue("sylvaris_breath")
+do Cutscene.camera_to("cam_final", 0.8)
+Ignis: [#angry] The old wyrm of the Tree. I was told you slept.
+Sylvaris: [#stern] I slept. Now I am awake. Leave this place, Herald.
+Ignis: [#cold] Gladly. Nothing here is worth the burning. Not yet.
+Ignis: [#smirk] Grow a little, Spark. Ash is sweeter when it was once a flame.
+do Cutscene.cue("ignis_retreats")
+do Cutscene.wait(0.8)
+=> sylvaris_first_meeting
+
+~ sylvaris_first_meeting
+do Cutscene.cue("stage_meeting")
+do Cutscene.camera_to("cam_meet", 0.0)
+do Cutscene.fade_in(0.8)
+do Cutscene.anim("sylvaris", "bow")
+Sylvaris: [#calm] Rise, little light. He is gone, for now.
+Aurelia: [#surprised] A dragon. A real dragon. You're Sylvaris, the guardian of the World Tree. From the books!
+Sylvaris: [#pleased] The books remember me kindly. That is good.
+Aurelia: [#sad] I couldn't even scratch him. The Stone was right. I'm only a Spark.
+Sylvaris: [#calm] Rank measures what you are. Not what you will become.
+Sylvaris: You stood when the strong ran. The World Tree saw it. So did one of its own.
+do Cutscene.cue("lumen_awakens")
+Aurelia: [#surprised] Oh! A butterfly... made of light?
+Lumen: Hello, Aurelia. I have waited a long time to say that.
+Sylvaris: [#calm] Lumen is a fragment of the Tree's own spirit. Lumen will walk with you, and show you what hides.
+- Then teach me to become more.
+	Sylvaris: [#pleased] Spoken like a true mage. Spells are found, little light. So go and find them.
+- Why would a dragon help someone like me?
+	Sylvaris: [#calm] Because Ignis fears what he cannot measure. Go and find your spells.
+Sylvaris: East in the meadow, an old Trial of the wind is sleeping. It has not opened in a hundred years.
+Sylvaris: [#calm] Wake it. Then we will speak again.
+Aurelia: [#determined] I'll grow strong. Strong enough that next time, he is the one who runs.
+Lumen: Your light is stronger than you think.
+do Cutscene.anim("sylvaris", "rise")
+do Cutscene.cue("sylvaris_leaves")
+=> END
+
+~ elder_quest_start
+do Cutscene.letterbox(true)
+do Cutscene.spawn("aurelia", "aurelia_meet")
+do Cutscene.cue("elder_returns")
+do Cutscene.camera_to("cam_elder", 0.8)
+do Cutscene.move("elder", "elder_meet", 2.0)
+do Cutscene.face("elder", "aurelia")
+do Cutscene.face("aurelia", "elder")
+Elder: [#worried] Aurelia! You're standing. Thank the Tree. Was that... Sylvaris himself?
+Aurelia: [#excited] It was! And this is Lumen. And there's a Trial in the meadow. A wind Trial!
+Elder: [#proud] The old shrine east of the pond, past the ruins. My grandmother called it the Windcall.
+Elder: A Trial gives its spell to whoever passes it. Go when you are ready. Not a moment before.
+Elder: [#worried] And the village needs hands today. Maren's garden was trampled, and there are burns to treat.
+Elder: Little Tamsin ran up to the meadow in all the smoke, and lost her satchel. Look in on them both.
+do GameState.set_flag("met_elder")
+do QuestManager.start("morning_in_elderroot")
+do QuestManager.start("gust_trial")
+Aurelia: [#determined] The Trial, Maren, Tamsin. I'll do my best. All of it!
+=> END

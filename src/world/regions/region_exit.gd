@@ -2,7 +2,10 @@ class_name RegionExit
 extends Area3D
 ## Walk into it to travel to another region (TECHNICAL_DESIGN.md §4.7). Aurelia keeps her health and stamina.
 ## Give it a size; it builds its own box shape. Ignores her for a moment after a region loads, so arriving next to
-## an exit doesn't bounce her straight back.
+## an exit doesn't bounce her straight back. While the GameState flag `closed_while` is set (the prologue) it
+## doesn't lead anywhere and says so (`blocked`).
+
+signal blocked(exit: RegionExit)
 
 const PLAYER_LAYER := 1 << 1
 const ARM_DELAY := 1.0  ## s
@@ -10,6 +13,8 @@ const ARM_DELAY := 1.0  ## s
 @export var target_region: StringName
 @export var target_spawn: StringName = &"start"
 @export var size := Vector3(4, 3, 1.5)
+@export var closed_while: StringName   ## a GameState flag; empty = always open
+@export var closed_text := ""          ## shown when she tries to leave while closed
 
 var _armed := false
 
@@ -32,6 +37,9 @@ func _ready() -> void:
 func _on_body_entered(body: Node3D) -> void:
 	var player := body as Player
 	if player == null or not _armed or player.health.is_dead() or SceneLoader.is_changing:
+		return
+	if closed_while != &"" and GameState.has_flag(closed_while):
+		blocked.emit(self)
 		return
 	var state := SaveManager.capture_player(player)
 	state.erase("position")  # she appears at the target spawn instead

@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=18
+type="Resource"
+uid="uid://dfiq2j05r81sv"
+path="res://.godot/imported/trial_shrines.dialogue-7d368eb84444dffde660083a7b1b1440.tres"
+
+[deps]
+
+source_file="res://dialogue/system/trial_shrines.dialogue"
+dest_files=["res://.godot/imported/trial_shrines.dialogue-7d368eb84444dffde660083a7b1b1440.tres"]
+
+[params]
+
+defaults=true

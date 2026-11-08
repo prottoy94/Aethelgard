@@ -83,7 +83,47 @@ outfit = Color(0.35, 0.5, 0.65, 1)
 background = Color(0.88, 0.93, 0.96, 1)
 name_color = Color(0.17, 0.33, 0.48, 1)
 
+[sub_resource type="Resource" id="p8"]
+script = ExtResource("2")
+character = "Ignis"
+look = 7
+skin = Color(0.88, 0.8, 0.74, 1)
+hair = Color(0.36, 0.07, 0.06, 1)
+outfit = Color(0.16, 0.08, 0.08, 1)
+background = Color(0.36, 0.16, 0.12, 1)
+name_color = Color(0.55, 0.12, 0.08, 1)
+
+[sub_resource type="Resource" id="p9"]
+script = ExtResource("2")
+character = "Sylvaris"
+look = 5
+skin = Color(0.25, 0.4, 0.26, 1)
+hair = Color(0.4, 0.29, 0.2, 1)
+outfit = Color(0.88, 0.72, 0.34, 1)
+background = Color(0.86, 0.91, 0.8, 1)
+name_color = Color(0.2, 0.35, 0.2, 1)
+
+[sub_resource type="Resource" id="p10"]
+script = ExtResource("2")
+character = "Shrine"
+look = 6
+skin = Color(0.72, 1.0, 0.86, 1)
+hair = Color(0.6, 0.62, 0.6, 1)
+outfit = Color(0.6, 0.62, 0.6, 1)
+background = Color(0.86, 0.93, 0.92, 1)
+name_color = Color(0.2, 0.38, 0.34, 1)
+
+[sub_resource type="Resource" id="p11"]
+script = ExtResource("2")
+character = "Emberbound"
+look = 8
+skin = Color(0.28, 0.24, 0.24, 1)
+hair = Color(1.0, 0.42, 0.12, 1)
+outfit = Color(0.55, 0.16, 0.12, 1)
+background = Color(0.42, 0.24, 0.2, 1)
+name_color = Color(0.5, 0.14, 0.1, 1)
+
 ; Placeholder portrait colours per speaker (DIALOGUE_DESIGN.md §6). Real portraits replace them in M11.
 [resource]
 script = ExtResource("1")
-styles = Array[ExtResource("2")]([SubResource("p0"), SubResource("p1"), SubResource("p2"), SubResource("p3"), SubResource("p4"), SubResource("p5"), SubResource("p6"), SubResource("p7")])
+styles = Array[ExtResource("2")]([SubResource("p0"), SubResource("p1"), SubResource("p2"), SubResource("p3"), SubResource("p4"), SubResource("p5"), SubResource("p6"), SubResource("p7"), SubResource("p8"), SubResource("p9"), SubResource("p10"), SubResource("p11")])

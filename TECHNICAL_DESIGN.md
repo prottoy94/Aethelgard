@@ -264,7 +264,7 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
   (group `elemental`, found by distance, no extra physics layer). Parts (`LanternBrazier`, `PressurePlate`,
   `HiddenSteps`) have `is_on()` + `state_changed`; a `Puzzle` node checks them, calls `activate(instant)` on its targets
   (`PuzzleGate`, `Chest`), emits `EventBus.puzzle_solved` and keeps its state in GameState. `PushBlock` slides one grid
-  cell away from the caster. `Cutscene` autoload has letterbox/fade/wait so far.
+  cell away from the caster. `Cutscene` autoload: see §4.10d.
 - Full dialogue and cutscene plan (file layout, allowed calls, `Cutscene` API, portraits, barks): [DIALOGUE_DESIGN.md](DIALOGUE_DESIGN.md).
 - Dialogue Manager `.dialogue` files reference `GameState`/`QuestManager` for conditions (`if GameState.has_flag("met_sylvaris")`) and actions (`do QuestManager.start("dragon_egg")`).
 
@@ -327,6 +327,36 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
 - Sounds are heard from Aurelia: `CameraRig.listener` (AudioListener3D) sits at the rig's focus point, facing the
   camera's way; the camera is ~13 m away.
 
+### 4.10d Cutscenes, the prologue and Trials (Phase 8b, 2026-11-07)
+- **`Cutscene` autoload** (`src/autoload/cutscene.gd`): letterbox, fades, `wait`, `flash`, `shake`, a cutscene camera
+  (`camera_to(marker, t)` blends from the play camera; `camera_back`), actors (`spawn`, `despawn`, `move`/`walk_to`,
+  `face`, `anim`, `emote` with `EmoteBubble`), `play(id)` for registered scenes and `play_scene(scene, id)` for a
+  region's own `StoryScene` (one .dialogue title; cues go to its `handler`). Markers: `CutsceneMarker`
+  (`src/cutscenes/`, group `cutscene_marker`, `make(id, at, look_at)`); actors: `CutsceneActor.tag(node, id)` (group
+  `cutscene_actor`; `CutsceneActor` itself is for scene-only figures such as `Sylvaris`). Dialogue pauses the tree, so
+  actions run while paused: `involve(node)` sets the actor's visual to `PROCESS_MODE_ALWAYS` until the scene ends;
+  walking calls the visual's `update_motion`/`set_walking`. **Skip** (FR-DLG-07): holding `ui_cancel` for 1 s sets
+  `Cutscene.skipping`; `DialogueBox.fast_forward()` finishes lines and picks the first answer (lines tagged `[#ask]`
+  call `pause_skip()`), timed actions and `CutsceneScene.pause_for`/`scene_tween` end at once. Each scene sets
+  `cs_<id>_seen`. `GameMenu` doesn't open during a scene.
+- **Prologue** (`src/world/regions/elderroot_village/village_prologue.gd`, `VillagePrologue`): a new story
+  (`SaveManager.start_prologue()`, flag `prologue_active`) starts in the village at spawn `home`; the village adds the
+  director, which places markers, Sylvaris and a `ScriptedEncounter`, then runs the beats (morning → Rank Stone →
+  Scouts → Ignis → Sylvaris/Lumen → Elder) with beat flags `prologue_rank_done`, `prologue_scouts_done`,
+  `prologue_ignis_done`, `prologue_done` (a save part-way resumes at the last beat). The quest `prologue` follows the
+  flags. `RegionExit.closed_while` keeps the road north closed; `Lumen.is_awake()` hides Lumen until `lumen_awakened`.
+  Quick test starts (`-- --spawn=…` etc.) begin *after* the prologue; `-- --prologue[=stone|attack|ignis|sylvaris|elder]`
+  plays it. `RankStone` (`src/world/props/`) lights its seven marks up to a rank.
+- **ScriptedEncounter** (`src/world/bosses/scripted_encounter.gd` + `ScriptedEncounterData`, `data/encounters/`): holds
+  the boss asleep (hidden, `PROCESS_MODE_DISABLED`, a cutscene actor) until `start()`; `HealthComponent.invulnerable`
+  (Ignis, `EnemyData.invulnerable`) and `HealthComponent.minimum` (Aurelia can't fall); ends after `duration` or at
+  `end_health_ratio` (`finished(reason)`), `release()` afterwards. Hits on an invulnerable enemy show "Immune" and call
+  its visual's `play_shield()`. `IgnisVisual` (`src/actors/ignis/`), `Sylvaris` (`src/actors/sylvaris/`).
+- **Trials** (`src/world/trials/`): `TrialShrine` built from `TrialData` (+ `TrialWave`; `data/trials/gust_trial.tres`):
+  courtyard, altar, mist, a `Landmark`, `TrialRune`s (revealable, lit by Light after a short grace, marks = order) in a
+  `RuneSequence` (a Puzzle part: wrong order puts them out) wrapped by a `Puzzle` whose target is the shrine; then a
+  `WindRing` (walls + streaks) and waves spawned round the altar; passing sets the flag and places a `SpellTome`.
+
 ### 4.11 Pet dragon AI
 - **Follow:** stay at an offset behind Aurelia; teleport back if more than ~12 m away (leash).
 - **Attack:** target = Aurelia's last-hit or aimed enemy; otherwise the nearest enemy threatening Aurelia.
@@ -359,7 +389,8 @@ Hitbox(DamageInfo) ──overlap──► Hurtbox ──► i-frames? ──► 
   `BossData` (phases, title, music, defeat flag, rewards) and `BossPhaseData` (HP ratio, moves, speed, opening move);
   `BossArena` (`src/world/bosses/`) seals with a fire ring, starts the fight, rewards, resets on Aurelia's respawn;
   `BossBar` on the HUD. `HitboxComponent.arc_deg` limits sweeps to the front. Cinder Warden: `data/bosses/`.
-- Ignis scripted encounters use a `ScriptedEncounter` (invulnerable boss, timer or HP-threshold → cutscene).
+- Ignis scripted encounters use a `ScriptedEncounter` (invulnerable boss, timer or HP-threshold → cutscene). *Built in
+  Phase 8b for the prologue (§4.10d).*
 
 ### 4.13 Input map (actions)
 `move_up/down/left/right`, `aim` (mouse or right stick), `attack`, `cast_1…cast_4`, `dash`, `interact`, `dragon_command`, `dragon_skill`,
@@ -435,7 +466,7 @@ Each milestone ends with something **playable** that can be checked.
 | **M5** | World systems | Dialogue Manager integration, NPCs, QuestManager, journal UI, 3 puzzle types, Lumen hints | Finish a side task involving dialogue and a puzzle |
 | **M6** | Persistence & atmosphere | JSON save/load + autosave, rest points + fast travel, day/night, weather, region transitions | Quit and reload with the world exactly as you left it |
 | **M7** ✅ | Dragon | Egg → hatch, follow/attack/guard AI, dragon skill, bond, dragon menu, treats | The dragon fights at your side (done 2026-11-04) |
-| **M8** | Boss framework | PhaseController, attack patterns, arena, boss HP bar; **Cinder Warden** + prologue Ignis scene | Beat the first boss |
+| **M8** | Boss framework | PhaseController, attack patterns, arena, boss HP bar; **Cinder Warden** + prologue Ignis scene | Beat the first boss (🟨 8a Warden ✅ 2026-11-05, 8b prologue + Gust Trial ✅ 2026-11-07, 8c slice next) |
 | **🎯 VS** | **Vertical slice** | Prologue + Elderroot Meadow polished (GDD §15.1) | 30–45 min of fun, complete play |
 | M9 | Region 2–3 | Azure Coast, Ruined Valley: enemies, spells, puzzles, bosses 2–3, juvenile dragon | Acts 1–2 playable |
 | M10 | Region 4–5 | Stormspire, Floating Isle, Vharka, Ignis encounters + final fight, adult dragon flight | Game completable |

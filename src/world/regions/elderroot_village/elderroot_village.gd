@@ -32,6 +32,7 @@ const ROOF := Color(0.55, 0.32, 0.3)
 const WINDOW := Color(1.0, 0.8, 0.45)
 
 var runtime: RegionRuntime
+var rank_stone: RankStone
 var _rng := RandomNumberGenerator.new()
 var _noise: NoiseTexture2D
 var _grass: MultiMesh
@@ -59,7 +60,17 @@ func _ready() -> void:
 	_build_villagers()
 	_build_road_to_meadow()
 	VillageExtras.new().build(self)  # more to explore (2026-11-05)
+	_build_rank_stone()
+	var prologue: VillagePrologue = null
+	if VillagePrologue.is_running():  # a new game: Rank Day (Phase 8b)
+		prologue = VillagePrologue.new()
+		add_child(prologue)
+		prologue.build(self, rank_stone)
 	runtime.start()
+	if prologue:
+		prologue.begin(runtime)
+	else:
+		rank_stone.touched.connect(_on_rank_stone_touched)
 	Settings.graphics_changed.connect(_apply_graphics)
 	_apply_graphics(Settings.graphics)
 
@@ -299,6 +310,8 @@ func _build_road_to_meadow() -> void:
 	exit.target_spawn = &"from_village"
 	exit.size = Vector3(PATH_HALF_WIDTH * 2.0 + 1.0, 3.0, 1.2)
 	exit.position = Vector3(0, 0, NORTH_ROAD_Z)
+	exit.closed_while = VillagePrologue.FLAG_ACTIVE
+	exit.closed_text = "Not yet. It's Rank Day, and the Rank Stone is waiting in the square."
 	add_child(exit)
 	for id: StringName in [&"start", &"from_meadow"]:
 		var spawn := RegionSpawn.new()
@@ -306,6 +319,45 @@ func _build_road_to_meadow() -> void:
 		spawn.position = Vector3(0, 0, NORTH_ROAD_Z + 5.0)
 		spawn.rotation.y = PI  # facing south, into the village
 		add_child(spawn)
+
+
+## The Rank Stone by the well (Phase 8b; owner decision 2026-11-07), Aurelia's reading bench by her cottage and the
+## spot a new game starts ("home").
+func _build_rank_stone() -> void:
+	rank_stone = RankStone.new()
+	rank_stone.position = VillagePrologue.RANK_STONE
+	add_child(rank_stone)
+	rank_stone.rotation.y = Player.yaw_of(VillagePrologue.RANK_STONE_FACING)  # its rune marks face the square
+	var to_plaza := -VillagePrologue.HOME_BENCH.normalized()
+	var bench := StaticBody3D.new()
+	bench.collision_layer = WORLD_LAYER
+	bench.position = VillagePrologue.HOME_BENCH - to_plaza * 0.35
+	bench.rotation.y = Player.yaw_of(to_plaza)
+	add_child(bench)
+	var wood := ToonMaterials.toon(TIMBER.lightened(0.15), 0.25, 0.015)
+	_box(bench, Vector3(1.5, 0.08, 0.45), wood, Vector3(0, 0.42, 0))
+	_box(bench, Vector3(1.5, 0.45, 0.07), wood, Vector3(0, 0.68, 0.22))
+	for side: float in [-0.65, 0.65]:
+		_box(bench, Vector3(0.08, 0.42, 0.4), wood, Vector3(side, 0.21, 0))
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(1.5, 0.5, 0.5)
+	shape.shape = box
+	shape.position = Vector3(0, 0.25, 0.05)
+	bench.add_child(shape)
+	var home := RegionSpawn.new()
+	home.spawn_id = &"home"
+	home.position = VillagePrologue.HOME_BENCH + to_plaza * 0.15
+	home.rotation.y = Player.yaw_of(to_plaza)
+	add_child(home)
+
+
+## After the prologue the Stone simply shows how far Aurelia has come.
+func _on_rank_stone_touched(_by: Player) -> void:
+	if Cutscene.is_playing():
+		return
+	rank_stone.show_rank(PlayerData.rank)
+	runtime.show_toast("The Rank Stone glows up to %s." % PlayerData.rank_label(), 4.0)
 
 
 ## True where something is built (plaza, road, cottages, garden, shrine), with `margin` metres around it.

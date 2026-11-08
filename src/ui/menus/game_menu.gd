@@ -50,7 +50,7 @@ func open_page(type: Script) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Open pages receive input first and close themselves; this only opens the menu during play.
-	if get_tree().paused or pages.is_empty():
+	if get_tree().paused or pages.is_empty() or Cutscene.is_playing():
 		return
 	if event.is_action_pressed("menu"):
 		open()

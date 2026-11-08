@@ -23,7 +23,9 @@ const SCOUT_SPOTS: Array[Vector3] = [Vector3(-9, 0, -24), Vector3(12, 0, -26)]  
 const WARDEN_SCENE := preload("res://src/actors/bosses/cinder_warden/cinder_warden.tscn")
 const WARDEN_CLEARING := Vector3(1.8, 0, -44)   ## the scorched clearing on the north path (owner decision 2026-11-04)
 const WARDEN_ARENA_RADIUS := 10.0
-const GUST := preload("res://data/spells/gust.tres")
+const GUST_TRIAL: TrialData = preload("res://data/trials/gust_trial.tres")
+const GUST_TRIAL_SPOT := Vector3(54, 0, 12)   ## the Windcall Shrine, east of the old shrine ruins (Phase 8b)
+const STAMINA_TONIC := preload("res://data/items/stamina_tonic.tres")
 const MENDING_BLOOM := preload("res://data/spells/mending_bloom.tres")
 const SHRINE_POSITION := Vector3(-3.2, 0, 3.5)
 const WORKBENCH_POSITION := Vector3(2.0, 0, 8.0)
@@ -106,6 +108,7 @@ func _ready() -> void:
 	_build_villagers()
 	_build_village_gate()
 	_build_warden_clearing()
+	_build_gust_trial()
 	MeadowLandmarks.new().build(self, _noise, _spawn_enemy)  # more to explore (2026-11-05)
 	_build_spawns()
 	runtime.start()
@@ -218,7 +221,7 @@ func _build_trees() -> void:
 		var p := Vector3(_rng.randf_range(-66, 66), 0, _rng.randf_range(-64, 38))
 		if p.distance_to(SPAWN) < 8.0 or _on_path(p, 3.5) or p.distance_to(POND_CENTER) < 6.5 or _on_platform(p, 3.0) \
 				or _is_reserved(p) or _in_ruins(p, 3.0) or p.distance_to(VILLAGE_GATE) < VILLAGE_GATE_CLEARANCE \
-				or p.distance_to(WARDEN_CLEARING) < WARDEN_ARENA_RADIUS + 3.0 or MeadowLandmarks.is_reserved(p):
+				or p.distance_to(WARDEN_CLEARING) < WARDEN_ARENA_RADIUS + 3.0 or MeadowLandmarks.is_reserved(p) 				or p.distance_to(GUST_TRIAL_SPOT) < GUST_TRIAL.radius + 3.5:
 			continue
 		var tree := _solid_root(p)
 		_add_shape(tree, _cylinder_shape(0.35, 3.2), Vector3(0, 1.6, 0))
@@ -465,14 +468,15 @@ func _build_shrine() -> void:
 	add_child(_shrine)
 
 
-## Spell tomes: Gust waits on the scenic platform (a reward for climbing); Mending Bloom is hidden under
-## the arch gate until Lantern Glow reveals it (and needs Magic Power 20 to read).
+## Spell tomes: Gust is the Gust Trial's reward (GAME_DESIGN.md §6.4; Phase 8b moved it from the scenic platform,
+## which now keeps a Stamina Tonic for climbing up); Mending Bloom is hidden under the arch gate until Lantern Glow
+## reveals it (and needs Magic Power 20 to read).
 func _build_tomes() -> void:
-	var gust := SpellTome.new()
-	gust.spell = GUST
-	gust.persist_id = &"elderroot_tome_gust"
-	gust.position = PLATFORM_CENTER + Vector3(1.6, PLATFORM_SIZE.y, -1.2)
-	add_child(gust)
+	var tonic := ItemPickup.new()
+	tonic.item = STAMINA_TONIC
+	tonic.persist_id = &"overlook_stamina_tonic"
+	tonic.position = PLATFORM_CENTER + Vector3(1.6, PLATFORM_SIZE.y, -1.2)
+	add_child(tonic)
 	var bloom := SpellTome.new()
 	bloom.spell = MENDING_BLOOM
 	bloom.persist_id = &"elderroot_tome_mending_bloom"
@@ -561,6 +565,7 @@ func _build_spawns() -> void:
 		&"camp": Vector3(-38, 0, -32),
 		&"farm": Vector3(24, 0, 34),
 		&"moonring": Vector3(-27, 0, 24),
+		&"trial": GUST_TRIAL_SPOT + Vector3(-GUST_TRIAL.radius - 3.0, 0, 0),  # just west of the Windcall Shrine
 	}
 	for id: StringName in spawns:
 		var spawn := RegionSpawn.new()
@@ -583,6 +588,14 @@ func _build_warden_clearing() -> void:
 		if _on_path(at, 2.5):
 			continue
 		_solid_box(Vector3(0.8, 2.2 + 0.4 * (i % 3), 0.7), stone, at + Vector3(0, 1.1, 0))
+
+
+## The Gust Trial at the Windcall Shrine (Phase 8b; owner decision 2026-11-07: hidden runes, then a ring of wind).
+func _build_gust_trial() -> void:
+	var shrine := TrialShrine.new()
+	shrine.data = GUST_TRIAL
+	shrine.position = GUST_TRIAL_SPOT
+	add_child(shrine)
 
 
 ## Two posts with a hanging sign at the meadow's south edge; walking through leads to Elderroot Village.

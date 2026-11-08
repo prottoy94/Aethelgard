@@ -14,6 +14,7 @@ extends Resource
 @export var move_speed := 2.6               ## m/s while chasing
 @export var wander_speed := 1.0             ## m/s while idle
 @export var knockback_resistance := 0.0     ## 0 = full knockback, 1 = immovable
+@export var invulnerable := false           ## takes no damage (scripted fights such as the prologue Ignis)
 
 @export_group("Senses")
 @export var aggro_range := 9.0              ## m: starts chasing the player

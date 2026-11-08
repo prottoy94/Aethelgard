@@ -73,9 +73,14 @@ func _process(_delta: float) -> void:
 		var player := _players[i]
 		var base := track.volume_db if track else 0.0
 		player.volume_db = base + level_db + linear_to_db(maxf(_gains[i], 0.0001))
-	if track == null or not track.loop or not _players[_active].playing:
+	if track == null or not _players[_active].playing:
 		return
 	var player := _players[_active]
+	if not track.loop:
+		# A one-shot part of a song (e.g. Sunlight's intro and first verse): fades out at loop_end.
+		if track.loop_end > 0.0 and player.get_playback_position() >= track.loop_end - crossfade:
+			stop(crossfade)
+		return
 	var length := player.stream.get_length()
 	var end := track.loop_end if track.loop_end > 0.0 else length
 	if length > 0.0 and player.get_playback_position() >= end - crossfade:

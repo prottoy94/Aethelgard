@@ -1,7 +1,7 @@
 class_name BossBar
 extends Control
 ## The boss health bar (FR-BOS-02): the boss's name and title above a wide bar at the top of the screen, with marks
-## where its next phases begin and a line when a phase starts. Shown while a boss fight runs.
+## where its next phases begin and a line when a phase starts, and its rank. Shown while a boss fight runs.
 
 const SIZE := Vector2(720, 70)
 const BAR_HEIGHT := 18.0
@@ -60,6 +60,8 @@ func _draw() -> void:
 	var font := get_theme_default_font()
 	var data := boss.boss_data()
 	var title := "%s   ·   %s" % [data.display_name, data.title] if data.title != "" else data.display_name
+	if data.rank != "":
+		title += "   ·   Rank %s" % data.rank  # Ignis shows "???" at first (GAME_DESIGN.md §5.2)
 	draw_string_outline(font, Vector2(0, 22), title, HORIZONTAL_ALIGNMENT_CENTER, SIZE.x, 22, 6, Color.BLACK)
 	draw_string(font, Vector2(0, 22), title, HORIZONTAL_ALIGNMENT_CENTER, SIZE.x, 22, TEXT)
 	var bar := Rect2(0, 32, SIZE.x, BAR_HEIGHT)
